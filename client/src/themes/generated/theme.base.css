@@ -4,8 +4,8 @@
 * http://js.devexpress.com/ThemeBuilder/
 */
 
-@import url(https://fonts.googleapis.com/css?family=Roboto:300,400,500,700);
-@import url(https://fonts.googleapis.com/earlyaccess/notokufiarabic.css);
+/* @import url(https://fonts.googleapis.com/css?family=Roboto:300,400,500,700); */
+/* @import url(https://fonts.googleapis.com/earlyaccess/notokufiarabic.css); */
 
 .dx-validationsummary-item {
   cursor: pointer;
@@ -61,41 +61,18 @@
     transform: scale(1);
   }
 }
-@font-face {
-  font-family: RobotoFallback;
-  font-style: normal;
-  font-weight: 300;
-  src: local("Roboto Light"),local("Roboto-Light"),url("../../../node_modules/devextreme/dist/css/fonts/Roboto-300.woff2") format("woff2"),url("../../../node_modules/devextreme/dist/css/fonts/Roboto-300.woff") format("woff"),url("../../../node_modules/devextreme/dist/css/fonts/Roboto-300.ttf") format("truetype");
-}
-@font-face {
-  font-family: RobotoFallback;
-  font-style: normal;
-  font-weight: 400;
-  src: local("Roboto"),local("Roboto-Regular"),url("../../../node_modules/devextreme/dist/css/fonts/Roboto-400.woff2") format("woff2"),url("../../../node_modules/devextreme/dist/css/fonts/Roboto-400.woff") format("woff"),url("../../../node_modules/devextreme/dist/css/fonts/Roboto-400.ttf") format("truetype");
-}
-@font-face {
-  font-family: RobotoFallback;
-  font-style: normal;
-  font-weight: 500;
-  src: local("Roboto Medium"),local("Roboto-Medium"),url("../../../node_modules/devextreme/dist/css/fonts/Roboto-500.woff2") format("woff2"),url("../../../node_modules/devextreme/dist/css/fonts/Roboto-500.woff") format("woff"),url("../../../node_modules/devextreme/dist/css/fonts/Roboto-500.ttf") format("truetype");
-}
-@font-face {
-  font-family: RobotoFallback;
-  font-style: normal;
-  font-weight: 700;
-  src: local("Roboto Bold"),local("Roboto-Bold"),url("../../../node_modules/devextreme/dist/css/fonts/Roboto-700.woff2") format("woff2"),url("../../../node_modules/devextreme/dist/css/fonts/Roboto-700.woff") format("woff"),url("../../../node_modules/devextreme/dist/css/fonts/Roboto-700.ttf") format("truetype");
-}
+
 .dx-theme-material-typography {
   background-color: #fff;
   color: rgba(0,0,0,.87);
   font-weight: 400;
   font-size: 14px;
-  font-family: Roboto,RobotoFallback,"Noto Kufi Arabic",Helvetica,Arial,sans-serif;
+  font-family: monospace;
   line-height: 1.2857;
 }
 .dx-theme-material-typography input,
 .dx-theme-material-typography textarea {
-  font-family: Roboto,RobotoFallback,"Noto Kufi Arabic",Helvetica,Arial,sans-serif;
+  font-family:monospace;
   line-height: 1.2857;
 }
 .dx-theme-material-typography h1 {
@@ -1567,7 +1544,7 @@
   color: rgba(0,0,0,.87);
   font-weight: 400;
   font-size: 14px;
-  font-family: Roboto,RobotoFallback,"Noto Kufi Arabic",Helvetica,Arial,sans-serif;
+  font-family: monospace;
   line-height: 1.2857;
 }
 .dx-widget,
@@ -1591,7 +1568,7 @@
 }
 .dx-widget input,
 .dx-widget textarea {
-  font-family: Roboto,RobotoFallback,"Noto Kufi Arabic",Helvetica,Arial,sans-serif;
+  font-family: monospace;
   line-height: 1.2857;
 }
 .dx-state-disabled .dx-widget,
@@ -1632,7 +1609,7 @@
   color: rgba(0,0,0,.87);
   font-weight: 400;
   font-size: 14px;
-  font-family: Roboto,RobotoFallback,"Noto Kufi Arabic",Helvetica,Arial,sans-serif;
+  font-family: monospace;
   line-height: 1.2857;
   padding: 0;
   display: -webkit-box;
@@ -1684,7 +1661,7 @@
 }
 .dx-field input,
 .dx-field textarea {
-  font-family: Roboto,RobotoFallback,"Noto Kufi Arabic",Helvetica,Arial,sans-serif;
+  font-family: monospace;
   line-height: 1.2857;
 }
 .dx-field-label i {
@@ -4556,7 +4533,7 @@
   color: rgba(0,0,0,.87);
   font-weight: 400;
   font-size: 14px;
-  font-family: Roboto,RobotoFallback,"Noto Kufi Arabic",Helvetica,Arial,sans-serif;
+  font-family: monospace;
   line-height: 1.2857;
 }
 .dx-overlay-wrapper,
@@ -4597,7 +4574,7 @@
 }
 .dx-overlay-wrapper input,
 .dx-overlay-wrapper textarea {
-  font-family: Roboto,RobotoFallback,"Noto Kufi Arabic",Helvetica,Arial,sans-serif;
+  font-family: monospace;
   line-height: 1.2857;
 }
 .dx-validationsummary-item {
@@ -8273,12 +8250,12 @@
   color: rgba(0,0,0,.87);
   font-weight: 400;
   font-size: 14px;
-  font-family: Roboto,RobotoFallback,"Noto Kufi Arabic",Helvetica,Arial,sans-serif;
+  font-family: monospace;
   line-height: 1.2857;
 }
 .dx-menu-base input,
 .dx-menu-base textarea {
-  font-family: Roboto,RobotoFallback,"Noto Kufi Arabic",Helvetica,Arial,sans-serif;
+  font-family: monospace;
   line-height: 1.2857;
 }
 .dx-menu-base.dx-state-focused {
@@ -13296,12 +13273,12 @@
   color: rgba(0,0,0,.87);
   font-weight: 400;
   font-size: 14px;
-  font-family: Roboto,RobotoFallback,"Noto Kufi Arabic",Helvetica,Arial,sans-serif;
+  font-family: monospace;
   line-height: 1.2857;
 }
 .dx-datagrid-column-chooser input,
 .dx-datagrid-column-chooser textarea {
-  font-family: Roboto,RobotoFallback,"Noto Kufi Arabic",Helvetica,Arial,sans-serif;
+  font-family: monospace;
   line-height: 1.2857;
 }
 .dx-datagrid-column-chooser.dx-datagrid-column-chooser-mode-drag .dx-popup-content {
@@ -15713,12 +15690,12 @@ input.dx-hidden {
   color: rgba(0,0,0,.87);
   font-weight: 400;
   font-size: 14px;
-  font-family: Roboto,RobotoFallback,"Noto Kufi Arabic",Helvetica,Arial,sans-serif;
+  font-family: monospace;
   line-height: 1.2857;
 }
 .dx-treelist-column-chooser input,
 .dx-treelist-column-chooser textarea {
-  font-family: Roboto,RobotoFallback,"Noto Kufi Arabic",Helvetica,Arial,sans-serif;
+  font-family: monospace;
   line-height: 1.2857;
 }
 .dx-treelist-column-chooser.dx-treelist-column-chooser-mode-drag .dx-popup-content {
@@ -17496,12 +17473,12 @@ input.dx-hidden {
   color: rgba(0,0,0,.87);
   font-weight: 400;
   font-size: 14px;
-  font-family: Roboto,RobotoFallback,"Noto Kufi Arabic",Helvetica,Arial,sans-serif;
+  font-family: monospace;
   line-height: 1.2857;
 }
 .dx-pivotgrid .dx-ie .dx-pivotgrid-fields-area input,
 .dx-pivotgrid .dx-ie .dx-pivotgrid-fields-area textarea {
-  font-family: Roboto,RobotoFallback,"Noto Kufi Arabic",Helvetica,Arial,sans-serif;
+  font-family: monospace;
   line-height: 1.2857;
 }
 .dx-pivotgridfieldchooser .dx-area .dx-area-icon-filter {
