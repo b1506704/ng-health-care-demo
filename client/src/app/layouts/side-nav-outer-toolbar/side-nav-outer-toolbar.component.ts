@@ -3,7 +3,6 @@ import {
   SideNavigationMenuModule,
   HeaderModule,
 } from '../../shared/components';
-import { ScreenService } from '../../shared/services';
 import { ItemClickEvent } from 'devextreme/ui/tree_view';
 import { DxDrawerModule } from 'devextreme-angular/ui/drawer';
 import {
@@ -13,6 +12,7 @@ import {
 import { CommonModule } from '@angular/common';
 
 import { Router, NavigationEnd } from '@angular/router';
+import { ScreenService } from 'src/app/shared/services/screen.service';
 
 @Component({
   selector: 'app-side-nav-outer-toolbar',

@@ -3,8 +3,9 @@ import { BrowserModule } from '@angular/platform-browser';
 
 import { AppComponent } from './app.component';
 import { SideNavOuterToolbarModule } from './layouts';
-import { ScreenService, AppInfoService } from './shared/services';
 import { AppRoutingModule } from './app-routing.module';
+import { ScreenService } from './shared/services/screen.service';
+import { AppInfoService } from './shared/services/app-info.service';
 
 @NgModule({
   declarations: [AppComponent],

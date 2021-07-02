@@ -49,11 +49,11 @@ export const navigationDoctor = [
     icon: 'folder',
     items: [
       {
-        text: 'Medicine',
+        text: 'Edit Medicine',
         path: '/edit_medicine_list',
       },
       {
-        text: 'Health Condition',
+        text: 'Edit Disease',
         path: '/edit_disease_list',
       },
     ],
@@ -63,11 +63,11 @@ export const navigationDoctor = [
     icon: 'folder',
     items: [
       {
-        text: 'Health Condition',
+        text: 'Monitor Patient',
         path: '/edit_health_condition',
       },
       {
-        text: 'Prescription',
+        text: 'Edit Prescription',
         path: '/edit_prescription_list',
       },
     ],
@@ -84,27 +84,27 @@ export const navigationAdmin = [
     icon: 'folder',
     items: [
       {
-        text: 'Customer',
+        text: 'Edit Customer',
         path: '/edit_customer_list',
       },
       {
-        text: 'Doctor',
+        text: 'Edit Doctor',
         path: '/edit_doctor_list',
       },
     ],
   },
   {
-    text: 'Schedule',
+    text: 'Edit Schedule',
     path: '/edit_schedule',
     icon: 'home',
   },
   {
-    text: 'Bill',
+    text: 'Edit Bill',
     path: '/edit_bill_list',
     icon: 'home',
   },
   {
-    text: 'Theme',
+    text: 'Modify Theme',
     path: '/edit_theme',
     icon: 'home',
   },
