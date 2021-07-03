@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 import cors from "cors";
 import dotenv from "dotenv";
 import bodyParser from "express";
+
 import userRoutes from "./routes/users.js";
 import roomRoutes from "./routes/rooms.js";
 import billRoutes from "./routes/bills.js";
@@ -21,15 +22,11 @@ const app = express();
 
 const PORT = process.env.PORT || 80;
 
+const dbUri = process.env.MONGODB_URI;
+
 app.use(bodyParser.json({ limit: "30mb", extended: true }));
 app.use(bodyParser.urlencoded({ limit: "30mb", extended: true }));
 app.use(cors());
-
-app.use(express.static("./client/dist/ng-health-care-demo"));
-
-app.get("/*", function (req, res) {
-  res.sendFile("index.html", { root: "./client/dist/ng-health-care-demo" });
-});
 
 app.use("/users", userRoutes);
 app.use("/rooms", roomRoutes);
@@ -43,8 +40,6 @@ app.use("/prescriptions", prescriptionRoutes);
 app.use("/schedules", scheduleRoutes);
 app.use("/diseases", diseaseRoutes);
 
-const dbUri = process.env.MONGODB_URI;
-
 mongoose
   .connect(dbUri, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() =>
@@ -55,3 +50,10 @@ mongoose
   .catch((error) => console.log(`${error} cannot connect`));
 
 mongoose.set("useFindAndModify", false);
+
+app.use(express.static("./client/dist/ng-health-care-demo"));
+
+app.get("/*", function (req, res) {
+  res.sendFile("index.html", { root: "./client/dist/ng-health-care-demo" });
+});
+
