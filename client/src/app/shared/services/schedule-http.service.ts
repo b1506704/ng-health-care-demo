@@ -9,7 +9,7 @@ import { Schedule } from '../models/schedule';
 })
 export class ScheduleHttpService {
   constructor(private http: HttpClient) {}
-  apiScheduleUrl = 'https://ng-health-care-demo.herokuapp.com/schedule';
+  apiScheduleUrl = 'https://ng-health-care-demo.herokuapp.com/schedules';
 
   fetchSchedule(): Observable<Schedule> {
     return this.http

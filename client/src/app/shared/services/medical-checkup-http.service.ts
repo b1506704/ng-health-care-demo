@@ -2,47 +2,58 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import { Customer } from '../models/customer';
+import { MedicalCheckup } from '../models/medical-checkup';
 
 @Injectable({
   providedIn: 'root',
 })
-export class CustomerHttpService {
+export class MedicalCheckupHttpService {
   constructor(private http: HttpClient) {}
-  apiCustomerUrl = 'https://ng-health-care-demo.herokuapp.com/customers';
+  apiMedicalCheckupUrl =
+    'https://ng-health-care-demo.herokuapp.com/medicalCheckups';
 
-  fetchCustomer(): Observable<Customer> {
+  fetchMedicalCheckup(): Observable<MedicalCheckup> {
     return this.http
-      .get<Customer>(this.apiCustomerUrl, {
+      .get<MedicalCheckup>(this.apiMedicalCheckupUrl, {
         reportProgress: true,
         observe: 'body',
       })
       .pipe(catchError(this.handleError));
   }
 
-  uploadCustomer(customer: Customer): Observable<Customer> {
+  uploadMedicalCheckup(
+    medicalCheckup: MedicalCheckup
+  ): Observable<MedicalCheckup> {
     return this.http
-      .post<Customer>(this.apiCustomerUrl, customer, {
+      .post<MedicalCheckup>(this.apiMedicalCheckupUrl, medicalCheckup, {
         reportProgress: true,
         observe: 'body',
       })
       .pipe(catchError(this.handleError));
   }
 
-  deleteCustomer(customer: Customer): Observable<ArrayBuffer> {
+  deleteMedicalCheckup(
+    medicalCheckup: MedicalCheckup
+  ): Observable<ArrayBuffer> {
     return this.http
-      .delete<ArrayBuffer>(this.apiCustomerUrl + `/${customer.id}`, {
-        reportProgress: true,
-        observe: 'body',
-      })
+      .delete<ArrayBuffer>(
+        this.apiMedicalCheckupUrl + `/${medicalCheckup.id}`,
+        {
+          reportProgress: true,
+          observe: 'body',
+        }
+      )
       .pipe(catchError(this.handleError));
   }
 
-  updateCustomer(customer: Customer): Observable<Customer> {
+  updateMedicalCheckup(
+    medicalCheckup: MedicalCheckup
+  ): Observable<MedicalCheckup> {
     return this.http
-      .post<Customer>(
-        this.apiCustomerUrl + `/updateCustomer/${customer.id}`,
-        customer,
+      .post<MedicalCheckup>(
+        this.apiMedicalCheckupUrl +
+          `/updateMedicalCheckup/${medicalCheckup.id}`,
+        medicalCheckup,
         {
           reportProgress: true,
           observe: 'body',

@@ -9,7 +9,7 @@ import { Bill } from '../models/bill';
 })
 export class BillHttpService {
   constructor(private http: HttpClient) {}
-  apiBillUrl = 'https://ng-health-care-demo.herokuapp.com/Bill';
+  apiBillUrl = 'https://ng-health-care-demo.herokuapp.com/bills';
 
   fetchBill(): Observable<Bill> {
     return this.http

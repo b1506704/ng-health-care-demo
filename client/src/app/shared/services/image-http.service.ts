@@ -2,52 +2,48 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import { Customer } from '../models/customer';
+import { Image } from '../models/image';
 
 @Injectable({
   providedIn: 'root',
 })
-export class CustomerHttpService {
+export class ImageHttpService {
   constructor(private http: HttpClient) {}
-  apiCustomerUrl = 'https://ng-health-care-demo.herokuapp.com/customers';
+  apiImageUrl = 'https://ng-health-care-demo.herokuapp.com/images';
 
-  fetchCustomer(): Observable<Customer> {
+  fetchImage(): Observable<Image> {
     return this.http
-      .get<Customer>(this.apiCustomerUrl, {
+      .get<Image>(this.apiImageUrl, {
         reportProgress: true,
         observe: 'body',
       })
       .pipe(catchError(this.handleError));
   }
 
-  uploadCustomer(customer: Customer): Observable<Customer> {
+  uploadImage(image: Image): Observable<Image> {
     return this.http
-      .post<Customer>(this.apiCustomerUrl, customer, {
+      .post<Image>(this.apiImageUrl, image, {
         reportProgress: true,
         observe: 'body',
       })
       .pipe(catchError(this.handleError));
   }
 
-  deleteCustomer(customer: Customer): Observable<ArrayBuffer> {
+  deleteImage(image: Image): Observable<ArrayBuffer> {
     return this.http
-      .delete<ArrayBuffer>(this.apiCustomerUrl + `/${customer.id}`, {
+      .delete<ArrayBuffer>(this.apiImageUrl + `/${image.id}`, {
         reportProgress: true,
         observe: 'body',
       })
       .pipe(catchError(this.handleError));
   }
 
-  updateCustomer(customer: Customer): Observable<Customer> {
+  updateImage(image: Image): Observable<Image> {
     return this.http
-      .post<Customer>(
-        this.apiCustomerUrl + `/updateCustomer/${customer.id}`,
-        customer,
-        {
-          reportProgress: true,
-          observe: 'body',
-        }
-      )
+      .post<Image>(this.apiImageUrl + `/updateImage/${image.id}`, image, {
+        reportProgress: true,
+        observe: 'body',
+      })
       .pipe(catchError(this.handleError));
   }
 

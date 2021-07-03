@@ -1,14 +1,19 @@
 {
-    "name": "ng_health_care_demo",
-    "version": "1.0.0",
-    "description": "",
-    "main": "index.js",
-    "type": "module",
-    "scripts": {
-        "start": "node index.js",
-        "heroku-postbuild": "cd client && npm install && npm run build"
-    },
-    "dependencies": {
-        "express": "^4.17.1"
-    }
+  "name": "ng_health_care_demo",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js",
+    "heroku-postbuild": "cd client && npm install && npm run build"
+  },
+  "dependencies": {
+    "express": "^4.17.1",
+    "cors": "^2.8.5",
+    "dotenv": "^10.0.0",
+    "mongoose": "^5.13.1",
+    "bcryptjs": "^2.4.3",
+    "jsonwebtoken": "^8.5.1"
+  }
 }

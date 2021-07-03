@@ -2,52 +2,48 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import { Customer } from '../models/customer';
+import { User } from '../models/user';
 
 @Injectable({
   providedIn: 'root',
 })
-export class CustomerHttpService {
+export class UserHttpService {
   constructor(private http: HttpClient) {}
-  apiCustomerUrl = 'https://ng-health-care-demo.herokuapp.com/customers';
+  apiUserUrl = 'https://ng-health-care-demo.herokuapp.com/users';
 
-  fetchCustomer(): Observable<Customer> {
+  fetchUser(): Observable<User> {
     return this.http
-      .get<Customer>(this.apiCustomerUrl, {
+      .get<User>(this.apiUserUrl, {
         reportProgress: true,
         observe: 'body',
       })
       .pipe(catchError(this.handleError));
   }
 
-  uploadCustomer(customer: Customer): Observable<Customer> {
+  uploadUser(user: User): Observable<User> {
     return this.http
-      .post<Customer>(this.apiCustomerUrl, customer, {
+      .post<User>(this.apiUserUrl, user, {
         reportProgress: true,
         observe: 'body',
       })
       .pipe(catchError(this.handleError));
   }
 
-  deleteCustomer(customer: Customer): Observable<ArrayBuffer> {
+  deleteUser(user: User): Observable<ArrayBuffer> {
     return this.http
-      .delete<ArrayBuffer>(this.apiCustomerUrl + `/${customer.id}`, {
+      .delete<ArrayBuffer>(this.apiUserUrl + `/${user.id}`, {
         reportProgress: true,
         observe: 'body',
       })
       .pipe(catchError(this.handleError));
   }
 
-  updateCustomer(customer: Customer): Observable<Customer> {
+  updateUser(user: User): Observable<User> {
     return this.http
-      .post<Customer>(
-        this.apiCustomerUrl + `/updateCustomer/${customer.id}`,
-        customer,
-        {
-          reportProgress: true,
-          observe: 'body',
-        }
-      )
+      .post<User>(this.apiUserUrl + `/updateUser/${user.id}`, user, {
+        reportProgress: true,
+        observe: 'body',
+      })
       .pipe(catchError(this.handleError));
   }
 
