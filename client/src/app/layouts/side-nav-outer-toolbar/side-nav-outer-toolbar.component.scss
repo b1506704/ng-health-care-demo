@@ -1,3 +1,4 @@
+@import "../../../dx-styles.scss";
 :host {
   flex-direction: column;
   display: flex;
@@ -16,4 +17,14 @@
 
 .content {
   flex-grow: 1;
+}
+::ng-deep .dx-toast-custom {
+  background-color: rgba(248, 238, 238, 0.322);
+  color: #fff;
+  backdrop-filter: blur(5px);
+  text-shadow: $neon-light;
+  display: flex;
+  width: auto;
+  justify-content: center;
+  align-items: center;
 }

@@ -1,3 +1,9 @@
 export interface Customer {
-    id: String
+  userName: String;
+  fullName: String;
+  age: Number;
+  gender: String;
+  occupation: String;
+  address: String;
+  bloodType: String;
 }

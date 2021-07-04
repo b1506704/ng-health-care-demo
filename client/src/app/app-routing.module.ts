@@ -139,11 +139,11 @@ const routes: Routes = [
         (m) => m.NotFoundModule
       ),
   },
-  // {
-  //   path: '',
-  //   pathMatch: 'full',
-  //   redirectTo: 'user_home',
-  // },
+  {
+    path: '',
+    pathMatch: 'full',
+    redirectTo: 'doctor_home',
+  },
   {
     path: '**',
     redirectTo: 'not_found',

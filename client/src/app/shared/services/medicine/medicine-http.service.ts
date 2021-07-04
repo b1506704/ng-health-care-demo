@@ -2,14 +2,13 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import { Medicine } from '../models/medicine';
+import { Medicine } from '../../models/medicine';
 
 @Injectable({
   providedIn: 'root',
 })
 export class MedicineHttpService {
   constructor(private http: HttpClient) {}
-
   apiMedicineUrl = 'https://ng-health-care-demo.herokuapp.com/medicines';
 
   fetchMedicine(): Observable<Medicine> {

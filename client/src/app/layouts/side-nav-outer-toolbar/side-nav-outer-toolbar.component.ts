@@ -13,6 +13,8 @@ import { CommonModule } from '@angular/common';
 
 import { Router, NavigationEnd } from '@angular/router';
 import { ScreenService } from 'src/app/shared/services/screen.service';
+import { DxToastModule } from 'devextreme-angular';
+import { StoreService } from 'src/app/shared/services/store.service';
 
 @Component({
   selector: 'app-side-nav-outer-toolbar',
@@ -25,6 +27,11 @@ export class SideNavOuterToolbarComponent implements OnInit {
   selectedRoute = '';
 
   menuOpened!: boolean;
+
+  isNotifVisible!: Boolean;
+  notifType: string = "info";
+  responseMsg: String = "OK";
+
   temporaryMenuOpened = false;
 
   @Input()
@@ -35,9 +42,26 @@ export class SideNavOuterToolbarComponent implements OnInit {
   minMenuSize = 0;
   shaderEnabled = false;
 
-  constructor(private screen: ScreenService, private router: Router) {}
+  constructor(
+    private screen: ScreenService,
+    private router: Router,
+    private store: StoreService
+  ) {}
 
   ngOnInit() {
+    this.store.$isNotifVisible.subscribe((data: any) => {
+      this.isNotifVisible = data;
+      console.log(data);
+    });
+    this.store.$notifType.subscribe((data: any) => {
+      this.notifType = data;
+      console.log(data);
+    });
+    this.store.$responseMsg.subscribe((data: any) => {
+      this.responseMsg = data;
+      console.log(data);
+    });
+
     this.menuOpened = this.screen.sizes['screen-large'];
 
     this.router.events.subscribe((val) => {
@@ -106,6 +130,7 @@ export class SideNavOuterToolbarComponent implements OnInit {
     HeaderModule,
     DxScrollViewModule,
     CommonModule,
+    DxToastModule,
   ],
   exports: [SideNavOuterToolbarComponent],
   declarations: [SideNavOuterToolbarComponent],

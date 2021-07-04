@@ -13,6 +13,8 @@ import { DxButtonModule } from 'devextreme-angular/ui/button';
 import { DxToolbarModule } from 'devextreme-angular/ui/toolbar';
 
 import { Router } from '@angular/router';
+import { DxLoadIndicatorModule } from 'devextreme-angular';
+import { StoreService } from '../../services/store.service';
 @Component({
   selector: 'app-header',
   templateUrl: 'header.component.html',
@@ -38,9 +40,15 @@ export class HeaderComponent implements OnInit {
     },
   ];
 
-  constructor(private router: Router) {}
+  isLoadIndicatorVisible: boolean = false;
 
-  ngOnInit() {}
+  constructor(private router: Router, private store: StoreService) {}
+
+  ngOnInit() {
+    this.store.$isLoading.subscribe((data: any) => {
+      this.isLoadIndicatorVisible = data;
+    });
+  }
 
   toggleMenu = () => {
     this.menuToggle.emit();
@@ -48,7 +56,13 @@ export class HeaderComponent implements OnInit {
 }
 
 @NgModule({
-  imports: [CommonModule, DxButtonModule, UserPanelModule, DxToolbarModule],
+  imports: [
+    CommonModule,
+    DxButtonModule,
+    UserPanelModule,
+    DxToolbarModule,
+    DxLoadIndicatorModule,
+  ],
   declarations: [HeaderComponent],
   exports: [HeaderComponent],
 })

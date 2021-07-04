@@ -7,11 +7,11 @@ export const navigationCustomer = [
   {
     text: 'Bill',
     path: '/bill_list',
-    icon: 'home',
+    icon: 'cart',
   },
   {
     text: 'Help Center',
-    icon: 'folder',
+    icon: 'help',
     items: [
       {
         text: 'Doctor',
@@ -25,7 +25,7 @@ export const navigationCustomer = [
   },
   {
     text: 'Heath Care',
-    icon: 'folder',
+    icon: 'like',
     items: [
       {
         text: 'Health Condition',
@@ -46,7 +46,7 @@ export const navigationDoctor = [
   },
   {
     text: 'Medical',
-    icon: 'folder',
+    icon: 'filter',
     items: [
       {
         text: 'Edit Medicine',
@@ -60,7 +60,7 @@ export const navigationDoctor = [
   },
   {
     text: 'Heath Care',
-    icon: 'folder',
+    icon: 'like',
     items: [
       {
         text: 'Monitor Patient',
@@ -81,7 +81,7 @@ export const navigationAdmin = [
   },
   {
     text: 'User',
-    icon: 'folder',
+    icon: 'user',
     items: [
       {
         text: 'Edit Customer',
@@ -96,21 +96,21 @@ export const navigationAdmin = [
   {
     text: 'Edit Schedule',
     path: '/edit_schedule',
-    icon: 'home',
-  },
+    icon: 'event',
+  },  
   {
     text: 'Edit Bill',
     path: '/edit_bill_list',
-    icon: 'home',
+    icon: 'card',
   },
   {
     text: 'Modify Theme',
     path: '/edit_theme',
-    icon: 'home',
+    icon: 'palette',
   },
   {
     text: 'Statistics',
     path: '/statistics',
-    icon: 'home',
+    icon: 'chart',
   },
 ];
