@@ -4,10 +4,10 @@ import { DxDataGridModule, DxFormModule } from 'devextreme-angular';
 
 const routes: Routes = [
   {
-    path: 'user_home',
+    path: 'customer_home',
     loadChildren: () =>
-      import('./pages/customer/user_home/user-home.module').then(
-        (m) => m.UserHomeModule
+      import('./pages/customer/customer_home/customer-home.module').then(
+        (m) => m.CustomerHomeModule
       ),
   },
   {
@@ -36,6 +36,13 @@ const routes: Routes = [
     loadChildren: () =>
       import('./pages/customer/health-condition/health-condition.module').then(
         (m) => m.HealthConditionModule
+      ),
+  },
+  {
+    path: 'medical_checkup',
+    loadChildren: () =>
+      import('./pages/customer/medical-checkup/medical-checkup.module').then(
+        (m) => m.MedicalCheckupModule
       ),
   },
   {
@@ -68,11 +75,18 @@ const routes: Routes = [
       ),
   },
   {
-    path: 'edit_health_condition',
+    path: 'edit_health_condition_list',
     loadChildren: () =>
       import(
-        './pages/doctor/edit-health-condition/edit-health-condition.module'
+        './pages/doctor/edit-health-condition-list/edit-health-condition-list.module'
       ).then((m) => m.EditHealthConditionModule),
+  },
+  {
+    path: 'edit_medical_checkup_list',
+    loadChildren: () =>
+      import(
+        './pages/doctor/edit-medical-checkup-list/edit-medical-checkup-list.module'
+      ).then((m) => m.EditMedicalCheckupListModule),
   },
   {
     path: 'edit_prescription_list',
@@ -90,6 +104,13 @@ const routes: Routes = [
       ),
   },
   {
+    path: 'edit_user_list',
+    loadChildren: () =>
+      import('./pages/admin/edit-user-list/edit-user-list.module').then(
+        (m) => m.EditUserListModule
+      ),
+  },
+  {
     path: 'edit_customer_list',
     loadChildren: () =>
       import('./pages/admin/edit-customer-list/edit-customer-list.module').then(
@@ -101,6 +122,13 @@ const routes: Routes = [
     loadChildren: () =>
       import('./pages/admin/edit-doctor-list/edit-doctor-list.module').then(
         (m) => m.EditDoctorListModule
+      ),
+  },
+  {
+    path: 'edit_room_list',
+    loadChildren: () =>
+      import('./pages/admin/edit-room-list/edit-room-list.module').then(
+        (m) => m.EditRoomListModule
       ),
   },
   {
@@ -137,6 +165,20 @@ const routes: Routes = [
     loadChildren: () =>
       import('./pages/not-found/not-found.module').then(
         (m) => m.NotFoundModule
+      ),
+  },
+  {
+    path: 'login',
+    loadChildren: () =>
+      import('../app/shared/components/login/login.module').then(
+        (m) => m.LoginModule
+      ),
+  },
+  {
+    path: 'signup',
+    loadChildren: () =>
+      import('./shared/components/sign-up/sign-up.module').then(
+        (m) => m.SignUpModule
       ),
   },
   {

@@ -50,6 +50,14 @@ export class HeaderComponent implements OnInit {
     });
   }
 
+  onLogin() {
+    this.router.navigate(['/login']);
+  }
+
+  onSignup() {
+    this.router.navigate(['/signup']);
+  }
+
   toggleMenu = () => {
     this.menuToggle.emit();
   };

@@ -1,7 +1,7 @@
 export const navigationCustomer = [
   {
     text: 'Home',
-    path: '/user_home',
+    path: '/customer_home',
     icon: 'home',
   },
   {
@@ -18,8 +18,8 @@ export const navigationCustomer = [
         path: '/doctor_list',
       },
       {
-        text: 'Medical',
-        path: '/medical_list',
+        text: 'Medicine',
+        path: '/medicine_list',
       },
     ],
   },
@@ -30,6 +30,10 @@ export const navigationCustomer = [
       {
         text: 'Health Condition',
         path: '/health_condition',
+      },
+      {
+        text: 'Medical Checkup',
+        path: '/medical_checkup',
       },
       {
         text: 'Prescription',
@@ -64,7 +68,11 @@ export const navigationDoctor = [
     items: [
       {
         text: 'Monitor Patient',
-        path: '/edit_health_condition',
+        path: '/edit_health_condition_list',
+      },
+      {
+        text: 'Edit Medical Checkup',
+        path: '/edit_medical_checkup_list',
       },
       {
         text: 'Edit Prescription',
@@ -84,6 +92,10 @@ export const navigationAdmin = [
     icon: 'user',
     items: [
       {
+        text: 'Edit User',
+        path: '/edit_user_list',
+      },
+      {
         text: 'Edit Customer',
         path: '/edit_customer_list',
       },
@@ -98,6 +110,11 @@ export const navigationAdmin = [
     path: '/edit_schedule',
     icon: 'event',
   },  
+  {
+    text: 'Edit Room',
+    path: '/edit_room_list',
+    icon: 'event',
+  },
   {
     text: 'Edit Bill',
     path: '/edit_bill_list',

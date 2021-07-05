@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import notify from 'devextreme/ui/notify';
 import { Observable } from 'rxjs';
 import { HealthCondition } from '../models/health-condition';
 import { User } from '../models/user';
@@ -11,9 +12,9 @@ interface StoreState {
   searchedUserList: Array<User>;
   selectedUser: Object;
   currentUser: Object;
+  currentRole: String;
   patientData: HealthCondition;
   isLoading: Boolean;
-  isNotifVisible: Boolean;
   notifType: string;
   responseMsg: string;
   lastVisitTime: Date;
@@ -24,6 +25,7 @@ const initialState: StoreState = {
   searchedUserList: [],
   selectedUser: {},
   currentUser: {},
+  currentRole: 'Doctor',
   patientData: {
     bloodPressure: 110,
     sweat: 30,
@@ -31,7 +33,6 @@ const initialState: StoreState = {
     heartRate: 90,
   },
   isLoading: false,
-  isNotifVisible: false,
   responseMsg: '',
   notifType: '',
   lastVisitTime: new Date(),
@@ -47,10 +48,6 @@ export class StoreService extends StateService<StoreState> {
 
   $isLoading: Observable<Boolean> = this.select((state) => state.isLoading);
 
-  $isNotifVisible: Observable<Boolean> = this.select(
-    (state) => state.isNotifVisible
-  );
-
   $responseMsg: Observable<String> = this.select((state) => state.responseMsg);
 
   $notifType: Observable<String> = this.select((state) => state.notifType);
@@ -63,14 +60,14 @@ export class StoreService extends StateService<StoreState> {
     (state) => state.patientData
   );
 
+  $currentUser: Observable<Object> = this.select((state) => state.currentUser);
+
+  $currentRole: Observable<String> = this.select((state) => state.currentRole);
+
   loadDataAsync() {}
 
   setIsLoading(_isLoading: Boolean) {
     this.setState({ isLoading: _isLoading });
-  }
-
-  setIsNotifVisible(_isVisible: Boolean) {
-    this.setState({ isNotifVisible: _isVisible });
   }
 
   setResponseMsg(message: string) {
@@ -85,13 +82,20 @@ export class StoreService extends StateService<StoreState> {
     this.setState({ lastVisitTime: _date });
   }
 
-  showNotifSuccess(message: string, type: string) {
-    this.setIsNotifVisible(true);
-    this.setNotifType(type);
-    this.setResponseMsg(message);
-  }
-
   setPatientData(_patientData: HealthCondition) {
     this.setState({ patientData: _patientData });
+  }
+
+  setCurrentUser(_user: Object) {
+    this.setState({ currentUser: _user });
+  }
+
+  setCurrentUserRole(role: String) {
+    this.setState({ currentRole: role });
+  }
+
+  showNotifSuccess(message: string, type: string) {
+    notify(message, type);
+    this.setResponseMsg(message);
   }
 }

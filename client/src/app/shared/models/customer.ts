@@ -6,4 +6,6 @@ export interface Customer {
   occupation: String;
   address: String;
   bloodType: String;
+  height: Number;
+  weight: Number;
 }

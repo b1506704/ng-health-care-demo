@@ -1,3 +1,16 @@
+<dx-toolbar>
+  <dxi-item location="after">
+    <dx-button
+      icon="export"
+      type="normal"
+      text="Refresh"
+      (onClick)="onRefresh()"
+    >
+    </dx-button>
+    <dx-button icon="key" type="normal" text="Add" (onClick)="onAdd()">
+    </dx-button>
+  </dxi-item>
+</dx-toolbar>
 <dx-data-grid
   id="gridContainer"
   [dataSource]="medicineList"

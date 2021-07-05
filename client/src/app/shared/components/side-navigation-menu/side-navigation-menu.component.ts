@@ -22,6 +22,7 @@ import {
 } from '../../../app-navigation';
 
 import * as events from 'devextreme/events';
+import { StoreService } from '../../services/store.service';
 
 @Component({
   selector: 'app-side-navigation-menu',
@@ -32,7 +33,7 @@ export class SideNavigationMenuComponent
   implements AfterViewInit, OnDestroy, OnInit
 {
   navigation: Array<any> = [];
-  userRole: string = 'doctor';
+  // userRole: string = 'Doctor';
 
   @ViewChild(DxTreeViewComponent, { static: true })
   menu!: DxTreeViewComponent;
@@ -42,6 +43,32 @@ export class SideNavigationMenuComponent
 
   @Output()
   openMenu = new EventEmitter<any>();
+
+  constructor(private elementRef: ElementRef, private store: StoreService) {}
+
+  onItemClick(event: ItemClickEvent) {
+    this.selectedItemChanged.emit(event);
+  }
+
+  userRoleListener() {
+    this.store.$currentRole.subscribe((data: any) => {
+      console.log(data);
+      // not switch view?
+      switch (data) {
+        case 'Customer':
+          this.navigation = navigationCustomer;
+          break;
+        case 'Admin':
+          this.navigation = navigationAdmin;
+          break;
+        case 'Doctor':
+          this.navigation = navigationDoctor;
+          break;
+        default:
+          break;
+      }
+    });
+  }
 
   private _selectedItem!: String;
   @Input()
@@ -87,26 +114,8 @@ export class SideNavigationMenuComponent
     }
   }
 
-  constructor(private elementRef: ElementRef) {}
-
-  onItemClick(event: ItemClickEvent) {
-    this.selectedItemChanged.emit(event);
-  }
-
   ngOnInit(): void {
-    switch (this.userRole) {
-      case 'user':
-        this.navigation = navigationCustomer;
-        break;
-      case 'admin':
-        this.navigation = navigationAdmin;
-        break;
-      case 'doctor':
-        this.navigation = navigationDoctor;
-        break;
-      default:
-        break;
-    }
+    this.userRoleListener();
   }
 
   ngAfterViewInit() {

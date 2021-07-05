@@ -19,18 +19,33 @@
       [text]="title"
     >
     </dxi-item>
-    <dxi-item
-      location="center"
-      cssClass="header-title"
-      *ngIf="title"
-      [text]="title"
-    >
-      <dx-load-indicator
-        [(visible)]="isLoadIndicatorVisible"
-        [height]="30"
-        [width]="30"
-      >
-      </dx-load-indicator>
+    <dxi-item location="center">
+      <div *dxTemplate="let data of 'item'">
+        <dx-load-indicator
+          [(visible)]="isLoadIndicatorVisible"
+          [height]="30"
+          [width]="30"
+        >
+        </dx-load-indicator>
+      </div>
+    </dxi-item>
+    <dxi-item location="after">
+      <div *dxTemplate="let data of 'item'">
+        <dx-button
+          icon="export"
+          type="normal"
+          text="Login"
+          (onClick)="onLogin()"
+        >
+        </dx-button>
+        <dx-button
+          icon="key"
+          type="normal"
+          text="Signup"
+          (onClick)="onSignup()"
+        >
+        </dx-button>
+      </div>
     </dxi-item>
 
     <dxi-item location="after" locateInMenu="auto" menuItemTemplate="menuItem">

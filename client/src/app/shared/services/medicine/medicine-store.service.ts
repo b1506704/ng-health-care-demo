@@ -12,7 +12,6 @@ interface MedicineState {
   searchedMedicineList: Array<Medicine>;
   selectedMedicine: Object;
   responseMsg: String;
-  
 }
 const initialState: MedicineState = {
   medicineList: [],
@@ -20,7 +19,6 @@ const initialState: MedicineState = {
   searchedMedicineList: [],
   selectedMedicine: {},
   responseMsg: '',
-  
 };
 @Injectable({
   providedIn: 'root',
@@ -69,8 +67,6 @@ export class MedicineStore extends StateService<MedicineState> {
   $selectedMedicine: Observable<Object> = this.select(
     (state) => state.selectedMedicine
   );
-
-  
 
   uploadMedicine(medicine: Medicine) {
     this.setIsLoading(true);
@@ -134,6 +130,4 @@ export class MedicineStore extends StateService<MedicineState> {
   searchMedicine(_medicineList: Array<Medicine>, _criteria: string) {
     this.setState({ searchedMedicineList: _medicineList });
   }
-
-  
 }

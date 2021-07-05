@@ -11,6 +11,12 @@ export class EditMedicineListComponent implements OnInit {
   medicineList!: Array<Medicine>;
   constructor(private medicineStore: MedicineStore) {}
 
+  onRefresh() {
+    this.medicineStore.loadDataAsync();
+  }
+
+  onAdd() {}
+
   ngOnInit(): void {
     this.medicineStore.$medicineList.subscribe((data: any) => {
       this.medicineList = data;
