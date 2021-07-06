@@ -65,7 +65,7 @@ export class ThemeService extends StateService<ThemeState> {
     (state) => state.hoverTextColor
   );
 
-  showNotifSuccess(msg: any) {
+  showNotif(msg: any) {
     this.notifService.showNotif(msg, {
       delay: 3500,
     });
@@ -73,46 +73,46 @@ export class ThemeService extends StateService<ThemeState> {
 
   setBackgroundColor(color: any) {
     this.setState({ backgroundColor: color });
-    this.showNotifSuccess(`Set background color to ${color}`);
+    this.showNotif(`Set background color to ${color}`);
   }
 
   setTextColor(color: any) {
     this.setState({ textColor: color });
-    this.showNotifSuccess(`Set text color to ${color}`);
+    this.showNotif(`Set text color to ${color}`);
   }
 
   setCardBackgroundColor(color: any) {
     this.setState({ cardBackgroundColor: color });
-    this.showNotifSuccess(`Set card background color to ${color}`);
+    this.showNotif(`Set card background color to ${color}`);
   }
 
   setCardTextColor(color: any) {
     this.setState({ cardTextColor: color });
-    this.showNotifSuccess(`Set card text color to ${color}`);
+    this.showNotif(`Set card text color to ${color}`);
   }
 
   setTypoFontSize(fontSize: any) {
     this.setState({ typoFontSize: fontSize });
-    this.showNotifSuccess(`Set font size to ${fontSize}`);
+    this.showNotif(`Set font size to ${fontSize}`);
   }
 
   setTypoLetterSpacing(px: any) {
     this.setState({ typoLetterSpacing: px });
-    this.showNotifSuccess(`Set letter spacing to ${px}`);
+    this.showNotif(`Set letter spacing to ${px}`);
   }
 
   setTypoFontFamily(fontFamily: any) {
     this.setState({ typoFontFamily: fontFamily });
-    this.showNotifSuccess(`Set font family to ${fontFamily}`);
+    this.showNotif(`Set font family to ${fontFamily}`);
   }
 
   setHoverTextColor(color: any) {
     this.setState({ hoverTextColor: color });
-    this.showNotifSuccess(`Set hover text color to ${color}`);
+    this.showNotif(`Set hover text color to ${color}`);
   }
 
   setHoverBackgroundColor(color: any) {
     this.setState({ hoverBackgroundColor: color });
-    this.showNotifSuccess(`Set hover background color to ${color}`);
+    this.showNotif(`Set hover background color to ${color}`);
   }
 }

@@ -47,7 +47,7 @@ export class LoginComponent implements OnInit {
   onLoginSubmit = (e: any) => {
     e.preventDefault();
     this.authService.sendLoginRequest(this.user);
-    console.log(this.user);
+    // console.log(this.user);
   };
   ngOnInit(): void {
     this.user = {

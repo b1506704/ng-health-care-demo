@@ -12,6 +12,7 @@ interface UserState {
   searchedUserList: Array<User>;
   selectedUser: Object;
   responseMsg: String;
+  isLoggedIn: Boolean;
 }
 const initialState: UserState = {
   userList: [],
@@ -19,6 +20,7 @@ const initialState: UserState = {
   searchedUserList: [],
   selectedUser: {},
   responseMsg: '',
+  isLoggedIn: localStorage.getItem('access_token') !== null,
 };
 @Injectable({
   providedIn: 'root',
@@ -29,6 +31,13 @@ export class UserStore extends StateService<UserState> {
     private store: StoreService
   ) {
     super(initialState);
+
+    this.$isLoggedIn.subscribe((data: any) => {
+      if (data === true) {
+        this.store.setCurrentUser(this.parseJwt(this.getToken())._doc);
+        this.store.setCurrentUserRole(this.parseJwt(this.getToken())._doc.role);
+      }
+    });
     this.loadDataAsync();
   }
 
@@ -40,9 +49,12 @@ export class UserStore extends StateService<UserState> {
       next: (data: any) => {
         this.setState({ userList: data });
         console.log(data);
-      },
-      complete: () => {
         this.setIsLoading(false);
+      },
+      error: (data: any) => {
+        this.setIsLoading(false);
+        this.store.showNotif(data.error.errorMessage, 'error');
+        console.log(data);
       },
     });
   }
@@ -65,16 +77,51 @@ export class UserStore extends StateService<UserState> {
     (state) => state.selectedUser
   );
 
+  $isLoggedIn: Observable<Boolean> = this.select((state) => state.isLoggedIn);
+
+  getToken() {
+    // console.log(localStorage.getItem('access_token'));
+    return localStorage.getItem('access_token');
+  }
+
+  isLoggedIn() {
+    let authToken = this.getToken();
+    return authToken !== null ? true : false;
+  }
+
+  parseJwt(token: any) {
+    var base64Url = token.split('.')[1];
+    var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    var jsonPayload = decodeURIComponent(
+      atob(base64)
+        .split('')
+        .map(function (c) {
+          return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+        })
+        .join('')
+    );
+
+    return JSON.parse(jsonPayload);
+  }
+
   loginUser(user: User) {
     this.setIsLoading(true);
     this.userService.loginUser(user).subscribe({
       next: (data: any) => {
-        this.setState({ responseMsg: data });
-        this.store.setCurrentUser(data);
-        this.store.setCurrentUserRole(data.role);
-        this.loadDataAsync();
+        this.setState({ responseMsg: data.message });
+        localStorage.setItem('access_token', data.token);
+        const parseToken = this.parseJwt(data.token);
+        this.store.setCurrentUser(parseToken._doc);
+        this.store.setCurrentUserRole(parseToken._doc.role);
+        this.setState({ isLoggedIn: true });
         this.setIsLoading(false);
-        this.store.showNotifSuccess('Login successfully', 'custom');
+        this.store.showNotif(data.message, 'custom');
+        // console.log(data);
+        this.loadDataAsync();
+      },
+      error: (data: any) => {
+        this.setIsLoading(false);
+        this.store.showNotif(data.error.errorMessage, 'error');
         console.log(data);
       },
     });
@@ -82,16 +129,22 @@ export class UserStore extends StateService<UserState> {
 
   logoutUser(user: User) {
     this.setIsLoading(true);
-    this.userService.loginUser(user).subscribe({
+    this.userService.logoutUser(user).subscribe({
       next: (data: any) => {
         this.setState({ responseMsg: data });
-        this.store.setCurrentUser(data);
-        console.log(data);
-      },
-      complete: () => {
-        this.loadDataAsync();
+        this.store.setCurrentUser({});
+        this.store.setCurrentUserRole('');
         this.setIsLoading(false);
-        this.store.showNotifSuccess('Signup successfully', 'custom');
+        localStorage.removeItem('access_token');
+        this.setState({ isLoggedIn: false });
+        this.store.showNotif(data.message, 'custom');
+        // console.log(data);
+        this.loadDataAsync();
+      },
+      error: (data: any) => {
+        this.setIsLoading(false);
+        this.store.showNotif(data.error.errorMessage, 'error');
+        console.log(data);
       },
     });
   }
@@ -102,11 +155,14 @@ export class UserStore extends StateService<UserState> {
       next: (data: any) => {
         this.setState({ responseMsg: data });
         console.log(data);
-      },
-      complete: () => {
         this.setIsLoading(false);
         this.loadDataAsync();
-        this.store.showNotifSuccess('Signup successfully', 'custom');
+        this.store.showNotif(data.message, 'custom');
+      },
+      error: (data: any) => {
+        this.setIsLoading(false);
+        this.store.showNotif(data.error.errorMessage, 'error');
+        console.log(data);
       },
     });
   }
@@ -117,10 +173,14 @@ export class UserStore extends StateService<UserState> {
       next: (data: any) => {
         this.setState({ responseMsg: data });
         console.log(data);
-      },
-      complete: () => {
         this.setIsLoading(false);
+        this.store.showNotif(data.message, 'custom');
         this.loadDataAsync();
+      },
+      error: (data: any) => {
+        this.setIsLoading(false);
+        this.store.showNotif(data.error.errorMessage, 'error');
+        console.log(data);
       },
     });
   }
@@ -131,10 +191,15 @@ export class UserStore extends StateService<UserState> {
       next: (data: any) => {
         this.setState({ responseMsg: data });
         console.log(data);
-      },
-      complete: () => {
         this.setIsLoading(false);
+        this.store.showNotif(data.message, 'custom');
         this.loadDataAsync();
+      },
+
+      error: (data: any) => {
+        this.setIsLoading(false);
+        this.store.showNotif(data.error.errorMessage, 'error');
+        console.log(data);
       },
     });
   }
@@ -151,11 +216,11 @@ export class UserStore extends StateService<UserState> {
       )
     );
   }
-
+  // need rework
   filterUser(_userList: Array<User>, _criteria: string) {
     this.setState({ filteredUserList: _userList });
   }
-
+  // need rework
   searchUser(_userList: Array<User>, _criteria: string) {
     this.setState({ searchedUserList: _userList });
   }

@@ -15,6 +15,8 @@ import { DxToolbarModule } from 'devextreme-angular/ui/toolbar';
 import { Router } from '@angular/router';
 import { DxLoadIndicatorModule } from 'devextreme-angular';
 import { StoreService } from '../../services/store.service';
+import { UserStore } from '../../services/user/user-store.service';
+import { User } from '../../models/user';
 @Component({
   selector: 'app-header',
   templateUrl: 'header.component.html',
@@ -41,12 +43,41 @@ export class HeaderComponent implements OnInit {
   ];
 
   isLoadIndicatorVisible: boolean = false;
+  isLoggedIn: boolean = false;
+  currentUser: User;
 
-  constructor(private router: Router, private store: StoreService) {}
+  constructor(
+    private router: Router,
+    private store: StoreService,
+    private userStore: UserStore
+  ) {}
 
   ngOnInit() {
     this.store.$isLoading.subscribe((data: any) => {
       this.isLoadIndicatorVisible = data;
+    });
+    this.store.$currentUser.subscribe((data: any) => {
+      this.currentUser = data;
+      // console.log(data);
+    });
+    this.userStore.$isLoggedIn.subscribe((data: any) => {
+      this.isLoggedIn = data;
+      this.store.$currentRole.subscribe((data: string) => {
+        switch (data.trim().toLocaleLowerCase()) {
+          case 'admin':
+            this.router.navigate(['/admin_home']);
+            break;
+          case 'doctor':
+            this.router.navigate(['/doctor_home']);
+            break;
+          case 'customer':
+            this.router.navigate(['/customer_home']);
+            break;
+          default:
+            this.router.navigate(['/doctor_home']);
+            break;
+        }
+      });
     });
   }
 
@@ -56,6 +87,10 @@ export class HeaderComponent implements OnInit {
 
   onSignup() {
     this.router.navigate(['/signup']);
+  }
+
+  onLogout() {
+    this.userStore.logoutUser(this.currentUser);
   }
 
   toggleMenu = () => {

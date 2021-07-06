@@ -43,7 +43,7 @@ export class BillStore extends StateService<BillState> {
       },
       complete: () => {
         this.setIsLoading(false);
-        this.store.showNotifSuccess('Load bill successfully', 'custom');
+        this.store.showNotif('Load bill successfully', 'custom');
       },
     });
   }

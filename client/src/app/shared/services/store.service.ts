@@ -94,8 +94,9 @@ export class StoreService extends StateService<StoreState> {
     this.setState({ currentRole: role });
   }
 
-  showNotifSuccess(message: string, type: string) {
-    notify(message, type);
+  showNotif(message: string, type: string) {
+    notify({ message: message, width: 150 }, type);
     this.setResponseMsg(message);
   }
+
 }

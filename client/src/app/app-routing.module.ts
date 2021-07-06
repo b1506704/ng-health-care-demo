@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { DxDataGridModule, DxFormModule } from 'devextreme-angular';
+import { AuthGuardService } from './shared/services/auth-guard.service';
 
 const routes: Routes = [
   {
@@ -37,6 +38,7 @@ const routes: Routes = [
       import('./pages/customer/health-condition/health-condition.module').then(
         (m) => m.HealthConditionModule
       ),
+    canActivate: [AuthGuardService],
   },
   {
     path: 'medical_checkup',
@@ -44,6 +46,7 @@ const routes: Routes = [
       import('./pages/customer/medical-checkup/medical-checkup.module').then(
         (m) => m.MedicalCheckupModule
       ),
+    canActivate: [AuthGuardService],
   },
   {
     path: 'prescription_list',
@@ -51,6 +54,7 @@ const routes: Routes = [
       import(
         './pages/customer/prescription-list/prescription-list.module'
       ).then((m) => m.PrescriptionListModule),
+    canActivate: [AuthGuardService],
   },
   // doctor route
   {
@@ -66,6 +70,7 @@ const routes: Routes = [
       import(
         './pages/doctor/edit-medicine-list/edit-medicine-list.module'
       ).then((m) => m.EditMedicineListModule),
+    canActivate: [AuthGuardService],
   },
   {
     path: 'edit_disease_list',
@@ -73,6 +78,7 @@ const routes: Routes = [
       import('./pages/doctor/edit-disease-list/edit-disease-list.module').then(
         (m) => m.EditDiseaseListModule
       ),
+    canActivate: [AuthGuardService],
   },
   {
     path: 'edit_health_condition_list',
@@ -80,6 +86,7 @@ const routes: Routes = [
       import(
         './pages/doctor/edit-health-condition-list/edit-health-condition-list.module'
       ).then((m) => m.EditHealthConditionModule),
+    canActivate: [AuthGuardService],
   },
   {
     path: 'edit_medical_checkup_list',
@@ -87,6 +94,7 @@ const routes: Routes = [
       import(
         './pages/doctor/edit-medical-checkup-list/edit-medical-checkup-list.module'
       ).then((m) => m.EditMedicalCheckupListModule),
+    canActivate: [AuthGuardService],
   },
   {
     path: 'edit_prescription_list',
@@ -94,6 +102,7 @@ const routes: Routes = [
       import(
         './pages/doctor/edit-prescription-list/edit-prescription-list.module'
       ).then((m) => m.EditPrescriptionListModule),
+    canActivate: [AuthGuardService],
   },
   // admin route
   {
@@ -109,6 +118,7 @@ const routes: Routes = [
       import('./pages/admin/edit-user-list/edit-user-list.module').then(
         (m) => m.EditUserListModule
       ),
+    canActivate: [AuthGuardService],
   },
   {
     path: 'edit_customer_list',
@@ -116,6 +126,7 @@ const routes: Routes = [
       import('./pages/admin/edit-customer-list/edit-customer-list.module').then(
         (m) => m.EditCustomerModule
       ),
+    canActivate: [AuthGuardService],
   },
   {
     path: 'edit_doctor_list',
@@ -123,6 +134,7 @@ const routes: Routes = [
       import('./pages/admin/edit-doctor-list/edit-doctor-list.module').then(
         (m) => m.EditDoctorListModule
       ),
+    canActivate: [AuthGuardService],
   },
   {
     path: 'edit_room_list',
@@ -130,6 +142,7 @@ const routes: Routes = [
       import('./pages/admin/edit-room-list/edit-room-list.module').then(
         (m) => m.EditRoomListModule
       ),
+    canActivate: [AuthGuardService],
   },
   {
     path: 'edit_bill_list',
@@ -137,6 +150,7 @@ const routes: Routes = [
       import('./pages/admin/edit-bill-list/edit-bill-list.module').then(
         (m) => m.EditBillListModule
       ),
+    canActivate: [AuthGuardService],
   },
   {
     path: 'edit_theme',
@@ -144,6 +158,7 @@ const routes: Routes = [
       import('./pages/admin/edit-theme/edit-theme.module').then(
         (m) => m.EditThemeModule
       ),
+    canActivate: [AuthGuardService],
   },
   {
     path: 'edit_schedule',
@@ -151,6 +166,7 @@ const routes: Routes = [
       import('./pages/admin/edit-schedule/edit-schedule.module').then(
         (m) => m.EditScheduleModule
       ),
+    canActivate: [AuthGuardService],
   },
   {
     path: 'statistics',
@@ -158,6 +174,7 @@ const routes: Routes = [
       import('./pages/admin/statistics/statistics.module').then(
         (m) => m.StatisticsModule
       ),
+    canActivate: [AuthGuardService],
   },
   // other
   {

@@ -43,7 +43,7 @@ export class PrescriptionStore extends StateService<PrescriptionState> {
       },
       complete: () => {
         this.setIsLoading(false);
-        this.store.showNotifSuccess('Load prescription successfully', 'custom');
+        this.store.showNotif('Load prescription successfully', 'custom');
       },
     });
   }

@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, throwError } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { Observable } from 'rxjs';
+import { shareReplay } from 'rxjs/operators';
 import { User } from '../../models/user';
 
 @Injectable({
@@ -13,12 +13,10 @@ export class UserHttpService {
   // apiUserUrl = 'http://localhost/users';
 
   fetchUser(): Observable<User> {
-    return this.http
-      .get<User>(this.apiUserUrl, {
-        reportProgress: true,
-        observe: 'body',
-      })
-      .pipe(catchError(this.handleError));
+    return this.http.get<User>(this.apiUserUrl, {
+      reportProgress: true,
+      observe: 'body',
+    });
   }
 
   loginUser(user: User): Observable<User> {
@@ -27,53 +25,41 @@ export class UserHttpService {
         reportProgress: true,
         observe: 'body',
       })
-      .pipe(catchError(this.handleError));
+      .pipe(shareReplay());
   }
 
   logoutUser(user: User): Observable<User> {
-    return this.http
-      .post<User>(this.apiUserUrl + `/logout/${user}`, user, {
-        reportProgress: true,
-        observe: 'body',
-      })
-      .pipe(catchError(this.handleError));
+    return this.http.post<User>(this.apiUserUrl + `/logout/${user}`, user, {
+      reportProgress: true,
+      observe: 'body',
+    });
   }
 
   uploadUser(user: User): Observable<User> {
-    return this.http
-      .post<User>(this.apiUserUrl, user, {
-        reportProgress: true,
-        observe: 'body',
-      })
-      .pipe(catchError(this.handleError));
+    return this.http.post<User>(this.apiUserUrl, user, {
+      reportProgress: true,
+      observe: 'body',
+    });
   }
 
   deleteUser(user: User): Observable<ArrayBuffer> {
-    return this.http
-      .delete<ArrayBuffer>(this.apiUserUrl + `/${user.userName}`, {
+    return this.http.delete<ArrayBuffer>(
+      this.apiUserUrl + `/${user.userName}`,
+      {
         reportProgress: true,
         observe: 'body',
-      })
-      .pipe(catchError(this.handleError));
+      }
+    );
   }
 
   updateUser(user: User): Observable<User> {
-    return this.http
-      .post<User>(this.apiUserUrl + `/updateUser/${user.userName}`, user, {
+    return this.http.post<User>(
+      this.apiUserUrl + `/updateUser/${user.userName}`,
+      user,
+      {
         reportProgress: true,
         observe: 'body',
-      })
-      .pipe(catchError(this.handleError));
-  }
-
-  handleError(error: any) {
-    let errorMessage = '';
-    if (error.error instanceof ErrorEvent) {
-      errorMessage = error.error.message;
-    } else {
-      errorMessage = `Error Code: ${error.status}\nMessage: ${error.message}`;
-    }
-    console.log(errorMessage);
-    return throwError(errorMessage);
+      }
+    );
   }
 }

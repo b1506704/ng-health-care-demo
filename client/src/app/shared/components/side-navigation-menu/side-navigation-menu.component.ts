@@ -32,9 +32,6 @@ import { StoreService } from '../../services/store.service';
 export class SideNavigationMenuComponent
   implements AfterViewInit, OnDestroy, OnInit
 {
-  navigation: Array<any> = [];
-  // userRole: string = 'Doctor';
-
   @ViewChild(DxTreeViewComponent, { static: true })
   menu!: DxTreeViewComponent;
 
@@ -50,26 +47,6 @@ export class SideNavigationMenuComponent
     this.selectedItemChanged.emit(event);
   }
 
-  userRoleListener() {
-    this.store.$currentRole.subscribe((data: any) => {
-      console.log(data);
-      // not switch view?
-      switch (data) {
-        case 'Customer':
-          this.navigation = navigationCustomer;
-          break;
-        case 'Admin':
-          this.navigation = navigationAdmin;
-          break;
-        case 'Doctor':
-          this.navigation = navigationDoctor;
-          break;
-        default:
-          break;
-      }
-    });
-  }
-
   private _selectedItem!: String;
   @Input()
   set selectedItem(value: String) {
@@ -82,17 +59,85 @@ export class SideNavigationMenuComponent
   }
 
   private _items!: Record<string, unknown>[];
-  get items() {
+  items: Array<any>;
+
+  renderItemMenu() {
     if (!this._items) {
-      this._items = this.navigation.map((item) => {
+      this._items = navigationDoctor.map((item) => {
         if (item.path && !/^\//.test(item.path)) {
           item.path = `/${item.path}`;
         }
         return { ...item, expanded: !this._compactMode };
       });
     }
+    this.items = this._items;
+  }
 
-    return this._items;
+  userRoleListener() {
+    this.store.$currentRole.subscribe((data: string) => {
+      // console.log(data);
+      // not switch view?
+      if (!this.menu.instance) {
+        return;
+      }
+      switch (data.trim().toLocaleLowerCase()) {
+        case 'customer':
+          this.menu.instance.option(
+            'items',
+            navigationCustomer.map((item) => {
+              if (item.path && !/^\//.test(item.path)) {
+                item.path = `/${item.path}`;
+              }
+              return { ...item, expanded: !this._compactMode };
+            })
+          );
+          break;
+        case 'admin':
+          this.menu.instance.option(
+            'items',
+            navigationAdmin.map((item) => {
+              if (item.path && !/^\//.test(item.path)) {
+                item.path = `/${item.path}`;
+              }
+              return { ...item, expanded: !this._compactMode };
+            })
+          );
+          break;
+        case 'doctor':
+          this.menu.instance.option(
+            'items',
+            navigationDoctor.map((item) => {
+              if (item.path && !/^\//.test(item.path)) {
+                item.path = `/${item.path}`;
+              }
+              return { ...item, expanded: !this._compactMode };
+            })
+          );
+          break;
+        case undefined:
+          this.menu.instance.option(
+            'items',
+            navigationDoctor.map((item) => {
+              if (item.path && !/^\//.test(item.path)) {
+                item.path = `/${item.path}`;
+              }
+              return { ...item, expanded: !this._compactMode };
+            })
+          );
+          break;
+        default:
+          this.menu.instance.option(
+            'items',
+            navigationDoctor.map((item) => {
+              if (item.path && !/^\//.test(item.path)) {
+                item.path = `/${item.path}`;
+              }
+              return { ...item, expanded: !this._compactMode };
+            })
+          );
+          break;
+      }
+    });
   }
 
   private _compactMode = false;
@@ -115,6 +160,7 @@ export class SideNavigationMenuComponent
   }
 
   ngOnInit(): void {
+    this.renderItemMenu();
     this.userRoleListener();
   }
 

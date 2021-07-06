@@ -1,2 +1,3 @@
-export const secret = "health-care-secret-key";
-  
+export const jwtSecretKey =
+  "07670AC1F90D23BBB6eb990C95D19A2D6221A4A3B84007859B7B6578EF1bdF29";
+

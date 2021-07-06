@@ -43,7 +43,7 @@ export class ScheduleStore extends StateService<ScheduleState> {
       },
       complete: () => {
         this.setIsLoading(false);
-        this.store.showNotifSuccess('Load schedule successfully', 'custom');
+        this.store.showNotif('Load schedule successfully', 'custom');
       },
     });
   }

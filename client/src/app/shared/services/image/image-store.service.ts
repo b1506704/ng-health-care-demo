@@ -43,7 +43,7 @@ export class ImageStore extends StateService<ImageState> {
       },
       complete: () => {
         this.setIsLoading(false);
-        this.store.showNotifSuccess('Load image successfully', 'custom');
+        this.store.showNotif('Load image successfully', 'custom');
       },
     });
   }

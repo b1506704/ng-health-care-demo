@@ -13,10 +13,5 @@ export class AppComponent {
       .filter((cl) => this.screen.sizes[cl])
       .join(' ');
   }
-
   constructor(private screen: ScreenService, public appInfo: AppInfoService) {}
-
-  // isAuthenticated() {
-  //   return this.authService.loggedIn;
-  // }
 }

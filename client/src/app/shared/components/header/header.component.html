@@ -29,7 +29,7 @@
         </dx-load-indicator>
       </div>
     </dxi-item>
-    <dxi-item location="after">
+    <dxi-item location="after" [visible]="!isLoggedIn">
       <div *dxTemplate="let data of 'item'">
         <dx-button
           icon="export"
@@ -47,8 +47,24 @@
         </dx-button>
       </div>
     </dxi-item>
+    <dxi-item location="after" [visible]="isLoggedIn">
+      <div *dxTemplate="let data of 'item'">
+        <dx-button
+          icon="key"
+          type="normal"
+          text="Logout"
+          (onClick)="onLogout()"
+        >
+        </dx-button>
+      </div>
+    </dxi-item>
 
-    <dxi-item location="after" locateInMenu="auto" menuItemTemplate="menuItem">
+    <dxi-item
+      location="after"
+      locateInMenu="auto"
+      menuItemTemplate="menuItem"
+      [visible]="isLoggedIn"
+    >
       <div *dxTemplate="let data of 'item'">
         <dx-button
           class="user-button authorization"

@@ -43,7 +43,7 @@ export class DiseaseStore extends StateService<DiseaseState> {
       },
       complete: () => {
         this.setIsLoading(false);
-        this.store.showNotifSuccess('Load disease successfully', 'custom');
+        this.store.showNotif('Load disease successfully', 'custom');
       },
     });
   }

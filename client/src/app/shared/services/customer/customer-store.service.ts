@@ -43,7 +43,7 @@ export class CustomerStore extends StateService<CustomerState> {
       },
       complete: () => {
         this.setIsLoading(false);
-        this.store.showNotifSuccess('Load customer successfully', 'custom');
+        this.store.showNotif('Load customer successfully', 'custom');
       },
     });
   }

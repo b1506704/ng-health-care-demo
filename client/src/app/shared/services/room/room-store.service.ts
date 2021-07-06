@@ -43,7 +43,7 @@ export class RoomStore extends StateService<RoomState> {
       },
       complete: () => {
         this.setIsLoading(false);
-        this.store.showNotifSuccess('Load room successfully', 'custom');
+        this.store.showNotif('Load room successfully', 'custom');
       },
     });
   }

@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 const userSchema = mongoose.Schema({
   userName: { type: String, require: true, unique: true, maxlength: 8 },
-  passWord: { type: String, require: true, maxlength: 12 },
+  passWord: { type: String, require: true },
   isLogin: { type: Boolean },
   role: { type: String },
 });

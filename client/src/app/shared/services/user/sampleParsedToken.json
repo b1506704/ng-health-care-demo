@@ -1,0 +1,57 @@
+{
+  "$__": {
+    "strictMode": true,
+    "selected": {},
+    "getters": {},
+    "_id": "60e3c109387ce2201015e56a",
+    "wasPopulated": false,
+    "activePaths": {
+      "paths": {
+        "_id": "init",
+        "userName": "init",
+        "passWord": "init",
+        "role": "init",
+        "__v": "init"
+      },
+      "states": {
+        "ignore": {},
+        "default": {},
+        "init": {
+          "_id": true,
+          "userName": true,
+          "passWord": true,
+          "role": true,
+          "__v": true
+        },
+        "modify": {},
+        "require": {}
+      },
+      "stateNames": ["require", "modify", "init", "default", "ignore"]
+    },
+    "pathsToScopes": {},
+    "cachedRequired": {},
+    "session": null,
+    "$setCalled": {},
+    "emitter": { "_events": {}, "_eventsCount": 0, "_maxListeners": 0 },
+    "$options": {
+      "skipId": true,
+      "isNew": false,
+      "willInit": true,
+      "defaults": true
+    }
+  },
+  "isNew": false,
+  "$locals": {},
+  "$op": null,
+  "_doc": {
+    "_id": "60e3c109387ce2201015e56a",
+    "userName": "admin",
+    "passWord": "$2a$10$dbRaoIT1Bd6mfkoznHT3leu6SrIb0.4xLRH8yUjYbR08EPgkhCRne",
+    "role": "Admin",
+    "__v": 0
+  },
+  "$init": true,
+  "iat": 1625562917,
+  "exp": 1625563037,
+  "sub": "admin"
+}

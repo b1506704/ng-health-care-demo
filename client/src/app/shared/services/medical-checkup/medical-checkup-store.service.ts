@@ -43,7 +43,7 @@ export class MedicalCheckupStore extends StateService<MedicalCheckupState> {
       },
       complete: () => {
         this.setIsLoading(false);
-        this.store.showNotifSuccess(
+        this.store.showNotif(
           'Load medicalCheckup successfully',
           'custom'
         );
