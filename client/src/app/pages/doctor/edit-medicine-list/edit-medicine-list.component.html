@@ -1,13 +1,42 @@
-<dx-toolbar>
-  <dxi-item location="after">
+<dx-toolbar [ngStyle]="{ paddingLeft: '25px', paddingRight: '25px' }">
+  <dxi-item [location]="'before'" [text]="'Medicine Mananagement'"> </dxi-item>
+  <dxi-item
+    location="center"
+    locateInMenu="auto"
+    [visible]="isSelectInfoVisible"
+  >
+    <div *dxTemplate>
+      <div style="font-size: small">{{ selectInfoText }}</div>
+    </div>
+  </dxi-item>
+  <dxi-item location="center" locateInMenu="auto">
     <dx-button
-      icon="export"
+      icon="close"
       type="normal"
-      text="Refresh"
-      (onClick)="onRefresh()"
+      [visible]="isSelectInfoVisible"
+      hint="Clear current row selection"
+      (onClick)="clearSelection()"
     >
     </dx-button>
-    <dx-button icon="key" type="normal" text="Add" (onClick)="onAdd()">
+  </dxi-item>
+  <dxi-item location="center" locateInMenu="auto">
+    <dx-button
+      icon="trash"
+      type="danger"
+      [visible]="isSelectInfoVisible"
+      hint="Delete current selected items"
+      (onClick)="deleteSelectedItems()"
+    >
+    </dx-button>
+  </dxi-item>
+  <dxi-item location="after" locateInMenu="auto">
+    <dx-button
+      icon="arrowright"
+      type="outline"
+      text="Disease Management"
+      hint="Navigate to Edit Disease"
+      (onClick)="navigateToEditDisease()"
+    >
     </dx-button>
   </dxi-item>
 </dx-toolbar>
@@ -16,23 +45,48 @@
   [dataSource]="medicineList"
   keyExpr="_id"
   [showBorders]="true"
+  [allowColumnResizing]="true"
+  [allowColumnReordering]="true"
   [focusedRowEnabled]="true"
+  [(selectedRowKeys)]="selectedRows"
+  (onSelectionChanged)="selectionChangedHandler()"
+  (onEditingStart)="onEditingStart()"
+  (onInitNewRow)="onInitNewRow()"
+  (onSaving)="onSaving($event)"
+  (onEditCanceled)="onEditCanceled()"
+  (onCellClick)="onCellClick($event)"
+  (onToolbarPreparing)="onToolbarPreparing($event)"
 >
+  >
+
   <dxo-editing
+    [refreshMode]="'full'"
     [allowUpdating]="true"
     [allowDeleting]="true"
-    [selectTextOnEditStart]="true"
+    [allowAdding]="true"
     [useIcons]="true"
+    [selectTextOnEditStart]="true"
   >
   </dxo-editing>
+  <dxo-selection
+    [selectAllMode]="'page'"
+    [showCheckBoxesMode]="'onClick'"
+    mode="multiple"
+  ></dxo-selection>
 
   <dxo-header-filter [visible]="true"> </dxo-header-filter>
+  <!-- enable to save state of data grid to local storage -->
+  <!-- <dxo-state-storing
+    [enabled]="true"
+    type="localStorage"
+    storageKey="storage"
+  ></dxo-state-storing> -->
 
   <dxo-filter-panel [visible]="true"> </dxo-filter-panel>
 
   <dxo-filter-row [visible]="true"> </dxo-filter-row>
 
-  <dxo-paging [pageSize]="10"> </dxo-paging>
+  <dxo-paging [pageSize]="5"> </dxo-paging>
 
   <dxo-pager
     [allowedPageSizes]="[5, 10]"
@@ -40,12 +94,22 @@
     [showNavigationButtons]="true"
   >
   </dxo-pager>
+  <dxo-load-panel
+    [enabled]="true"
+  ></dxo-load-panel>
 
-  <dxi-column dataField="name"> </dxi-column>
+  <dxi-column dataField="name" [width]="220">
+    <dxi-validation-rule type="required"></dxi-validation-rule>
+  </dxi-column>
 
-  <dxi-column dataField="price"> </dxi-column>
+  <dxi-column dataField="price" [width]="100">
+    <dxi-validation-rule type="required"></dxi-validation-rule>
+  </dxi-column>
 
-  <dxi-column dataField="brand"> </dxi-column>
+  <dxi-column dataField="brand" [width]="150"> </dxi-column>
 
   <dxi-column dataField="effect"> </dxi-column>
+  <div *dxTemplate="let data of 'totalMedicineCount'">
+    <span>Total Medicine: {{ medicineList.length }} </span>
+  </div>
 </dx-data-grid>

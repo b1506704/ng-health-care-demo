@@ -1,6 +1,6 @@
-<dx-box direction="col" width="100%" [height]="'80vh'">
+<dx-box direction="col" width="100%" [height]="'45vh'">
   <dxi-item class="rect demo-dark header" [ratio]="1"></dxi-item>
-  <dxi-item [ratio]="2" [baseSize]="0">
+  <dxi-item [ratio]="2">
     <dx-box direction="row" width="100%">
       <dxi-item class="rect demo-dark" [ratio]="1"></dxi-item>
       <dxi-item class="rect demo-light" [ratio]="1">
@@ -91,123 +91,10 @@
                   >
                   </dxi-item>
                 </dxi-item>
-                <dxi-item
-                  editorType="dxCheckBox"
-                  [editorOptions]="checkBoxOptions"
-                ></dxi-item>
+               
               </dxi-item>
 
-              <dxi-item itemType="group">
-                <dxi-item
-                  itemType="group"
-                  caption="Personal Information"
-                  name="personalInformation"
-                  [visible]="isCustomerInfoVisible"
-                >
-                  <dxi-item
-                    dataField="age"
-                    [label]="{ text: 'Age' }"
-                    editorType="dxNumberBox"
-                  >
-                    <dxi-validation-rule
-                      type="required"
-                      message="Age is required"
-                    >
-                    </dxi-validation-rule>
-                    <dxi-validation-rule
-                      type="range"
-                      [min]="1"
-                      message="Invalid age!"
-                    ></dxi-validation-rule>
-                  </dxi-item>
-                  <dxi-item
-                    dataField="occupation"
-                    [label]="{ text: 'Occupation' }"
-                    editorType="dxTextBox"
-                  >
-                    <dxi-validation-rule
-                      type="required"
-                      message="Occupation is required"
-                    >
-                    </dxi-validation-rule>
-                    <dxi-validation-rule
-                      type="stringLength"
-                      message="Occupation cannot contain more than 25 letters!"
-                      [min]="1"
-                      [max]="25"
-                    >
-                    </dxi-validation-rule>
-                  </dxi-item>
-                  <dxi-item
-                    dataField="address"
-                    [label]="{ text: 'Address' }"
-                    editorType="dxTextBox"
-                  >
-                    <dxi-validation-rule
-                      type="required"
-                      message="Address is required"
-                    >
-                    </dxi-validation-rule>
-                    <dxi-validation-rule
-                      type="stringLength"
-                      message="Address cannot contain more than 100 letters!"
-                      [min]="1"
-                      [max]="100"
-                    >
-                    </dxi-validation-rule>
-                  </dxi-item>
-                  <dxi-item
-                    dataField="gender"
-                    [label]="{ text: 'Gender' }"
-                    editorType="dxSelectBox"
-                    [editorOptions]="{ items: ['Male', 'Female'], value: '' }"
-                  >
-                    <dxi-validation-rule
-                      type="required"
-                      message="Gender is required"
-                    >
-                    </dxi-validation-rule>
-                  </dxi-item>
-                  <dxi-item
-                    dataField="bloodType"
-                    [label]="{ text: 'Blood Type' }"
-                    editorType="dxSelectBox"
-                    [editorOptions]="{ items: bloodType, value: '' }"
-                  ></dxi-item>
-                  <dxi-item
-                    dataField="height"
-                    [label]="{ text: 'Height' }"
-                    editorType="dxNumberBox"
-                  >
-                    <dxi-validation-rule
-                      type="required"
-                      message="Height is required"
-                    >
-                    </dxi-validation-rule>
-                    <dxi-validation-rule
-                      type="range"
-                      [min]="1"
-                      message="Invalid height!"
-                    ></dxi-validation-rule>
-                  </dxi-item>
-                  <dxi-item
-                    dataField="weight"
-                    editorType="dxNumberBox"
-                    [label]="{ text: 'Weight' }"
-                  >
-                    <dxi-validation-rule
-                      type="required"
-                      message="Weight is required"
-                    >
-                    </dxi-validation-rule>
-                    <dxi-validation-rule
-                      type="range"
-                      [min]="1"
-                      message="Invalid weight!"
-                    ></dxi-validation-rule>
-                  </dxi-item>
-                </dxi-item>
-              </dxi-item>
+              
             </dxi-item>
             <dxi-item itemType="group"></dxi-item>
           </dx-form>

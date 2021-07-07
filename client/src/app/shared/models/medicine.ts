@@ -1,3 +1,8 @@
 export interface Medicine {
-    id: String
+    _id: string;
+    __v: number;
+    name: String,
+    price: Number,
+    brand: String,
+    effect: String
 }

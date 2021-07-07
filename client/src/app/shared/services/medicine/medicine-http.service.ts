@@ -1,7 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, throwError } from 'rxjs';
-import { catchError } from 'rxjs/operators';
 import { Medicine } from '../../models/medicine';
 
 @Injectable({
@@ -9,55 +8,58 @@ import { Medicine } from '../../models/medicine';
 })
 export class MedicineHttpService {
   constructor(private http: HttpClient) {}
-  apiMedicineUrl = 'https://ng-health-care-demo.herokuapp.com/medicines';
+  // apiMedicineUrl = 'https://ng-health-care-demo.herokuapp.com/medicines';
+  apiMedicineUrl = 'http://localhost/medicines';
 
   fetchMedicine(): Observable<Medicine> {
-    return this.http
-      .get<Medicine>(this.apiMedicineUrl, {
-        reportProgress: true,
-        observe: 'body',
-      })
-      .pipe(catchError(this.handleError));
+    return this.http.get<Medicine>(this.apiMedicineUrl, {
+      reportProgress: true,
+      observe: 'body',
+    });
   }
 
   uploadMedicine(medicine: Medicine): Observable<Medicine> {
-    return this.http
-      .post<Medicine>(this.apiMedicineUrl, medicine, {
-        reportProgress: true,
-        observe: 'body',
-      })
-      .pipe(catchError(this.handleError));
+    return this.http.post<Medicine>(this.apiMedicineUrl, medicine, {
+      reportProgress: true,
+      observe: 'body',
+    });
   }
 
-  deleteMedicine(medicine: Medicine): Observable<ArrayBuffer> {
-    return this.http
-      .delete<ArrayBuffer>(this.apiMedicineUrl + `/${medicine.id}`, {
-        reportProgress: true,
-        observe: 'body',
-      })
-      .pipe(catchError(this.handleError));
+  generateRandomMedicine(): Observable<Medicine> {
+    return this.http.get<Medicine>(this.apiMedicineUrl + '/randomMedicine', {
+      reportProgress: true,
+      observe: 'body',
+    });
   }
 
-  updateMedicine(medicine: Medicine): Observable<Medicine> {
-    return this.http
-      .post<Medicine>(
-        this.apiMedicineUrl + `/updateMedicine/${medicine.id}`,
-        medicine,
-        {
-          reportProgress: true,
-          observe: 'body',
-        }
-      )
-      .pipe(catchError(this.handleError));
+  deleteMedicine(id: string): Observable<ArrayBuffer> {
+    return this.http.delete<ArrayBuffer>(this.apiMedicineUrl + `/${id}`, {
+      reportProgress: true,
+      observe: 'body',
+    });
   }
-  handleError(error: any) {
-    let errorMessage = '';
-    if (error.error instanceof ErrorEvent) {
-      errorMessage = error.error.message;
-    } else {
-      errorMessage = `Error Code: ${error.status}\nMessage: ${error.message}`;
-    }
-    console.log(errorMessage);
-    return throwError(errorMessage);
+
+  deleteSelectedMedicines(
+    selectedItems: Array<String>
+  ): Observable<Array<String>> {
+    return this.http.post<Array<String>>(
+      this.apiMedicineUrl + '/batch',
+      selectedItems,
+      {
+        reportProgress: true,
+        observe: 'body',
+      }
+    );
+  }
+
+  updateMedicine(medicine: Medicine, key: string): Observable<Medicine> {
+    return this.http.post<Medicine>(
+      this.apiMedicineUrl + `/updateMedicine/${key}`,
+      medicine,
+      {
+        reportProgress: true,
+        observe: 'body',
+      }
+    );
   }
 }

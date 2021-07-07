@@ -21,7 +21,7 @@ import { DxToastModule } from 'devextreme-angular';
   styleUrls: ['./side-nav-outer-toolbar.component.scss'],
 })
 export class SideNavOuterToolbarComponent implements OnInit {
-  @ViewChild(DxScrollViewComponent, { static: true })
+  @ViewChild(DxScrollViewComponent, { static: false })
   scrollView!: DxScrollViewComponent;
   selectedRoute = '';
 

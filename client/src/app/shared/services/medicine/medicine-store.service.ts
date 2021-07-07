@@ -5,6 +5,7 @@ import { Medicine } from '../../models/medicine';
 import { StateService } from '../state.service';
 import { StoreService } from '../store.service';
 import { MedicineHttpService } from './medicine-http.service';
+import { confirm } from 'devextreme/ui/dialog';
 
 interface MedicineState {
   medicineList: Array<Medicine>;
@@ -40,10 +41,29 @@ export class MedicineStore extends StateService<MedicineState> {
       next: (data: any) => {
         this.setState({ medicineList: data });
         console.log(data);
-      },
-      complete: () => {
         this.setIsLoading(false);
-        this.store.showNotif('Load medicine successfully', 'custom');
+      },
+      error: (data: any) => {
+        this.setIsLoading(false);
+        this.store.showNotif(data.error.errorMessage, 'error');
+        console.log(data);
+      },
+    });
+  }
+
+  refresh() {
+    this.setIsLoading(true);
+    this.medicineService.fetchMedicine().subscribe({
+      next: (data: any) => {
+        this.setState({ medicineList: data });
+        console.log(data);
+        this.store.showNotif('Refresh successfully', 'custom');
+        this.setIsLoading(false);
+      },
+      error: (data: any) => {
+        this.setIsLoading(false);
+        this.store.showNotif(data.error.errorMessage, 'error');
+        console.log(data);
       },
     });
   }
@@ -69,44 +89,118 @@ export class MedicineStore extends StateService<MedicineState> {
   );
 
   uploadMedicine(medicine: Medicine) {
-    this.setIsLoading(true);
-    this.medicineService.uploadMedicine(medicine).subscribe({
-      next: (data: any) => {
-        this.setState({ responseMsg: data });
-        console.log(data);
-      },
-      complete: () => {
-        this.setIsLoading(false);
-        this.loadDataAsync();
-      },
+    this.confirmDialog().then((confirm: boolean) => {
+      if (confirm) {
+        this.setIsLoading(true);
+        this.medicineService.uploadMedicine(medicine).subscribe({
+          next: (data: any) => {
+            this.setState({ responseMsg: data });
+            console.log(data);
+            this.setIsLoading(false);
+            this.loadDataAsync();
+            this.store.showNotif(data.message, 'custom');
+          },
+          error: (data: any) => {
+            this.setIsLoading(false);
+            this.store.showNotif(data.error.errorMessage, 'error');
+            console.log(data);
+          },
+        });
+      }
     });
   }
 
-  updateMedicine(medicine: Medicine) {
-    this.setIsLoading(true);
-    this.medicineService.updateMedicine(medicine).subscribe({
-      next: (data: any) => {
-        this.setState({ responseMsg: data });
-        console.log(data);
-      },
-      complete: () => {
-        this.setIsLoading(false);
-        this.loadDataAsync();
-      },
+  updateMedicine(medicine: Medicine, key: string) {
+    this.confirmDialog().then((confirm: boolean) => {
+      if (confirm) {
+        this.setIsLoading(true);
+        this.medicineService.updateMedicine(medicine, key).subscribe({
+          next: (data: any) => {
+            this.setState({ responseMsg: data });
+            console.log(data);
+            this.setIsLoading(false);
+            this.loadDataAsync();
+            this.store.showNotif(data.message, 'custom');
+          },
+          error: (data: any) => {
+            this.setIsLoading(false);
+            this.store.showNotif(data.error.errorMessage, 'error');
+            console.log(data);
+          },
+        });
+      }
     });
   }
 
-  deleteMedicine(medicine: Medicine) {
-    this.setIsLoading(true);
-    this.medicineService.deleteMedicine(medicine).subscribe({
-      next: (data: any) => {
-        this.setState({ responseMsg: data });
-        console.log(data);
-      },
-      complete: () => {
-        this.setIsLoading(false);
-        this.loadDataAsync();
-      },
+  confirmDialog() {
+    return confirm('<b>Are you sure?</b>', 'Confirm changes');
+  }
+
+  generateRandomNumber() {
+    this.confirmDialog().then((confirm: boolean) => {
+      if (confirm) {
+        this.setIsLoading(true);
+        this.medicineService.generateRandomMedicine().subscribe({
+          next: (data: any) => {
+            this.setState({ responseMsg: data });
+            console.log(data);
+            this.setIsLoading(false);
+            this.loadDataAsync();
+            this.store.showNotif(data.message, 'custom');
+          },
+          error: (data: any) => {
+            this.setIsLoading(false);
+            this.store.showNotif(data.error.errorMessage, 'error');
+            console.log(data);
+          },
+        });
+      }
+    });
+  }
+
+  deleteSelectedMedicines(selectedMedicines: Array<string>) {
+    this.confirmDialog().then((confirm: boolean) => {
+      if (confirm) {
+        this.setIsLoading(true);
+        this.medicineService
+          .deleteSelectedMedicines(selectedMedicines)
+          .subscribe({
+            next: (data: any) => {
+              this.setState({ responseMsg: data });
+              console.log(data);
+              this.setIsLoading(false);
+              this.loadDataAsync();
+              this.store.showNotif(data.message, 'custom');
+            },
+            error: (data: any) => {
+              this.setIsLoading(false);
+              this.store.showNotif(data.error.errorMessage, 'error');
+              console.log(data);
+            },
+          });
+      }
+    });
+  }
+
+  deleteMedicine(id: string) {
+    this.confirmDialog().then((confirm: boolean) => {
+      if (confirm) {
+        this.setIsLoading(true);
+        this.medicineService.deleteMedicine(id).subscribe({
+          next: (data: any) => {
+            this.setState({ responseMsg: data });
+            console.log(data);
+            this.setIsLoading(false);
+            this.loadDataAsync();
+            this.store.showNotif(data.message, 'custom');
+          },
+          error: (data: any) => {
+            this.setIsLoading(false);
+            this.store.showNotif(data.error.errorMessage, 'error');
+            console.log(data);
+          },
+        });
+      }
     });
   }
 
@@ -118,7 +212,7 @@ export class MedicineStore extends StateService<MedicineState> {
     return this.$medicineList.pipe(
       map(
         (medicines: Array<Medicine>) =>
-          medicines.find((medicine) => medicine.id === id)!
+          medicines.find((medicine) => medicine._id === id)!
       )
     );
   }
