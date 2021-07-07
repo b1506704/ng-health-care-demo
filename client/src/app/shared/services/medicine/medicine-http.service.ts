@@ -8,8 +8,8 @@ import { Medicine } from '../../models/medicine';
 })
 export class MedicineHttpService {
   constructor(private http: HttpClient) {}
-  // apiMedicineUrl = 'https://ng-health-care-demo.herokuapp.com/medicines';
-  apiMedicineUrl = 'http://localhost/medicines';
+  apiMedicineUrl = 'https://ng-health-care-demo.herokuapp.com/medicines';
+  // apiMedicineUrl = 'http://localhost/medicines';
 
   fetchMedicine(): Observable<Medicine> {
     return this.http.get<Medicine>(this.apiMedicineUrl, {
