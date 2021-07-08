@@ -48,7 +48,12 @@
   [allowColumnResizing]="true"
   [allowColumnReordering]="true"
   [focusedRowEnabled]="true"
+  [(focusedRowKey)]="focusedRowKey"
+  [(autoNavigateToFocusedRow)]="autoNavigateToFocusedRow"
   [(selectedRowKeys)]="selectedRows"
+  (onOptionChanged)="onOptionChanged($event)"
+  (onFocusedRowChanging)="onFocusedRowChanging($event)"
+  (onFocusedRowChanged)="onFocusedRowChanged($event)"
   (onSelectionChanged)="selectionChangedHandler()"
   (onEditingStart)="onEditingStart()"
   (onInitNewRow)="onInitNewRow()"
@@ -57,8 +62,6 @@
   (onCellClick)="onCellClick($event)"
   (onToolbarPreparing)="onToolbarPreparing($event)"
 >
-  >
-
   <dxo-editing
     [refreshMode]="'full'"
     [allowUpdating]="true"
@@ -86,17 +89,18 @@
 
   <dxo-filter-row [visible]="true"> </dxo-filter-row>
 
-  <dxo-paging [pageSize]="5"> </dxo-paging>
+  <dxo-paging [(pageSize)]="pageSize" [(pageIndex)]="currentPage"> </dxo-paging>
 
   <dxo-pager
-    [allowedPageSizes]="[5, 10]"
+    [visible]="true"
+    [displayMode]="'full'"
+    [allowedPageSizes]="[5, 10, 50]"
     [showPageSizeSelector]="true"
     [showNavigationButtons]="true"
+    [showInfo]="true"
   >
   </dxo-pager>
-  <dxo-load-panel
-    [enabled]="true"
-  ></dxo-load-panel>
+  <dxo-load-panel [enabled]="true"></dxo-load-panel>
 
   <dxi-column dataField="name" [width]="220">
     <dxi-validation-rule type="required"></dxi-validation-rule>
@@ -110,6 +114,6 @@
 
   <dxi-column dataField="effect"> </dxi-column>
   <div *dxTemplate="let data of 'totalMedicineCount'">
-    <span>Total Medicine: {{ medicineList.length }} </span>
+    <span>Total Medicine: {{ totalItems }} </span>
   </div>
 </dx-data-grid>

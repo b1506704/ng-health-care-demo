@@ -12,6 +12,9 @@ interface MedicineState {
   filteredMedicineList: Array<Medicine>;
   searchedMedicineList: Array<Medicine>;
   selectedMedicine: Object;
+  totalPages: Number;
+  currentPage: Number;
+  totalItems: Number;
   responseMsg: String;
 }
 const initialState: MedicineState = {
@@ -19,6 +22,9 @@ const initialState: MedicineState = {
   filteredMedicineList: [],
   searchedMedicineList: [],
   selectedMedicine: {},
+  totalPages: 0,
+  currentPage: 0,
+  totalItems: 0,
   responseMsg: '',
 };
 @Injectable({
@@ -30,16 +36,43 @@ export class MedicineStore extends StateService<MedicineState> {
     private store: StoreService
   ) {
     super(initialState);
-    this.loadDataAsync();
+    // this.medicineService.fetchMedicine(0, 5).subscribe((data: any) => {
+    //   this.setState({medicineList: new Array<Medicine>(data.totalItems)});
+    //   this.setState({ totalItems: data.totalItems });
+    //   this.setState({ totalPages: data.totalPages });
+    //   this.setState({ currentPage: data.currentPage });
+    //   this.loadDataAsync(0, 5);
+    // });
+    this.loadDataAsync(1, 5);
+    this.loadDataAsync(2, 5);
+    this.loadDataAsync(3, 5);
+    this.loadDataAsync(4, 5);
+    this.loadDataAsync(5, 5);
   }
 
-  // general obs & functions
+  checkDuplicate(sourceArray: Array<Medicine>, addedArray: Array<Medicine>) {
+    var a = sourceArray.concat(addedArray);
+    for (var i = 0; i < a.length; ++i) {
+      for (var j = i + 1; j < a.length; ++j) {
+        // if (a[i] === undefined) return false;
+        if (a[i]._id === a[j]._id) return true;
+      }
+    }
+    return false;
+  }
 
-  loadDataAsync() {
+  loadDataAsync(page: number, size: number) {
     this.setIsLoading(true);
-    this.medicineService.fetchMedicine().subscribe({
+    this.medicineService.fetchMedicine(page, size).subscribe({
       next: (data: any) => {
-        this.setState({ medicineList: data });
+        if (!this.checkDuplicate(this.state.medicineList, data.items)) {
+          this.setState({
+            medicineList: this.state.medicineList.concat(data.items),
+          });
+          this.setState({ totalItems: data.totalItems });
+          this.setState({ totalPages: data.totalPages });
+          this.setState({ currentPage: data.currentPage });
+        }
         console.log(data);
         this.setIsLoading(false);
       },
@@ -51,11 +84,18 @@ export class MedicineStore extends StateService<MedicineState> {
     });
   }
 
-  refresh() {
+  refresh(page: number, size: number) {
     this.setIsLoading(true);
-    this.medicineService.fetchMedicine().subscribe({
+    this.medicineService.fetchMedicine(page, size).subscribe({
       next: (data: any) => {
-        this.setState({ medicineList: data });
+        if (!this.checkDuplicate(this.state.medicineList, data.items)) {
+          this.setState({
+            medicineList: this.state.medicineList.concat(data.items),
+          });
+          this.setState({ totalItems: data.totalItems });
+          this.setState({ totalPages: data.totalPages });
+          this.setState({ currentPage: data.currentPage });
+        }
         console.log(data);
         this.store.showNotif('Refresh successfully', 'custom');
         this.setIsLoading(false);
@@ -76,6 +116,12 @@ export class MedicineStore extends StateService<MedicineState> {
     (state) => state.medicineList
   );
 
+  $totalPages: Observable<Number> = this.select((state) => state.totalPages);
+
+  $totalItems: Observable<Number> = this.select((state) => state.totalItems);
+
+  $currentPage: Observable<Number> = this.select((state) => state.currentPage);
+
   $filteredMedicineList: Observable<Array<Medicine>> = this.select(
     (state) => state.filteredMedicineList
   );
@@ -88,16 +134,20 @@ export class MedicineStore extends StateService<MedicineState> {
     (state) => state.selectedMedicine
   );
 
-  uploadMedicine(medicine: Medicine) {
+  uploadMedicine(medicine: Medicine, page: number, size: number) {
     this.confirmDialog().then((confirm: boolean) => {
       if (confirm) {
         this.setIsLoading(true);
         this.medicineService.uploadMedicine(medicine).subscribe({
           next: (data: any) => {
+            this.setState({ medicineList: data.items });
+            this.setState({ totalItems: data.totalItems });
+            this.setState({ totalPages: data.totalPages });
+            this.setState({ currentPage: data.currentPage });
             this.setState({ responseMsg: data });
             console.log(data);
             this.setIsLoading(false);
-            this.loadDataAsync();
+            this.loadDataAsync(page, size);
             this.store.showNotif(data.message, 'custom');
           },
           error: (data: any) => {
@@ -110,16 +160,20 @@ export class MedicineStore extends StateService<MedicineState> {
     });
   }
 
-  updateMedicine(medicine: Medicine, key: string) {
+  updateMedicine(medicine: Medicine, key: string, page: number, size: number) {
     this.confirmDialog().then((confirm: boolean) => {
       if (confirm) {
         this.setIsLoading(true);
         this.medicineService.updateMedicine(medicine, key).subscribe({
           next: (data: any) => {
+            this.setState({ medicineList: data.items });
+            this.setState({ totalItems: data.totalItems });
+            this.setState({ totalPages: data.totalPages });
+            this.setState({ currentPage: data.currentPage });
             this.setState({ responseMsg: data });
             console.log(data);
             this.setIsLoading(false);
-            this.loadDataAsync();
+            this.loadDataAsync(page, size);
             this.store.showNotif(data.message, 'custom');
           },
           error: (data: any) => {
@@ -135,17 +189,21 @@ export class MedicineStore extends StateService<MedicineState> {
   confirmDialog() {
     return confirm('<b>Are you sure?</b>', 'Confirm changes');
   }
-
+  // need rework
   generateRandomNumber() {
     this.confirmDialog().then((confirm: boolean) => {
       if (confirm) {
         this.setIsLoading(true);
         this.medicineService.generateRandomMedicine().subscribe({
           next: (data: any) => {
+            this.setState({ medicineList: data.items });
+            this.setState({ totalItems: data.totalItems });
+            this.setState({ totalPages: data.totalPages });
+            this.setState({ currentPage: data.currentPage });
             this.setState({ responseMsg: data });
             console.log(data);
             this.setIsLoading(false);
-            this.loadDataAsync();
+            this.loadDataAsync(1, 5);
             this.store.showNotif(data.message, 'custom');
           },
           error: (data: any) => {
@@ -158,7 +216,11 @@ export class MedicineStore extends StateService<MedicineState> {
     });
   }
 
-  deleteSelectedMedicines(selectedMedicines: Array<string>) {
+  deleteSelectedMedicines(
+    selectedMedicines: Array<string>,
+    page: number,
+    size: number
+  ) {
     this.confirmDialog().then((confirm: boolean) => {
       if (confirm) {
         this.setIsLoading(true);
@@ -166,10 +228,14 @@ export class MedicineStore extends StateService<MedicineState> {
           .deleteSelectedMedicines(selectedMedicines)
           .subscribe({
             next: (data: any) => {
+              this.setState({ medicineList: data.items });
+              this.setState({ totalItems: data.totalItems });
+              this.setState({ totalPages: data.totalPages });
+              this.setState({ currentPage: data.currentPage });
               this.setState({ responseMsg: data });
               console.log(data);
               this.setIsLoading(false);
-              this.loadDataAsync();
+              this.loadDataAsync(page, size);
               this.store.showNotif(data.message, 'custom');
             },
             error: (data: any) => {
@@ -182,16 +248,20 @@ export class MedicineStore extends StateService<MedicineState> {
     });
   }
 
-  deleteMedicine(id: string) {
+  deleteMedicine(id: string, page: number, size: number) {
     this.confirmDialog().then((confirm: boolean) => {
       if (confirm) {
         this.setIsLoading(true);
         this.medicineService.deleteMedicine(id).subscribe({
           next: (data: any) => {
+            this.setState({ medicineList: data.items });
+            this.setState({ totalItems: data.totalItems });
+            this.setState({ totalPages: data.totalPages });
+            this.setState({ currentPage: data.currentPage });
             this.setState({ responseMsg: data });
             console.log(data);
             this.setIsLoading(false);
-            this.loadDataAsync();
+            this.loadDataAsync(page, size);
             this.store.showNotif(data.message, 'custom');
           },
           error: (data: any) => {
@@ -206,6 +276,18 @@ export class MedicineStore extends StateService<MedicineState> {
 
   selectMedicine(_medicine: Medicine) {
     this.setState({ selectedMedicine: _medicine });
+  }
+
+  setTotalPages(_totalPages: Number) {
+    this.setState({ totalPages: _totalPages });
+  }
+
+  setTotalItems(_totalItems: Number) {
+    this.setState({ totalItems: _totalItems });
+  }
+
+  setCurrentPage(_currentPage: Number) {
+    this.setState({ currentPage: _currentPage });
   }
 
   getMedicine(id: string | number) {

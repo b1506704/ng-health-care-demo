@@ -1,6 +1,6 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, throwError } from 'rxjs';
+import { Observable } from 'rxjs';
 import { Medicine } from '../../models/medicine';
 
 @Injectable({
@@ -8,11 +8,14 @@ import { Medicine } from '../../models/medicine';
 })
 export class MedicineHttpService {
   constructor(private http: HttpClient) {}
-  apiMedicineUrl = 'https://ng-health-care-demo.herokuapp.com/medicines';
-  // apiMedicineUrl = 'http://localhost/medicines';
+  // apiMedicineUrl = 'https://ng-health-care-demo.herokuapp.com/medicines';
+  apiMedicineUrl = 'http://localhost/medicines';
 
-  fetchMedicine(): Observable<Medicine> {
+  fetchMedicine(page: number, size: number): Observable<Medicine> {
+    const params = new HttpParams().set('page', page).set('size', size);
+    console.log(params.toString());
     return this.http.get<Medicine>(this.apiMedicineUrl, {
+      params: params,
       reportProgress: true,
       observe: 'body',
     });

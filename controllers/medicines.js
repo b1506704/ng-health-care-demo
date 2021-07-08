@@ -1,14 +1,43 @@
 import express from "express";
 
 import Medicine from "../models/medicine.js";
+import getPagination from "../middleware/getPagination.js";
 import random from "../middleware/RandomNumber.js";
+
 const router = express.Router();
 
-export const getMedicines = async (req, res) => {
+export const getMedicines = (req, res) => {
+  const { page, size } = req.query;
+  console.log(`Page: ${page}  Size: ${size}`);
   try {
-    const medicines = await Medicine.find();
+    const { limit, offset } = getPagination(page, size);
+    console.log(`Limit: ${limit}  Offset: ${offset}`);
+    Medicine.paginate({}, { offset, limit })
+      .then((data) => {
+        res.status(200).json({
+          totalItems: data.totalDocs,
+          items: data.docs,
+          totalPages: data.totalPages,
+          currentPage: data.page - 1,
+        });
+      })
+      .catch((error) => {
+        res.status(404).json({ errorMessage: error.message });
+      });
+  } catch (error) {
+    res.status(404).json({ errorMessage: "Failed to get data!" });
+  }
+};
 
-    res.status(200).json(medicines);
+export const getMedicine = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const medicine = await Medicine.findOne({ _id: id });
+    if (medicine) {
+      res.status(200).json(medicine);
+    } else {
+      res.status(404).json({ errorMessage: "Requested data does not exist!" });
+    }
   } catch (error) {
     res.status(404).json({ errorMessage: "Failed to get data!" });
   }
@@ -37,6 +66,15 @@ export const deleteMedicine = async (req, res) => {
     res.status(200).json({ message: `Medicine ${medicine.name} deleted` });
   } catch (error) {
     res.status(404).json({ errorMessage: "Medicine not found!" });
+  }
+};
+
+export const deleteAllMedicines = async (req, res) => {
+  try {
+    await Medicine.deleteMany({});
+    res.status(200).json({ message: "All medicines deleted!" });
+  } catch (error) {
+    res.status(404).json({ errorMessage: "Failed to perform command" });
   }
 };
 
@@ -73,16 +111,21 @@ export const generateRandomMedicine = async (req, res) => {
 
 export const updateMedicine = async (req, res) => {
   const { _id } = req.params;
-  try {
-    const medicine = await Medicine.findOne({ _id: _id });
-    const updatedMedicine = await Medicine.findOneAndUpdate(
-      { _id: medicine._id },
-      req.body,
-      { new: true }
-    );
-    res.status(200).json({ message: `1 medicine updated` });
-  } catch (error) {
-    res.status(404).json({ message: error.message });
+
+  if (!req.body) {
+    res.status(400).json({ errorMessage: "Updated data cannot be empty!" });
+  } else {
+    try {
+      const medicine = await Medicine.findOne({ _id: _id });
+      const updatedMedicine = await Medicine.findOneAndUpdate(
+        { _id: medicine._id },
+        req.body,
+        { new: true }
+      );
+      res.status(200).json({ message: `1 medicine updated` });
+    } catch (error) {
+      res.status(404).json({ message: error.message });
+    }
   }
 };
 
