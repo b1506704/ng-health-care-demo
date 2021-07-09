@@ -4,5 +4,7 @@ export interface Medicine {
     name: String,
     price: Number,
     brand: String,
-    effect: String
+    effect: String,
+    createdAt: Date,
+    updatedAt: Date
 }

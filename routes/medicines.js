@@ -9,17 +9,27 @@ import {
   deleteSelectedMedicines,
   deleteAllMedicines,
   getMedicine,
+  filterMedicineByPrice,
+  filterMedicineByCategory,
+  searchMedicineByName,
+  sortByName,
+  sortByNumber,
 } from "../controllers/medicines.js";
 
 const router = express.Router();
 
 router.get("/", getMedicines);
 router.get("/:_id", getMedicine);
-router.get("/randomMedicine", generateRandomMedicine);
-router.get("/deleteAll", deleteAllMedicines);
+router.post("/randomMedicine", generateRandomMedicine);
+router.post("/deleteAll", deleteAllMedicines);
 router.post("/", createMedicine);
 router.delete("/:_id", deleteMedicine);
 router.post("/batch", deleteSelectedMedicines);
 router.post("/updateMedicine/:_id", updateMedicine);
+router.post("/filterByPrice", filterMedicineByPrice);
+router.post("/filterByCategory", filterMedicineByCategory);
+router.post("/searchByName", searchMedicineByName);
+router.post("/sortByName", sortByName);
+router.post("/sortByPrice", sortByNumber);
 
 export default router;

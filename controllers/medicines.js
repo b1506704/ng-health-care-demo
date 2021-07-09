@@ -12,13 +12,20 @@ export const getMedicines = (req, res) => {
   try {
     const { limit, offset } = getPagination(page, size);
     console.log(`Limit: ${limit}  Offset: ${offset}`);
-    Medicine.paginate({}, { offset, limit })
+    const options = {
+      sort: { createdAt: "desc" },
+      offset: offset,
+      limit: limit,
+    };
+    Medicine.paginate({}, options)
       .then((data) => {
         res.status(200).json({
           totalItems: data.totalDocs,
           items: data.docs,
           totalPages: data.totalPages,
           currentPage: data.page - 1,
+          nextPage: data.nextPage,
+          prevPage: data.prevPage,
         });
       })
       .catch((error) => {
@@ -30,9 +37,9 @@ export const getMedicines = (req, res) => {
 };
 
 export const getMedicine = async (req, res) => {
-  const { id } = req.params;
+  const { _id } = req.params;
   try {
-    const medicine = await Medicine.findOne({ _id: id });
+    const medicine = await Medicine.findOne({ _id: _id });
     if (medicine) {
       res.status(200).json(medicine);
     } else {
@@ -63,7 +70,7 @@ export const deleteMedicine = async (req, res) => {
   const { _id } = req.params;
   try {
     const medicine = await Medicine.findOneAndDelete({ _id: _id });
-    res.status(200).json({ message: `Medicine ${medicine.name} deleted` });
+    res.status(200).json({ message: `1 Medicine deleted` });
   } catch (error) {
     res.status(404).json({ errorMessage: "Medicine not found!" });
   }
@@ -88,6 +95,201 @@ export const createMedicine = async (req, res) => {
     res.status(200).json({ message: `Medicine ${name} created` });
   } catch (error) {
     res.status(404).json({ errorMessage: "Failed to create medicine!" });
+  }
+};
+
+export const filterMedicineByPrice = (req, res) => {
+  const { criteria, value, page, size } = req.query;
+  console.log(
+    `Page: ${page}  Size: ${size}. Criteria: ${criteria} Value: ${value}`
+  );
+  try {
+    const { limit, offset } = getPagination(page, size);
+    console.log(`Limit: ${limit}  Offset: ${offset}`);
+    let query = {};
+    switch (criteria) {
+      case "=":
+        query = {
+          price: value,
+        };
+        break;
+      case "<":
+        query = {
+          price: { $lt: value },
+        };
+        break;
+      case ">":
+        query = {
+          price: { $gt: value },
+        };
+        break;
+      case ">=":
+        query = {
+          price: { $gte: value },
+        };
+        break;
+      case "<=":
+        query = {
+          price: { $lte: value },
+        };
+        break;
+      case "!=":
+        query = {
+          price: { $ne: value },
+        };
+        break;
+      default:
+        break;
+    }
+    const options = {
+      sort: { createdAt: "desc" },
+      offset: offset,
+      limit: limit,
+    };
+    Medicine.paginate(query, options)
+      .then((data) => {
+        res.status(200).json({
+          totalItems: data.totalDocs,
+          items: data.docs,
+          totalPages: data.totalPages,
+          currentPage: data.page - 1,
+          nextPage: data.nextPage,
+          prevPage: data.prevPage,
+        });
+      })
+      .catch((error) => {
+        res.status(404).json({ errorMessage: error.message });
+      });
+  } catch (error) {
+    res.status(404).json({ errorMessage: "Failed to get data!" });
+  }
+};
+
+export const filterMedicineByCategory = (req, res) => {
+  const { value, page, size } = req.query;
+  console.log(`Page: ${page}  Size: ${size}. Value: ${value}`);
+  try {
+    const { limit, offset } = getPagination(page, size);
+    console.log(`Limit: ${limit}  Offset: ${offset}`);
+    const query = { brand: value };
+    const options = {
+      sort: { createdAt: "desc" },
+      offset: offset,
+      limit: limit,
+    };
+    Medicine.paginate(query, options)
+      .then((data) => {
+        res.status(200).json({
+          totalItems: data.totalDocs,
+          items: data.docs,
+          totalPages: data.totalPages,
+          currentPage: data.page - 1,
+          nextPage: data.nextPage,
+          prevPage: data.prevPage,
+        });
+      })
+      .catch((error) => {
+        res.status(404).json({ errorMessage: error.message });
+      });
+  } catch (error) {
+    res.status(404).json({ errorMessage: "Failed to get data!" });
+  }
+};
+
+export const searchMedicineByName = (req, res) => {
+  const { value, page, size } = req.query;
+  console.log(`Page: ${page}  Size: ${size}. Value: ${value}`);
+  try {
+    const { limit, offset } = getPagination(page, size);
+    console.log(`Limit: ${limit}  Offset: ${offset}`);
+    const query = {
+      name: { $regex: value, $options: "i" },
+    };
+    const options = {
+      sort: { createdAt: "desc" },
+      offset: offset,
+      limit: limit,
+    };
+    Medicine.paginate(query, options)
+      .then((data) => {
+        res.status(200).json({
+          totalItems: data.totalDocs,
+          items: data.docs,
+          totalPages: data.totalPages,
+          currentPage: data.page - 1,
+          nextPage: data.nextPage,
+          prevPage: data.prevPage,
+        });
+      })
+      .catch((error) => {
+        res.status(404).json({ errorMessage: error.message });
+      });
+  } catch (error) {
+    res.status(404).json({ errorMessage: "Failed to get data!" });
+  }
+};
+
+export const sortByName = (req, res) => {
+  const { value, page, size } = req.query;
+  console.log(`Page: ${page}  Size: ${size}. Value: ${value}`);
+  try {
+    const { limit, offset } = getPagination(page, size);
+    console.log(`Limit: ${limit}  Offset: ${offset}`);
+    const query = {};
+    // value = desc || asc
+    const options = {
+      sort: { name: value },
+      offset: offset,
+      limit: limit,
+    };
+    Medicine.paginate(query, options)
+      .then((data) => {
+        res.status(200).json({
+          totalItems: data.totalDocs,
+          items: data.docs,
+          totalPages: data.totalPages,
+          currentPage: data.page - 1,
+          nextPage: data.nextPage,
+          prevPage: data.prevPage,
+        });
+      })
+      .catch((error) => {
+        res.status(404).json({ errorMessage: error.message });
+      });
+  } catch (error) {
+    res.status(404).json({ errorMessage: "Failed to get data!" });
+  }
+};
+
+export const sortByNumber = (req, res) => {
+  const { value, page, size } = req.query;
+  console.log(`Page: ${page}  Size: ${size}. Value: ${value}`);
+  try {
+    const { limit, offset } = getPagination(page, size);
+    console.log(`Limit: ${limit}  Offset: ${offset}`);
+    const query = {};
+    // value = desc || asc
+    const options = {
+      sort: { price: value },
+      offset: offset,
+      limit: limit,
+    };
+    Medicine.paginate(query, options)
+      .then((data) => {
+        res.status(200).json({
+          totalItems: data.totalDocs,
+          items: data.docs,
+          totalPages: data.totalPages,
+          currentPage: data.page - 1,
+          nextPage: data.nextPage,
+          prevPage: data.prevPage,
+        });
+      })
+      .catch((error) => {
+        res.status(404).json({ errorMessage: error.message });
+      });
+  } catch (error) {
+    res.status(404).json({ errorMessage: "Failed to get data!" });
   }
 };
 

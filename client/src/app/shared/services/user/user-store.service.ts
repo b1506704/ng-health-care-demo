@@ -38,7 +38,7 @@ export class UserStore extends StateService<UserState> {
         this.store.setCurrentUserRole(this.parseJwt(this.getToken())._doc.role);
       }
     });
-    this.loadDataAsync();
+    // this.loadDataAsync();
   }
 
   // general obs & functions

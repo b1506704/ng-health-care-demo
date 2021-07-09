@@ -2,6 +2,7 @@ import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { DxDataGridComponent } from 'devextreme-angular';
 import { Medicine } from 'src/app/shared/models/medicine';
+import { MedicineHttpService } from 'src/app/shared/services/medicine/medicine-http.service';
 import { MedicineStore } from 'src/app/shared/services/medicine/medicine-store.service';
 import { StoreService } from 'src/app/shared/services/store.service';
 
@@ -14,21 +15,39 @@ export class EditMedicineListComponent implements OnInit, OnDestroy {
   @ViewChild(DxDataGridComponent, { static: false })
   dataGrid: DxDataGridComponent;
   medicineList!: Array<Medicine>;
+  brandList: Array<Object> = [
+    {
+      _id: 0,
+      name: 'Tesla',
+    },
+    {
+      _id: 1,
+      name: 'ABC',
+    },
+    {
+      _id: 0,
+      name: 'Covac',
+    },
+  ];
   selectedRows: string[];
-  isSelectInfoVisible: Boolean;
+  isSelectInfoVisible: boolean;
   selectInfoText: String;
   selectedCellRow: Object;
-  focusedRowKey: Number;
   pageSize: number = 5;
-  autoNavigateToFocusedRow = true;
+  totalPages: number;
+  totalItems: number;
+  currentPage: number;
 
-  totalPages: Number;
-  totalItems: Number;
-  currentPage: Number;
+  isSearchingByName: boolean;
+  isFilteringByCategory: boolean;
+  isFilteringByPrice: boolean;
+  isSortingByName: boolean;
+  isSortingByPrice: boolean;
 
   constructor(
     private medicineStore: MedicineStore,
     private store: StoreService,
+    private medicineHTTP: MedicineHttpService,
     private router: Router
   ) {}
 
@@ -55,24 +74,101 @@ export class EditMedicineListComponent implements OnInit, OnDestroy {
         widget: 'dxButton',
         options: {
           type: 'danger',
+          icon: 'trash',
+          hint: 'Delete all items',
+          onClick: this.deleteAll.bind(this),
+        },
+      },
+      {
+        location: 'after',
+        locateInMenu: 'auto',
+        widget: 'dxButton',
+        options: {
+          type: 'danger',
           icon: 'parentfolder',
           hint: 'Generate random 100+ items',
           onClick: this.onAddRandom.bind(this),
+        },
+      },
+      {
+        location: 'center',
+        locateInMenu: 'auto',
+        widget: 'dxSelectBox',
+        options: {
+          items: this.brandList,
+          valueExpr: 'name',
+          searchExpr: 'name',
+          displayExpr: 'name',
+          searchEnabled: true,
+          onValueChanged: this.onFilterChange.bind(this),
+        },
+      },
+      {
+        location: 'center',
+        locateInMenu: 'auto',
+        widget: 'dxButton',
+        options: {
+          hint: 'Filter with criteria',
+          disabled: true,
         },
       }
     );
   }
 
-  onOptionChanged(e: any) {
-    if (e.fullName === 'paging.pageIndex') {
-      console.log('new page index is ' + e.value, this.medicineList.length);
-      this.medicineStore.loadDataAsync(e.value, this.pageSize);
-      this.medicineStore.loadDataAsync(e.value+1, this.pageSize);
-    }
+  onFilterChange(e: any) {
+    this.medicineStore.setIsFilteringByCategory(true);
+    console.log(e.value);
+    setTimeout(() => {
+      this.medicineStore.initFilterByCategoryData(
+        e.value,
+        this.dataGrid.instance.pageIndex(),
+        this.dataGrid.instance.pageSize()
+      );
+    }, 200);
   }
 
-  onCellClick(e: any) {
-    this.selectedCellRow = e.data;
+  onOptionChanged(e: any) {
+    if (e.fullName === 'paging.pageIndex') {
+      console.log(
+        `New page index: ${e.value}. Total items: ${this.medicineList.length}`
+      );
+      this.medicineStore.$isFilteringByCategory
+        .subscribe((data: boolean) => {
+          if (data === true) {
+            this.medicineStore.filterMedicineByCategory(
+              e.value,
+              this.dataGrid.instance.pageIndex(),
+              this.dataGrid.instance.pageSize()
+            );
+            this.dataGrid.instance.refresh();
+          } else {
+            if (e.value === 0) {
+              this.medicineStore.loadDataAsync(
+                e.value,
+                this.dataGrid.instance.pageSize()
+              );
+              this.medicineStore.loadDataAsync(
+                e.value + 1,
+                this.dataGrid.instance.pageSize()
+              );
+            } else {
+              this.medicineStore.loadDataAsync(
+                e.value,
+                this.dataGrid.instance.pageSize()
+              );
+              this.medicineStore.loadDataAsync(
+                e.value + 1,
+                this.dataGrid.instance.pageSize()
+              );
+              this.medicineStore.loadDataAsync(
+                e.value - 1,
+                this.dataGrid.instance.pageSize()
+              );
+            }
+          }
+        })
+        .unsubscribe();
+    }
   }
 
   onEditingStart() {
@@ -86,26 +182,31 @@ export class EditMedicineListComponent implements OnInit, OnDestroy {
     );
   }
 
-  onSaving(e: any) {
-    let medicine: Medicine;
-    // mode: single row
-    // console.log(e.changes);
+  onSaved(e: any) {
     if (e.changes.length) {
       switch (e.changes[0].type) {
         case 'insert':
-          this.medicineStore.uploadMedicine(e.changes[0].data, 1, 5);
+          this.medicineStore.uploadMedicine(
+            e.changes[0].data,
+            this.currentPage,
+            this.pageSize
+          );
           break;
         case 'update':
           console.log(e.changes[0]);
           this.medicineStore.updateMedicine(
             e.changes[0].data,
             e.changes[0].key,
-            1,
-            5
+            this.currentPage,
+            this.pageSize
           );
           break;
         case 'remove':
-          this.medicineStore.deleteMedicine(e.changes[0].key, 1, 5);
+          this.medicineStore.deleteMedicine(
+            e.changes[0].key,
+            this.currentPage,
+            this.pageSize
+          );
           break;
         default:
           break;
@@ -113,7 +214,6 @@ export class EditMedicineListComponent implements OnInit, OnDestroy {
     } else {
       this.store.showNotif('No changes dectected', 'custom');
     }
-    // advance: implement batch update with array of changes here
   }
 
   onEditCanceled() {
@@ -132,48 +232,39 @@ export class EditMedicineListComponent implements OnInit, OnDestroy {
     }
   }
 
-  onFocusedRowChanging(e: any) {
-    var rowsCount = e.component.getVisibleRows().length,
-      pageCount = e.component.pageCount(),
-      pageIndex = e.component.pageIndex(),
-      key = e.event && e.event.key;
-
-    if (key && e.prevRowIndex === e.newRowIndex) {
-      if (e.newRowIndex === rowsCount - 1 && pageIndex < pageCount - 1) {
-        e.component.pageIndex(pageIndex + 1).done(function () {
-          e.component.option('focusedRowIndex', 0);
-        });
-      } else if (e.newRowIndex === 0 && pageIndex > 0) {
-        e.component.pageIndex(pageIndex - 1).done(function () {
-          e.component.option('focusedRowIndex', rowsCount - 1);
-        });
-      }
-    }
-  }
-
-  onFocusedRowChanged(e: any) {
-    var rowData = e.row && e.row.data;
-
-    if (rowData) {
-      console.log(`Current row data: ${rowData}`);
-      // this.taskSubject = rowData.Task_Subject;
-      // this.taskDetailsHtml = this.sanitizer.bypassSecurityTrustHtml(rowData.Task_Description);
-      // this.taskStatus = rowData.Task_Status;
-      // this.taskProgress = rowData.Task_Completion ? `${rowData.Task_Completion}` + "%" : "";
-    }
-  }
-
   changePageSize(pageSize: number) {
     this.dataGrid.instance.pageSize(pageSize);
   }
 
-  goToLastPage() {
-    this.dataGrid.instance.pageIndex(this.dataGrid.instance.pageCount() - 1);
+  goToPage(page: number) {
+    this.dataGrid.instance.pageIndex(page);
   }
 
   deleteSelectedItems() {
+    this.store.setIsLoading(true);
     if (this.selectedRows.length) {
-      this.medicineStore.deleteSelectedMedicines(this.selectedRows, 1, 5);
+      this.medicineStore.confirmDialog().then((result: boolean) => {
+        if (result) {
+          this.medicineHTTP
+            .deleteSelectedMedicines(this.selectedRows)
+            .toPromise()
+            .then(() => {
+              this.store.showNotif(
+                `${this.selectedRows.length} items deleted`,
+                'custom'
+              );
+              this.clearSelection();
+              this.medicineStore.initData(
+                this.dataGrid.instance.pageIndex(),
+                this.dataGrid.instance.pageSize()
+              );
+              this.isSelectInfoVisible = false;
+            })
+            .then(() => {
+              this.store.setIsLoading(false);
+            });
+        }
+      });
     }
   }
 
@@ -182,14 +273,37 @@ export class EditMedicineListComponent implements OnInit, OnDestroy {
   }
 
   onRefresh() {
+    this.medicineStore.setIsFilteringByCategory(false);
     this.medicineStore.refresh(
-      this.dataGrid.instance.pageIndex() + 1,
-      this.dataGrid.instance.totalCount()
+      this.dataGrid.instance.pageIndex(),
+      this.pageSize
     );
   }
 
   onAddRandom() {
-    this.medicineStore.generateRandomNumber();
+    this.medicineStore.confirmDialog().then((result: boolean) => {
+      if (result) {
+        this.store.setIsLoading(true);
+        this.medicineHTTP
+          .generateRandomMedicine()
+          .toPromise()
+          .then(() => {
+            this.medicineStore.initData(
+              this.dataGrid.instance.pageIndex(),
+              this.dataGrid.instance.pageSize()
+            );
+          })
+          .then(() => {
+            this.dataGrid.instance.refresh();
+            this.store.setIsLoading(false);
+            this.store.showNotif('Generated 100+ random items', 'custom');
+          });
+      }
+    });
+  }
+
+  deleteAll() {
+    this.medicineStore.deleteAllMedicines();
   }
 
   navigateToEditDisease() {
@@ -197,9 +311,18 @@ export class EditMedicineListComponent implements OnInit, OnDestroy {
   }
 
   sourceDataListener() {
-    return this.medicineStore.$medicineList.subscribe((data: any) => {
-      this.medicineList = data;
-    });
+    // this.medicineStore.$isFilteringByCategory.subscribe((data: boolean) => {
+    //   if (data === true) {
+    //     return this.medicineStore.$filteredMedicineList.subscribe(
+    //       (data: any) => {
+    //         this.medicineList = data;
+    //       }
+    //     );
+    //   }
+    // });
+    // return this.medicineStore.$medicineList.subscribe((data: any) => {
+    //   this.medicineList = data;
+    // });
   }
 
   totalPagesListener() {
@@ -220,15 +343,68 @@ export class EditMedicineListComponent implements OnInit, OnDestroy {
     });
   }
 
+  searchByNameListener() {
+    return this.medicineStore.$isSearchingByName.subscribe((data: any) => {
+      this.isSearchingByName = data;
+    });
+  }
+
+  filterByPriceListener() {
+    return this.medicineStore.$currentPage.subscribe((data: any) => {
+      this.isFilteringByPrice = data;
+    });
+  }
+
+  filterByCategoryListener() {
+    return this.medicineStore.$currentPage.subscribe((data: any) => {
+      this.isFilteringByCategory = data;
+    });
+  }
+
+  sortByNameListener() {
+    return this.medicineStore.$currentPage.subscribe((data: any) => {
+      this.isSortingByName = data;
+    });
+  }
+
+  sortByPriceListener() {
+    return this.medicineStore.$currentPage.subscribe((data: any) => {
+      this.isSortingByPrice = data;
+    });
+  }
+
   ngOnInit(): void {
-    this.sourceDataListener();
+    // this.sourceDataListener();
+    this.medicineStore.$isFilteringByCategory.subscribe((data: boolean) => {
+      if (data === true) {
+        this.medicineStore.$filteredMedicineList.subscribe((data: any) => {
+          this.medicineList = data;
+          console.log('Filter mode');
+        });
+      } else {
+        this.medicineStore.$medicineList.subscribe((data: any) => {
+          this.medicineList = data;
+          console.log('Normal mode');
+        });
+      }
+    });
     this.totalItemsListener();
     this.totalPagesListener();
+    // this.sortByNameListener();
+    // this.sortByPriceListener();
+    // this.searchByNameListener();
+    // this.filterByCategoryListener();
+    // this.filterByPriceListener();
   }
 
   ngOnDestroy(): void {
-    this.sourceDataListener().unsubscribe();
+    // this.sourceDataListener().unsubscribe();
     this.totalItemsListener().unsubscribe();
     this.totalPagesListener().unsubscribe();
+    // this.sortByNameListener().unsubscribe();
+    // this.sortByPriceListener().unsubscribe();
+    // this.searchByNameListener().unsubscribe();
+    // this.filterByCategoryListener().unsubscribe();
+    // this.filterByPriceListener().unsubscribe();
   }
 }

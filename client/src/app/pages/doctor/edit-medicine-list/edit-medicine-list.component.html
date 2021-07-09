@@ -11,16 +11,6 @@
   </dxi-item>
   <dxi-item location="center" locateInMenu="auto">
     <dx-button
-      icon="close"
-      type="normal"
-      [visible]="isSelectInfoVisible"
-      hint="Clear current row selection"
-      (onClick)="clearSelection()"
-    >
-    </dx-button>
-  </dxi-item>
-  <dxi-item location="center" locateInMenu="auto">
-    <dx-button
       icon="trash"
       type="danger"
       [visible]="isSelectInfoVisible"
@@ -45,25 +35,28 @@
   [dataSource]="medicineList"
   keyExpr="_id"
   [showBorders]="true"
-  [allowColumnResizing]="true"
-  [allowColumnReordering]="true"
-  [focusedRowEnabled]="true"
-  [(focusedRowKey)]="focusedRowKey"
-  [(autoNavigateToFocusedRow)]="autoNavigateToFocusedRow"
+  [columnHidingEnabled]="true"
   [(selectedRowKeys)]="selectedRows"
+  [sorting]="false"
   (onOptionChanged)="onOptionChanged($event)"
-  (onFocusedRowChanging)="onFocusedRowChanging($event)"
-  (onFocusedRowChanged)="onFocusedRowChanged($event)"
   (onSelectionChanged)="selectionChangedHandler()"
   (onEditingStart)="onEditingStart()"
   (onInitNewRow)="onInitNewRow()"
-  (onSaving)="onSaving($event)"
+  (onSaved)="onSaved($event)"
   (onEditCanceled)="onEditCanceled()"
-  (onCellClick)="onCellClick($event)"
   (onToolbarPreparing)="onToolbarPreparing($event)"
 >
+  <!-- [allowColumnResizing]="true"
+  [allowColumnReordering]="true" -->
+  <!-- (onCellClick)="onCellClick($event)" -->
+  <!-- [focusedRowEnabled]="true" -->
+  <!-- (onFocusedRowChanged)="onFocusedRowChanged($event)" -->
+  <!-- (onFocusedRowChanging)="onFocusedRowChanging($event)"
+  [(autoNavigateToFocusedRow)]="autoNavigateToFocusedRow"
+  [(focusedRowKey)]="focusedRowKey" -->
+  <!-- (onRowInserted)="$event.component.navigateToRow($event.key)" -->
+  <!-- [refreshMode]="'full'" -->
   <dxo-editing
-    [refreshMode]="'full'"
     [allowUpdating]="true"
     [allowDeleting]="true"
     [allowAdding]="true"
@@ -77,7 +70,7 @@
     mode="multiple"
   ></dxo-selection>
 
-  <dxo-header-filter [visible]="true"> </dxo-header-filter>
+  <!-- <dxo-header-filter [visible]="true"> </dxo-header-filter> -->
   <!-- enable to save state of data grid to local storage -->
   <!-- <dxo-state-storing
     [enabled]="true"
@@ -85,19 +78,22 @@
     storageKey="storage"
   ></dxo-state-storing> -->
 
-  <dxo-filter-panel [visible]="true"> </dxo-filter-panel>
+  <!-- <dxo-filter-panel [visible]="true"> </dxo-filter-panel> -->
 
-  <dxo-filter-row [visible]="true"> </dxo-filter-row>
-
+  <!-- <dxo-filter-row [visible]="true"> </dxo-filter-row> -->
+  <dxo-grouping
+    [contextMenuEnabled]="true"
+    expandMode="rowClick"
+  ></dxo-grouping>
+  <dxo-column-chooser [enabled]="true" mode="select"></dxo-column-chooser>
   <dxo-paging [(pageSize)]="pageSize" [(pageIndex)]="currentPage"> </dxo-paging>
 
   <dxo-pager
     [visible]="true"
-    [displayMode]="'full'"
-    [allowedPageSizes]="[5, 10, 50]"
+    [displayMode]="'adaptive'"
+    [allowedPageSizes]="[5, 10]"
     [showPageSizeSelector]="true"
     [showNavigationButtons]="true"
-    [showInfo]="true"
   >
   </dxo-pager>
   <dxo-load-panel [enabled]="true"></dxo-load-panel>
