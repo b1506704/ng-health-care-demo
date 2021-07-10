@@ -35,9 +35,12 @@
   [dataSource]="medicineList"
   keyExpr="_id"
   [showBorders]="true"
+  [allowColumnReordering]="true"
+  [rowAlternationEnabled]="true"
   [columnHidingEnabled]="true"
   [(selectedRowKeys)]="selectedRows"
   [sorting]="false"
+  
   (onOptionChanged)="onOptionChanged($event)"
   (onSelectionChanged)="selectionChangedHandler()"
   (onEditingStart)="onEditingStart()"
@@ -70,6 +73,8 @@
     mode="multiple"
   ></dxo-selection>
 
+  <!-- <dxo-scrolling [mode]="scrollingMode" [rowRenderingMode]="'virtual'"></dxo-scrolling> -->
+
   <!-- <dxo-header-filter [visible]="true"> </dxo-header-filter> -->
   <!-- enable to save state of data grid to local storage -->
   <!-- <dxo-state-storing
@@ -86,12 +91,12 @@
     expandMode="rowClick"
   ></dxo-grouping>
   <dxo-column-chooser [enabled]="true" mode="select"></dxo-column-chooser>
-  <dxo-paging [(pageSize)]="pageSize" [(pageIndex)]="currentPage"> </dxo-paging>
+  <dxo-paging [pageSize]="pageSize"> </dxo-paging>
 
   <dxo-pager
     [visible]="true"
     [displayMode]="'adaptive'"
-    [allowedPageSizes]="[5, 10]"
+    [allowedPageSizes]="allowedPageSizes"
     [showPageSizeSelector]="true"
     [showNavigationButtons]="true"
   >
@@ -106,10 +111,13 @@
     <dxi-validation-rule type="required"></dxi-validation-rule>
   </dxi-column>
 
-  <dxi-column dataField="brand" [width]="150"> </dxi-column>
+  <dxi-column dataField="brand" [width]="150">
+    <dxo-lookup [dataSource]="brandList" displayExpr="name" valueExpr="_id">
+    </dxo-lookup>
+  </dxi-column>
 
   <dxi-column dataField="effect"> </dxi-column>
   <div *dxTemplate="let data of 'totalMedicineCount'">
-    <span>Total Medicine: {{ totalItems }} </span>
+    <span>Total Medicine: {{ medicineList.length }} </span>
   </div>
 </dx-data-grid>

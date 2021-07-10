@@ -8,8 +8,8 @@ import { Medicine } from '../../models/medicine';
 })
 export class MedicineHttpService {
   constructor(private http: HttpClient) {}
-  apiMedicineUrl = 'https://ng-health-care-demo.herokuapp.com/medicines';
-  // apiMedicineUrl = 'http://localhost/medicines';
+  // apiMedicineUrl = 'https://ng-health-care-demo.herokuapp.com/medicines';
+  apiMedicineUrl = 'http://localhost/medicines';
 
   fetchMedicine(page: number, size: number): Observable<Medicine> {
     const params = new HttpParams().set('page', page).set('size', size);
@@ -31,11 +31,15 @@ export class MedicineHttpService {
       .set('page', page)
       .set('size', size);
     console.log(params.toString());
-    return this.http.post<Medicine>(this.apiMedicineUrl, {
-      params: params,
-      reportProgress: true,
-      observe: 'body',
-    });
+    return this.http.post<Medicine>(
+      this.apiMedicineUrl + '/searchByName',
+      {},
+      {
+        params: params,
+        reportProgress: true,
+        observe: 'body',
+      }
+    );
   }
 
   filterMedicineByPrice(
@@ -63,15 +67,19 @@ export class MedicineHttpService {
     size: number
   ): Observable<Medicine> {
     const params = new HttpParams()
-    .set('value', value)
-    .set('page', page)
-    .set('size', size)
+      .set('value', value)
+      .set('page', page)
+      .set('size', size);
     console.log(params.toString());
-    return this.http.post<Medicine>(this.apiMedicineUrl + '/filterByCategory',{},{
-      params: params,
-      reportProgress: true,
-      observe: 'body',
-    });
+    return this.http.post<Medicine>(
+      this.apiMedicineUrl + '/filterByCategory',
+      {},
+      {
+        params: params,
+        reportProgress: true,
+        observe: 'body',
+      }
+    );
   }
 
   sortMedicineByName(

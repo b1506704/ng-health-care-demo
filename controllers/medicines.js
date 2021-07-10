@@ -3,6 +3,7 @@ import express from "express";
 import Medicine from "../models/medicine.js";
 import getPagination from "../middleware/getPagination.js";
 import random from "../middleware/RandomNumber.js";
+import brandList from "../middleware/mock-brand.js";
 
 const router = express.Router();
 
@@ -300,7 +301,7 @@ export const generateRandomMedicine = async (req, res) => {
       const newMedicine = new Medicine({
         name: "Favipiravir" + randomNumber,
         price: randomNumber,
-        brand: "Tesla",
+        brand: brandList()[random(0,brandList().length - 1)]._id,
         effect: "Effect to cure illness #" + randomNumber,
       });
       await newMedicine.save();
