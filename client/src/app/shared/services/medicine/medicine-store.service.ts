@@ -9,15 +9,7 @@ import { confirm } from 'devextreme/ui/dialog';
 
 interface MedicineState {
   medicineList: Array<Medicine>;
-  filteredMedicineList: Array<Medicine>;
-  cacheImageList: Array<string>;
-  searchedMedicineList: Array<Medicine>;
   selectedMedicine: Object;
-  isFilteringByPrice: boolean;
-  isFilteringByCategory: boolean;
-  isSearchingByName: boolean;
-  isSortingByPrice: boolean;
-  isSortingByName: boolean;
   totalPages: number;
   currentPage: number;
   totalItems: number;
@@ -25,19 +17,10 @@ interface MedicineState {
 }
 const initialState: MedicineState = {
   medicineList: [],
-  filteredMedicineList: [],
-  cacheImageList: [],
-  searchedMedicineList: [],
   selectedMedicine: {},
-  isFilteringByPrice: false,
-  isFilteringByCategory: false,
-  isSearchingByName: false,
-  isSortingByPrice: false,
-  isSortingByName: false,
   totalPages: 0,
   currentPage: 0,
   totalItems: 0,
-
   responseMsg: '',
 };
 @Injectable({
@@ -134,6 +117,26 @@ export class MedicineStore extends StateService<MedicineState> {
       });
   }
 
+  initSortByPriceData(value: string, page: number, size: number) {
+    this.store.showNotif('Sort Mode On', 'custom');
+    this.medicineService
+      .sortMedicineByPrice(value, 0, 5)
+      .toPromise()
+      .then((data: any) => {
+        this.setState({
+          medicineList: new Array<Medicine>(data.totalItems),
+        });
+        console.log('Current flag: sort list');
+        console.log(this.state.medicineList);
+        this.setState({ totalItems: data.totalItems });
+        this.setState({ totalPages: data.totalPages });
+        this.setState({ currentPage: data.currentPage });
+      })
+      .then(() => {
+        this.sortMedicineByPrice(value, page, size);
+      });
+  }
+
   loadDataAsync(page: number, size: number) {
     this.setIsLoading(true);
     this.medicineService.fetchMedicine(page, size).subscribe({
@@ -201,39 +204,11 @@ export class MedicineStore extends StateService<MedicineState> {
     (state) => state.medicineList
   );
 
-  $isSearchingByName: Observable<boolean> = this.select(
-    (state) => state.isSearchingByName
-  );
-
-  $isFilteringByPrice: Observable<boolean> = this.select(
-    (state) => state.isFilteringByPrice
-  );
-
-  $isFilteringByCategory: Observable<boolean> = this.select(
-    (state) => state.isFilteringByCategory
-  );
-
-  $isSortingByPrice: Observable<boolean> = this.select(
-    (state) => state.isSortingByPrice
-  );
-
-  $isSortingByName: Observable<boolean> = this.select(
-    (state) => state.isSortingByName
-  );
-
   $totalPages: Observable<Number> = this.select((state) => state.totalPages);
 
   $totalItems: Observable<Number> = this.select((state) => state.totalItems);
 
   $currentPage: Observable<Number> = this.select((state) => state.currentPage);
-
-  $filteredMedicineList: Observable<Array<Medicine>> = this.select(
-    (state) => state.filteredMedicineList
-  );
-
-  $searchedMedicineList: Observable<Array<Medicine>> = this.select(
-    (state) => state.searchedMedicineList
-  );
 
   $selectedMedicine: Observable<Object> = this.select(
     (state) => state.selectedMedicine
@@ -396,44 +371,35 @@ export class MedicineStore extends StateService<MedicineState> {
     page: number,
     size: number
   ) {
-    this.confirmDialog().then((confirm: boolean) => {
-      if (confirm) {
-        this.setIsLoading(true);
-        this.setIsFilteringByPrice(true);
-        this.medicineService
-          .filterMedicineByPrice(criteria, value, page, size)
-          .subscribe({
-            next: (data: any) => {
-              this.setState({ responseMsg: data });
-              this.setState({
-                filteredMedicineList: this.fillEmpty(
-                  page,
-                  size,
-                  this.state.filteredMedicineList,
-                  data.items
-                ),
-              });
-              this.setState({ totalItems: data.totalItems });
-              this.setState({ totalPages: data.totalPages });
-              this.setState({ currentPage: data.currentPage });
-              this.setIsLoading(false);
-              this.store.showNotif(data.message, 'custom');
-            },
-            error: (data: any) => {
-              this.setIsLoading(false);
-              this.store.showNotif(data.error.errorMessage, 'error');
-              console.log(data);
-            },
+    this.setIsLoading(true);
+    this.medicineService
+      .filterMedicineByPrice(criteria, value, page, size)
+      .subscribe({
+        next: (data: any) => {
+          this.setState({ responseMsg: data });
+          this.setState({
+            medicineList: this.fillEmpty(
+              page,
+              size,
+              this.state.medicineList,
+              data.items
+            ),
           });
-      }
-    });
+          this.setState({ totalItems: data.totalItems });
+          this.setState({ totalPages: data.totalPages });
+          this.setState({ currentPage: data.currentPage });
+          this.setIsLoading(false);
+        },
+        error: (data: any) => {
+          this.setIsLoading(false);
+          this.store.showNotif(data.error.errorMessage, 'error');
+          console.log(data);
+        },
+      });
   }
 
   filterMedicineByCategory(value: string, page: number, size: number) {
-    // this.confirmDialog().then((confirm: boolean) => {
-    //   if (confirm) {
     this.setIsLoading(true);
-    // this.setIsFilteringByCategory(true);
     this.medicineService.filterMedicineByCategory(value, page, size).subscribe({
       next: (data: any) => {
         this.setState({
@@ -459,8 +425,6 @@ export class MedicineStore extends StateService<MedicineState> {
         console.log(data);
       },
     });
-    //   }
-    // });
   }
 
   searchMedicineByName(value: string, page: number, size: number) {
@@ -493,86 +457,62 @@ export class MedicineStore extends StateService<MedicineState> {
   }
 
   sortMedicineByName(value: string, page: number, size: number) {
-    this.confirmDialog().then((confirm: boolean) => {
-      if (confirm) {
-        this.setIsSortingByName(true);
-        this.setIsLoading(true);
-        this.medicineService.sortMedicineByName(value, page, size).subscribe({
-          next: (data: any) => {
-            this.setState({ responseMsg: data });
-            this.setState({
-              medicineList: this.fillEmpty(
-                page,
-                size,
-                this.state.medicineList,
-                data.items
-              ),
-            });
-            this.setState({ totalItems: data.totalItems });
-            this.setState({ totalPages: data.totalPages });
-            this.setState({ currentPage: data.currentPage });
-            this.setIsLoading(false);
-            this.store.showNotif(data.message, 'custom');
-          },
-          error: (data: any) => {
-            this.setIsLoading(false);
-            this.store.showNotif(data.error.errorMessage, 'error');
-            console.log(data);
-          },
+    this.setIsLoading(true);
+    this.medicineService.sortMedicineByName(value, page, size).subscribe({
+      next: (data: any) => {
+        this.setState({ responseMsg: data });
+        this.setState({
+          medicineList: this.fillEmpty(
+            page,
+            size,
+            this.state.medicineList,
+            data.items
+          ),
         });
-      }
+        this.setState({ totalItems: data.totalItems });
+        this.setState({ totalPages: data.totalPages });
+        this.setState({ currentPage: data.currentPage });
+        console.log('Sorted list');
+        console.log(this.state.medicineList);
+        console.log('Server response');
+        console.log(data);
+        this.setIsLoading(false);
+      },
+      error: (data: any) => {
+        this.setIsLoading(false);
+        this.store.showNotif(data.error.errorMessage, 'error');
+        console.log(data);
+      },
     });
   }
 
-  sortMedicineByPrice(value: number, page: number, size: number) {
-    this.confirmDialog().then((confirm: boolean) => {
-      if (confirm) {
-        this.setIsLoading(true);
-        this.setIsSortingByPrice(true);
-        this.medicineService.sortMedicineByPrice(value, page, size).subscribe({
-          next: (data: any) => {
-            this.setState({ responseMsg: data });
-            this.setState({
-              medicineList: this.fillEmpty(
-                page,
-                size,
-                this.state.medicineList,
-                data.items
-              ),
-            });
-            this.setState({ totalItems: data.totalItems });
-            this.setState({ totalPages: data.totalPages });
-            this.setState({ currentPage: data.currentPage });
-            this.setIsLoading(false);
-            this.store.showNotif(data.message, 'custom');
-          },
-          error: (data: any) => {
-            this.setIsLoading(false);
-            this.store.showNotif(data.error.errorMessage, 'error');
-            console.log(data);
-          },
+  sortMedicineByPrice(value: string, page: number, size: number) {
+    this.setIsLoading(true);
+    this.medicineService.sortMedicineByPrice(value, page, size).subscribe({
+      next: (data: any) => {
+        this.setState({ responseMsg: data });
+        this.setState({
+          medicineList: this.fillEmpty(
+            page,
+            size,
+            this.state.medicineList,
+            data.items
+          ),
         });
-      }
+        this.setState({ totalItems: data.totalItems });
+        this.setState({ totalPages: data.totalPages });
+        this.setState({ currentPage: data.currentPage });
+        console.log('Sorted list');
+        console.log(this.state.medicineList);
+        console.log('Server response');
+        console.log(data);
+        this.setIsLoading(false);
+      },
+      error: (data: any) => {
+        this.setIsLoading(false);
+        this.store.showNotif(data.error.errorMessage, 'error');
+        console.log(data);
+      },
     });
-  }
-
-  setIsFilteringByCategory(_isFiltering: boolean) {
-    this.setState({ isFilteringByCategory: _isFiltering });
-  }
-
-  setIsFilteringByPrice(_isFiltering: boolean) {
-    this.setState({ isFilteringByPrice: _isFiltering });
-  }
-
-  setIsSearchingByName(_isSearching: boolean) {
-    this.setState({ isSearchingByName: _isSearching });
-  }
-
-  setIsSortingByName(_isSearching: boolean) {
-    this.setState({ isSortingByName: _isSearching });
-  }
-
-  setIsSortingByPrice(_isSorting: boolean) {
-    this.setState({ isSortingByPrice: _isSorting });
   }
 }

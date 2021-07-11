@@ -54,11 +54,15 @@ export class MedicineHttpService {
       .set('page', page)
       .set('size', size);
     console.log(params.toString());
-    return this.http.post<Medicine>(this.apiMedicineUrl, {
-      params: params,
-      reportProgress: true,
-      observe: 'body',
-    });
+    return this.http.post<Medicine>(
+      this.apiMedicineUrl,
+      {},
+      {
+        params: params,
+        reportProgress: true,
+        observe: 'body',
+      }
+    );
   }
 
   filterMedicineByCategory(
@@ -92,15 +96,19 @@ export class MedicineHttpService {
       .set('page', page)
       .set('size', size);
     console.log(params.toString());
-    return this.http.post<Medicine>(this.apiMedicineUrl, {
-      params: params,
-      reportProgress: true,
-      observe: 'body',
-    });
+    return this.http.post<Medicine>(
+      this.apiMedicineUrl + '/sortByName',
+      {},
+      {
+        params: params,
+        reportProgress: true,
+        observe: 'body',
+      }
+    );
   }
 
   sortMedicineByPrice(
-    value: number,
+    value: string,
     page: number,
     size: number
   ): Observable<Medicine> {
@@ -109,11 +117,15 @@ export class MedicineHttpService {
       .set('page', page)
       .set('size', size);
     console.log(params.toString());
-    return this.http.post<Medicine>(this.apiMedicineUrl, {
-      params: params,
-      reportProgress: true,
-      observe: 'body',
-    });
+    return this.http.post<Medicine>(
+      this.apiMedicineUrl + '/sortByPrice',
+      {},
+      {
+        params: params,
+        reportProgress: true,
+        observe: 'body',
+      }
+    );
   }
 
   uploadMedicine(medicine: Medicine): Observable<Medicine> {

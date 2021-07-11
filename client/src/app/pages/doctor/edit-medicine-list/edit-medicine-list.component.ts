@@ -1,6 +1,12 @@
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { DxDataGridComponent } from 'devextreme-angular';
+import { exportDataGrid } from 'devextreme/excel_exporter';
+import { exportDataGrid as exportDataGridToPdf } from 'devextreme/pdf_exporter';
+import { jsPDF } from 'jspdf';
+import 'jspdf-autotable';
+import * as ExcelJS from 'exceljs';
+import saveAs from 'file-saver';
 import { Medicine } from 'src/app/shared/models/medicine';
 import { MedicineHttpService } from 'src/app/shared/services/medicine/medicine-http.service';
 import { MedicineStore } from 'src/app/shared/services/medicine/medicine-store.service';
@@ -34,7 +40,8 @@ export class EditMedicineListComponent implements OnInit, OnDestroy {
 
   currentCategoryFilterValue: string;
   timeout: any;
-  currentSearchValue: string;
+  currentSearchByNameValue: string;
+  currentSortByPriceValue: string;
 
   constructor(
     private medicineStore: MedicineStore,
@@ -83,6 +90,17 @@ export class EditMedicineListComponent implements OnInit, OnDestroy {
         },
       },
       {
+        location: 'after',
+        locateInMenu: 'auto',
+        widget: 'dxButton',
+        options: {
+          type: 'danger',
+          icon: 'exportpdf',
+          hint: 'Export to PDF',
+          onClick: this.exportGridToPdf.bind(this),
+        },
+      },
+      {
         location: 'center',
         locateInMenu: 'auto',
         widget: 'dxTextBox',
@@ -117,6 +135,31 @@ export class EditMedicineListComponent implements OnInit, OnDestroy {
           searchEnabled: true,
           onValueChanged: this.onFilterChange.bind(this),
         },
+      },
+      {
+        location: 'center',
+        locateInMenu: 'auto',
+        widget: 'dxButton',
+        options: {
+          type: 'normal',
+          icon: 'money',
+          disabled: true,
+          hint: 'Sort price',
+        },
+      },
+      {
+        location: 'center',
+        locateInMenu: 'auto',
+        widget: 'dxSelectBox',
+        options: {
+          items: [
+            { _id: 0, name: 'ASC' },
+            { _id: 1, name: 'DESC' },
+          ],
+          valueExpr: 'name',
+          displayExpr: 'name',
+          onValueChanged: this.onSortValueChanged.bind(this),
+        },
       }
     );
   }
@@ -126,9 +169,10 @@ export class EditMedicineListComponent implements OnInit, OnDestroy {
     this.timeout = setTimeout(() => {
       this.isSearchingByName = true;
       this.isFilteringByCategory = false;
-      console.log(this.currentSearchValue);
+      this.isSortingByPrice = false;
+      console.log(this.currentSearchByNameValue);
       this.medicineStore.initSearchByNameData(
-        this.currentSearchValue,
+        this.currentSearchByNameValue,
         this.dataGrid.instance.pageIndex(),
         this.pageSize
       );
@@ -136,12 +180,25 @@ export class EditMedicineListComponent implements OnInit, OnDestroy {
   }
 
   onSearchValueChanged(e: any) {
-    this.currentSearchValue = e.value;
+    this.currentSearchByNameValue = e.value;
+  }
+
+  onSortValueChanged(e: any) {
+    this.isSortingByPrice = true;
+    this.isSearchingByName = false;
+    this.isFilteringByCategory = false;
+    this.currentSortByPriceValue = e.value;
+    this.medicineStore.initSortByPriceData(
+      e.value,
+      this.dataGrid.instance.pageIndex(),
+      this.pageSize
+    );
   }
 
   onFilterChange(e: any) {
     this.isFilteringByCategory = true;
     this.isSearchingByName = false;
+    this.isSortingByPrice = false;
     this.currentCategoryFilterValue = e.value;
     console.log(e.value);
     this.medicineStore.initFilterByCategoryData(
@@ -153,11 +210,11 @@ export class EditMedicineListComponent implements OnInit, OnDestroy {
 
   checkEditorMode() {
     if (this.isFilteringByCategory === true) {
-      // this.isSearchingByName = false;
       return 'FILTER';
     } else if (this.isSearchingByName === true) {
-      // this.isFilteringByCategory = false;
       return 'SEARCH';
+    } else if (this.isSortingByPrice === true) {
+      return 'SORT';
     } else {
       return 'NORMAL';
     }
@@ -180,6 +237,9 @@ export class EditMedicineListComponent implements OnInit, OnDestroy {
           break;
         case 'SEARCH':
           this.paginateSearchData(currentIndex);
+          break;
+        case 'SORT':
+          this.paginateSortData(currentIndex);
           break;
         default:
           break;
@@ -209,7 +269,15 @@ export class EditMedicineListComponent implements OnInit, OnDestroy {
           break;
         case 'SEARCH':
           this.medicineStore.searchMedicineByName(
-            this.currentSearchValue,
+            this.currentSearchByNameValue,
+            this.currentIndexFromServer,
+            e.value
+          );
+          this.goToPage(this.currentIndexFromServer);
+          break;
+        case 'SORT':
+          this.medicineStore.sortMedicineByPrice(
+            this.currentSortByPriceValue,
             this.currentIndexFromServer,
             e.value
           );
@@ -266,28 +334,59 @@ export class EditMedicineListComponent implements OnInit, OnDestroy {
   paginateSearchData(index: number) {
     if (index === 0) {
       this.medicineStore.searchMedicineByName(
-        this.currentSearchValue,
+        this.currentSearchByNameValue,
         index,
         this.pageSize
       );
       this.medicineStore.searchMedicineByName(
-        this.currentSearchValue,
+        this.currentSearchByNameValue,
         index + 1,
         this.pageSize
       );
     } else {
       this.medicineStore.searchMedicineByName(
-        this.currentSearchValue,
+        this.currentSearchByNameValue,
         index,
         this.pageSize
       );
       this.medicineStore.searchMedicineByName(
-        this.currentSearchValue,
+        this.currentSearchByNameValue,
         index + 1,
         this.pageSize
       );
       this.medicineStore.searchMedicineByName(
-        this.currentSearchValue,
+        this.currentSearchByNameValue,
+        index - 1,
+        this.pageSize
+      );
+    }
+  }
+
+  paginateSortData(index: number) {
+    if (index === 0) {
+      this.medicineStore.sortMedicineByPrice(
+        this.currentSortByPriceValue,
+        index,
+        this.pageSize
+      );
+      this.medicineStore.sortMedicineByPrice(
+        this.currentSortByPriceValue,
+        index + 1,
+        this.pageSize
+      );
+    } else {
+      this.medicineStore.sortMedicineByPrice(
+        this.currentSortByPriceValue,
+        index,
+        this.pageSize
+      );
+      this.medicineStore.sortMedicineByPrice(
+        this.currentSortByPriceValue,
+        index + 1,
+        this.pageSize
+      );
+      this.medicineStore.sortMedicineByPrice(
+        this.currentSortByPriceValue,
         index - 1,
         this.pageSize
       );
@@ -406,6 +505,7 @@ export class EditMedicineListComponent implements OnInit, OnDestroy {
   onRefresh() {
     this.isFilteringByCategory = false;
     this.isSearchingByName = false;
+    this.isSortingByPrice = false;
     this.medicineStore.initData(
       this.dataGrid.instance.pageIndex(),
       this.pageSize
@@ -431,6 +531,36 @@ export class EditMedicineListComponent implements OnInit, OnDestroy {
             this.store.showNotif('Generated 100+ random items', 'custom');
           });
       }
+    });
+  }
+
+  onExporting(e: any) {
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet('Medicine List');
+
+    exportDataGrid({
+      component: e.component,
+      worksheet: worksheet,
+      autoFilterEnabled: true,
+    }).then(() => {
+      workbook.xlsx.writeBuffer().then((buffer) => {
+        saveAs(
+          new Blob([buffer], { type: 'application/octet-stream' }),
+          'Medicine_List.xlsx'
+        );
+      });
+    });
+    e.cancel = true;
+  }
+
+  exportGridToPdf(e: any) {
+    const doc = new jsPDF();
+    console.log(doc);
+    exportDataGridToPdf({
+      jsPDFDocument: doc,
+      component: this.dataGrid.instance,
+    }).then(() => {
+      doc.save('Medicine_List.pdf');
     });
   }
 

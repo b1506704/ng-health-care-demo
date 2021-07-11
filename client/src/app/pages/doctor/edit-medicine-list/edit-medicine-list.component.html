@@ -40,7 +40,7 @@
   [columnHidingEnabled]="true"
   [(selectedRowKeys)]="selectedRows"
   [sorting]="false"
-  
+  (onExporting)="onExporting($event)"
   (onOptionChanged)="onOptionChanged($event)"
   (onSelectionChanged)="selectionChangedHandler()"
   (onEditingStart)="onEditingStart()"
@@ -86,6 +86,8 @@
   <!-- <dxo-filter-panel [visible]="true"> </dxo-filter-panel> -->
 
   <!-- <dxo-filter-row [visible]="true"> </dxo-filter-row> -->
+
+  <dxo-export [enabled]="true" [allowExportSelectedData]="true"></dxo-export>
   <dxo-grouping
     [contextMenuEnabled]="true"
     expandMode="rowClick"
