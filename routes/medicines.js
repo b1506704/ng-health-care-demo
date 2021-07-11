@@ -14,6 +14,7 @@ import {
   searchMedicineByName,
   sortByName,
   sortByNumber,
+  fetchAll,
 } from "../controllers/medicines.js";
 
 const router = express.Router();
@@ -31,5 +32,6 @@ router.post("/filterByCategory", filterMedicineByCategory);
 router.post("/searchByName", searchMedicineByName);
 router.post("/sortByName", sortByName);
 router.post("/sortByPrice", sortByNumber);
+router.post("/fetchAll", fetchAll);
 
 export default router;

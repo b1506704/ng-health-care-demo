@@ -37,6 +37,19 @@ export const getMedicines = (req, res) => {
   }
 };
 
+export const fetchAll = async (req, res) => {
+  try {
+    const medicine = await Medicine.find();
+    if (medicine) {
+      res.status(200).json(medicine);
+    } else {
+      res.status(404).json({ errorMessage: "Requested data does not exist!" });
+    }
+  } catch (error) {
+    res.status(404).json({ errorMessage: "Failed to get data!" });
+  }
+};
+
 export const getMedicine = async (req, res) => {
   const { _id } = req.params;
   try {
@@ -301,7 +314,7 @@ export const generateRandomMedicine = async (req, res) => {
       const newMedicine = new Medicine({
         name: "Favipiravir" + randomNumber,
         price: randomNumber,
-        brand: brandList()[random(0,brandList().length - 1)]._id,
+        brand: brandList()[random(0, brandList().length - 1)]._id,
         effect: "Effect to cure illness #" + randomNumber,
       });
       await newMedicine.save();

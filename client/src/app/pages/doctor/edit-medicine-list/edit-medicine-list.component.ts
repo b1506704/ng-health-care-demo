@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { DxDataGridComponent } from 'devextreme-angular';
-import { exportDataGrid } from 'devextreme/excel_exporter';
+import { exportDataGrid as exportDataGridToExcel } from 'devextreme/excel_exporter';
 import { exportDataGrid as exportDataGridToPdf } from 'devextreme/pdf_exporter';
 import { jsPDF } from 'jspdf';
 import 'jspdf-autotable';
@@ -94,10 +94,21 @@ export class EditMedicineListComponent implements OnInit, OnDestroy {
         locateInMenu: 'auto',
         widget: 'dxButton',
         options: {
-          type: 'danger',
+          type: 'normal',
           icon: 'exportpdf',
           hint: 'Export to PDF',
           onClick: this.exportGridToPdf.bind(this),
+        },
+      },
+      {
+        location: 'after',
+        locateInMenu: 'auto',
+        widget: 'dxButton',
+        options: {
+          type: 'normal',
+          icon: 'xlsxfile',
+          hint: 'Export to Excel',
+          onClick: this.exportDataGridToExcel.bind(this),
         },
       },
       {
@@ -110,6 +121,7 @@ export class EditMedicineListComponent implements OnInit, OnDestroy {
           onKeyUp: this.onSearchKeyupHandler.bind(this),
           onValueChanged: this.onSearchValueChanged.bind(this),
           mode: 'search',
+          placeholder: 'Search with name',
         },
       },
       {
@@ -130,9 +142,10 @@ export class EditMedicineListComponent implements OnInit, OnDestroy {
         options: {
           items: this.brandList,
           valueExpr: '_id',
-          searchExpr: 'name',
+          // searchExpr: 'name',
           displayExpr: 'name',
-          searchEnabled: true,
+          placeholder: 'Filter with brand',
+          // searchEnabled: true,
           onValueChanged: this.onFilterChange.bind(this),
         },
       },
@@ -153,10 +166,15 @@ export class EditMedicineListComponent implements OnInit, OnDestroy {
         widget: 'dxSelectBox',
         options: {
           items: [
-            { _id: 0, name: 'ASC' },
-            { _id: 1, name: 'DESC' },
+            {
+              _id: '-1',
+              name: '(NONE)',
+            },
+            { _id: '0', name: 'ASC' },
+            { _id: '1', name: 'DESC' },
           ],
           valueExpr: 'name',
+          placeholder: 'Sort price',
           displayExpr: 'name',
           onValueChanged: this.onSortValueChanged.bind(this),
         },
@@ -171,11 +189,17 @@ export class EditMedicineListComponent implements OnInit, OnDestroy {
       this.isFilteringByCategory = false;
       this.isSortingByPrice = false;
       console.log(this.currentSearchByNameValue);
-      this.medicineStore.initSearchByNameData(
-        this.currentSearchByNameValue,
-        this.dataGrid.instance.pageIndex(),
-        this.pageSize
-      );
+      if (this.currentSearchByNameValue !== '') {
+        this.medicineStore.initSearchByNameData(
+          this.currentSearchByNameValue,
+          this.dataGrid.instance.pageIndex(),
+          this.pageSize
+        );
+      } else {
+        //return to pure editor mode
+        this.store.showNotif('SEARCH MODE OFF', 'custom');
+        this.onRefresh();
+      }
     }, 1250);
   }
 
@@ -188,11 +212,17 @@ export class EditMedicineListComponent implements OnInit, OnDestroy {
     this.isSearchingByName = false;
     this.isFilteringByCategory = false;
     this.currentSortByPriceValue = e.value;
-    this.medicineStore.initSortByPriceData(
-      e.value,
-      this.dataGrid.instance.pageIndex(),
-      this.pageSize
-    );
+    if (e.value !== '(NONE)') {
+      this.medicineStore.initSortByPriceData(
+        e.value,
+        this.dataGrid.instance.pageIndex(),
+        this.pageSize
+      );
+    } else {
+      //return to pure editor mode
+      this.store.showNotif('SORT MODE OFF', 'custom');
+      this.onRefresh();
+    }
   }
 
   onFilterChange(e: any) {
@@ -201,11 +231,17 @@ export class EditMedicineListComponent implements OnInit, OnDestroy {
     this.isSortingByPrice = false;
     this.currentCategoryFilterValue = e.value;
     console.log(e.value);
-    this.medicineStore.initFilterByCategoryData(
-      e.value,
-      this.dataGrid.instance.pageIndex(),
-      this.pageSize
-    );
+    if (e.value !== '-1') {
+      this.medicineStore.initFilterByCategoryData(
+        e.value,
+        this.dataGrid.instance.pageIndex(),
+        this.pageSize
+      );
+    } else {
+      //return to pure editor mode
+      this.store.showNotif('FILTER MODE OFF', 'custom');
+      this.onRefresh();
+    }
   }
 
   checkEditorMode() {
@@ -464,8 +500,9 @@ export class EditMedicineListComponent implements OnInit, OnDestroy {
 
   deleteSelectedItems() {
     this.store.setIsLoading(true);
+    const editorMode = this.checkEditorMode();
     if (this.selectedRows.length) {
-      this.medicineStore.confirmDialog().then((result: boolean) => {
+      this.medicineStore.confirmDialog('').then((result: boolean) => {
         if (result) {
           this.medicineHTTP
             .deleteSelectedMedicines(this.selectedRows)
@@ -476,17 +513,36 @@ export class EditMedicineListComponent implements OnInit, OnDestroy {
                 'custom'
               );
               this.clearSelection();
-              if (this.isFilteringByCategory === true) {
-                this.medicineStore.initFilterByCategoryData(
-                  this.currentCategoryFilterValue,
-                  this.dataGrid.instance.pageIndex(),
-                  this.pageSize
-                );
-              } else {
-                this.medicineStore.initData(
-                  this.dataGrid.instance.pageIndex(),
-                  this.pageSize
-                );
+              switch (editorMode) {
+                case 'NORMAL':
+                  this.medicineStore.initData(
+                    this.dataGrid.instance.pageIndex(),
+                    this.pageSize
+                  );
+                  break;
+                case 'FILTER':
+                  this.medicineStore.initFilterByCategoryData(
+                    this.currentCategoryFilterValue,
+                    this.dataGrid.instance.pageIndex(),
+                    this.pageSize
+                  );
+                  break;
+                case 'SORT':
+                  this.medicineStore.initSortByPriceData(
+                    this.currentSortByPriceValue,
+                    this.dataGrid.instance.pageIndex(),
+                    this.pageSize
+                  );
+                  break;
+                case 'SEARCH':
+                  this.medicineStore.initSearchByNameData(
+                    this.currentSearchByNameValue,
+                    this.dataGrid.instance.pageIndex(),
+                    this.pageSize
+                  );
+                  break;
+                default:
+                  break;
               }
               this.isSelectInfoVisible = false;
             })
@@ -513,55 +569,114 @@ export class EditMedicineListComponent implements OnInit, OnDestroy {
   }
 
   onAddRandom() {
-    this.medicineStore.confirmDialog().then((result: boolean) => {
-      if (result) {
-        this.isFilteringByCategory = false;
-        this.store.setIsLoading(true);
-        this.medicineHTTP
-          .generateRandomMedicine()
-          .toPromise()
-          .then(() => {
-            this.medicineStore.initData(
-              this.dataGrid.instance.pageIndex(),
-              this.pageSize
-            );
-          })
-          .then(() => {
-            this.store.setIsLoading(false);
-            this.store.showNotif('Generated 100+ random items', 'custom');
-          });
-      }
-    });
-  }
-
-  onExporting(e: any) {
-    const workbook = new ExcelJS.Workbook();
-    const worksheet = workbook.addWorksheet('Medicine List');
-
-    exportDataGrid({
-      component: e.component,
-      worksheet: worksheet,
-      autoFilterEnabled: true,
-    }).then(() => {
-      workbook.xlsx.writeBuffer().then((buffer) => {
-        saveAs(
-          new Blob([buffer], { type: 'application/octet-stream' }),
-          'Medicine_List.xlsx'
-        );
+    this.medicineStore
+      .confirmDialog(
+        'This will generate random 100+ items in database. Are you sure'
+      )
+      .then((result: boolean) => {
+        if (result) {
+          this.isFilteringByCategory = false;
+          this.store.setIsLoading(true);
+          this.medicineHTTP
+            .generateRandomMedicine()
+            .toPromise()
+            .then(() => {
+              this.medicineStore.initData(
+                this.dataGrid.instance.pageIndex(),
+                this.pageSize
+              );
+            })
+            .then(() => {
+              this.store.setIsLoading(false);
+              this.store.showNotif('Generated 100+ random items', 'custom');
+            });
+        }
       });
-    });
-    e.cancel = true;
   }
+
+  exportDataGridToExcel() {
+    this.medicineStore
+      .confirmDialog(
+        'This will export all fetched data to excel. Are you sure?'
+      )
+      .then((result: boolean) => {
+        if (result) {
+          this.store.setIsLoading(true);
+          this.medicineHTTP
+            .fetchAll()
+            .toPromise()
+            .then((data: any) => {
+              this.medicineStore.setExportData(data);
+              console.log(data);
+              setTimeout(() => {
+                const workbook = new ExcelJS.Workbook();
+                const worksheet = workbook.addWorksheet('Medicine List');
+                exportDataGridToExcel({
+                  component: this.dataGrid.instance,
+                  worksheet: worksheet,
+                  autoFilterEnabled: true,
+                }).then(() => {
+                  workbook.xlsx.writeBuffer().then((buffer) => {
+                    saveAs(
+                      new Blob([buffer], { type: 'application/octet-stream' }),
+                      'Medicine_List.xlsx'
+                    );
+                    this.store.setIsLoading(false);
+                    this.store.showNotif('Export succesully', 'custom');
+                  });
+                });
+              }, 200);
+            });
+        }
+      });
+  }
+
+  // default export with selected row
+  // onExporting(e: any) {
+  //   const workbook = new ExcelJS.Workbook();
+  //   const worksheet = workbook.addWorksheet('Medicine List');
+
+  //   exportDataGrid({
+  //     component: e.component,
+  //     worksheet: worksheet,
+  //     autoFilterEnabled: true,
+  //   }).then(() => {
+  //     workbook.xlsx.writeBuffer().then((buffer) => {
+  //       saveAs(
+  //         new Blob([buffer], { type: 'application/octet-stream' }),
+  //         'Medicine_List.xlsx'
+  //       );
+  //     });
+  //   });
+  //   e.cancel = true;
+  // }
 
   exportGridToPdf(e: any) {
-    const doc = new jsPDF();
-    console.log(doc);
-    exportDataGridToPdf({
-      jsPDFDocument: doc,
-      component: this.dataGrid.instance,
-    }).then(() => {
-      doc.save('Medicine_List.pdf');
-    });
+    this.medicineStore
+      .confirmDialog('This will export all data to pdf. Are you sure?')
+      .then((result: boolean) => {
+        if (result) {
+          this.store.setIsLoading(true);
+          this.medicineHTTP
+            .fetchAll()
+            .toPromise()
+            .then((data: any) => {
+              this.medicineStore.setExportData(data);
+              console.log(data);
+              setTimeout(() => {
+                const doc = new jsPDF();
+                exportDataGridToPdf({
+                  jsPDFDocument: doc,
+                  component: this.dataGrid.instance,
+                }).then(() => {
+                  doc.save('Medicine_List.pdf');
+                  this.store.setIsLoading(false);
+                  this.store.showNotif('Export succesully', 'custom');
+                });
+              }, 200);
+            });
+        }
+      });
   }
 
   deleteAll() {

@@ -9,6 +9,7 @@ import { confirm } from 'devextreme/ui/dialog';
 
 interface MedicineState {
   medicineList: Array<Medicine>;
+  exportData: Array<Medicine>;
   selectedMedicine: Object;
   totalPages: number;
   currentPage: number;
@@ -18,6 +19,7 @@ interface MedicineState {
 const initialState: MedicineState = {
   medicineList: [],
   selectedMedicine: {},
+  exportData: [],
   totalPages: 0,
   currentPage: 0,
   totalItems: 0,
@@ -204,6 +206,10 @@ export class MedicineStore extends StateService<MedicineState> {
     (state) => state.medicineList
   );
 
+  $exportData: Observable<Array<Medicine>> = this.select(
+    (state) => state.exportData
+  );
+
   $totalPages: Observable<Number> = this.select((state) => state.totalPages);
 
   $totalItems: Observable<Number> = this.select((state) => state.totalItems);
@@ -215,7 +221,7 @@ export class MedicineStore extends StateService<MedicineState> {
   );
 
   uploadMedicine(medicine: Medicine, page: number, size: number) {
-    this.confirmDialog().then((confirm: boolean) => {
+    this.confirmDialog('').then((confirm: boolean) => {
       if (confirm) {
         this.setIsLoading(true);
         this.medicineService.uploadMedicine(medicine).subscribe({
@@ -238,7 +244,7 @@ export class MedicineStore extends StateService<MedicineState> {
   }
 
   updateMedicine(medicine: Medicine, key: string, page: number, size: number) {
-    this.confirmDialog().then((confirm: boolean) => {
+    this.confirmDialog('').then((confirm: boolean) => {
       if (confirm) {
         this.setIsLoading(true);
         this.medicineService.updateMedicine(medicine, key).subscribe({
@@ -259,8 +265,11 @@ export class MedicineStore extends StateService<MedicineState> {
     });
   }
 
-  confirmDialog() {
-    return confirm('<b>Are you sure?</b>', 'Confirm changes');
+  confirmDialog(msg: string) {
+    if (msg != '') {
+      return confirm(`<b>${msg}</b>`, 'Confirm changes');
+    }
+    return confirm(`<b>Are you sure?</b>`, 'Confirm changes');
   }
 
   deleteSelectedMedicines(
@@ -268,7 +277,7 @@ export class MedicineStore extends StateService<MedicineState> {
     page: number,
     size: number
   ) {
-    this.confirmDialog().then((confirm: boolean) => {
+    this.confirmDialog('').then((confirm: boolean) => {
       if (confirm) {
         this.setIsLoading(true);
         this.medicineService
@@ -293,7 +302,7 @@ export class MedicineStore extends StateService<MedicineState> {
   }
 
   deleteAllMedicines() {
-    this.confirmDialog().then((confirm: boolean) => {
+    this.confirmDialog('Delete all items?').then((confirm: boolean) => {
       if (confirm) {
         this.setIsLoading(true);
         this.medicineService.deleteAllMedicines().subscribe({
@@ -318,7 +327,7 @@ export class MedicineStore extends StateService<MedicineState> {
   }
 
   deleteMedicine(id: string, page: number, size: number) {
-    this.confirmDialog().then((confirm: boolean) => {
+    this.confirmDialog('').then((confirm: boolean) => {
       if (confirm) {
         this.setIsLoading(true);
         this.medicineService.deleteMedicine(id).subscribe({
@@ -514,5 +523,9 @@ export class MedicineStore extends StateService<MedicineState> {
         console.log(data);
       },
     });
+  }
+
+  setExportData(array: Array<Medicine>) {
+    this.setState({ medicineList: array });
   }
 }

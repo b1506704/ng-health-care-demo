@@ -1,6 +1,10 @@
 export default function brandList(): Array<Object> {
   return [
     {
+      _id: '-1',
+      name: '(NONE)',
+    },
+    {
       _id: '0',
       name: 'Novartis',
     },

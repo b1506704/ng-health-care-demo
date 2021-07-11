@@ -40,7 +40,6 @@
   [columnHidingEnabled]="true"
   [(selectedRowKeys)]="selectedRows"
   [sorting]="false"
-  (onExporting)="onExporting($event)"
   (onOptionChanged)="onOptionChanged($event)"
   (onSelectionChanged)="selectionChangedHandler()"
   (onEditingStart)="onEditingStart()"
@@ -49,6 +48,7 @@
   (onEditCanceled)="onEditCanceled()"
   (onToolbarPreparing)="onToolbarPreparing($event)"
 >
+  <!-- (onExporting)="onExporting($event)" -->
   <!-- [allowColumnResizing]="true"
   [allowColumnReordering]="true" -->
   <!-- (onCellClick)="onCellClick($event)" -->
@@ -87,7 +87,7 @@
 
   <!-- <dxo-filter-row [visible]="true"> </dxo-filter-row> -->
 
-  <dxo-export [enabled]="true" [allowExportSelectedData]="true"></dxo-export>
+  <!-- <dxo-export [enabled]="true" [allowExportSelectedData]="true" [hidden]="true"></dxo-export> -->
   <dxo-grouping
     [contextMenuEnabled]="true"
     expandMode="rowClick"
@@ -114,6 +114,7 @@
   </dxi-column>
 
   <dxi-column dataField="brand" [width]="150">
+    <dxi-validation-rule type="required"></dxi-validation-rule>
     <dxo-lookup [dataSource]="brandList" displayExpr="name" valueExpr="_id">
     </dxo-lookup>
   </dxi-column>
