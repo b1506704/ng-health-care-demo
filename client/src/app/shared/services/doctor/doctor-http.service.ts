@@ -1,7 +1,6 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, throwError } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { Observable } from 'rxjs';
 import { Doctor } from '../../models/doctor';
 
 @Injectable({
@@ -10,50 +9,196 @@ import { Doctor } from '../../models/doctor';
 export class DoctorHttpService {
   constructor(private http: HttpClient) {}
   apiDoctorUrl = 'https://ng-health-care-demo.herokuapp.com/doctors';
+  // apiDoctorUrl = 'http://localhost/doctors';
 
-  fetchDoctor(): Observable<Doctor> {
-    return this.http
-      .get<Doctor>(this.apiDoctorUrl, {
+  fetchDoctor(page: number, size: number): Observable<Doctor> {
+    const params = new HttpParams().set('page', page).set('size', size);
+    console.log(params.toString());
+    return this.http.get<Doctor>(this.apiDoctorUrl, {
+      params: params,
+      reportProgress: true,
+      observe: 'body',
+    });
+  }
+
+  searchDoctorByName(
+    value: string,
+    page: number,
+    size: number
+  ): Observable<Doctor> {
+    const params = new HttpParams()
+      .set('value', value)
+      .set('page', page)
+      .set('size', size);
+    console.log(params.toString());
+    return this.http.post<Doctor>(
+      this.apiDoctorUrl + '/searchByName',
+      {},
+      {
+        params: params,
         reportProgress: true,
         observe: 'body',
-      })
-      .pipe(catchError(this.handleError));
+      }
+    );
+  }
+
+  filterDoctorByPrice(
+    criteria: string,
+    value: number,
+    page: number,
+    size: number
+  ): Observable<Doctor> {
+    const params = new HttpParams()
+      .set('criteria', criteria)
+      .set('value', value)
+      .set('page', page)
+      .set('size', size);
+    console.log(params.toString());
+    return this.http.post<Doctor>(
+      this.apiDoctorUrl,
+      {},
+      {
+        params: params,
+        reportProgress: true,
+        observe: 'body',
+      }
+    );
+  }
+
+  filterDoctorByCategory(
+    value: string,
+    page: number,
+    size: number
+  ): Observable<Doctor> {
+    const params = new HttpParams()
+      .set('value', value)
+      .set('page', page)
+      .set('size', size);
+    console.log(params.toString());
+    return this.http.post<Doctor>(
+      this.apiDoctorUrl + '/filterByCategory',
+      {},
+      {
+        params: params,
+        reportProgress: true,
+        observe: 'body',
+      }
+    );
+  }
+
+  sortDoctorByName(
+    value: string,
+    page: number,
+    size: number
+  ): Observable<Doctor> {
+    const params = new HttpParams()
+      .set('value', value)
+      .set('page', page)
+      .set('size', size);
+    console.log(params.toString());
+    return this.http.post<Doctor>(
+      this.apiDoctorUrl + '/sortByName',
+      {},
+      {
+        params: params,
+        reportProgress: true,
+        observe: 'body',
+      }
+    );
+  }
+
+  sortDoctorByPrice(
+    value: string,
+    page: number,
+    size: number
+  ): Observable<Doctor> {
+    const params = new HttpParams()
+      .set('value', value)
+      .set('page', page)
+      .set('size', size);
+    console.log(params.toString());
+    return this.http.post<Doctor>(
+      this.apiDoctorUrl + '/sortByPrice',
+      {},
+      {
+        params: params,
+        reportProgress: true,
+        observe: 'body',
+      }
+    );
   }
 
   uploadDoctor(doctor: Doctor): Observable<Doctor> {
-    return this.http
-      .post<Doctor>(this.apiDoctorUrl, doctor, {
-        reportProgress: true,
-        observe: 'body',
-      })
-      .pipe(catchError(this.handleError));
+    return this.http.post<Doctor>(this.apiDoctorUrl, doctor, {
+      reportProgress: true,
+      observe: 'body',
+    });
   }
 
-  deleteDoctor(doctor: Doctor): Observable<ArrayBuffer> {
-    return this.http
-      .delete<ArrayBuffer>(this.apiDoctorUrl + `/${doctor.id}`, {
+  generateRandomDoctor(): Observable<Doctor> {
+    return this.http.post<Doctor>(
+      this.apiDoctorUrl + '/randomDoctor',
+      {},
+      {
         reportProgress: true,
         observe: 'body',
-      })
-      .pipe(catchError(this.handleError));
+      }
+    );
   }
 
-  updateDoctor(doctor: Doctor): Observable<Doctor> {
-    return this.http
-      .post<Doctor>(this.apiDoctorUrl + `/updateDoctor/${doctor.id}`, doctor, {
+  deleteAllDoctors(): Observable<Doctor> {
+    return this.http.post<Doctor>(this.apiDoctorUrl + '/deleteAll',{}, {
+      reportProgress: true,
+      observe: 'body',
+    });
+  }
+
+  deleteDoctor(id: string): Observable<ArrayBuffer> {
+    return this.http.delete<ArrayBuffer>(this.apiDoctorUrl + `/${id}`, {
+      reportProgress: true,
+      observe: 'body',
+    });
+  }
+
+  getDoctor(id: string): Observable<Doctor> {
+    return this.http.get<Doctor>(this.apiDoctorUrl + `/${id}`, {
+      reportProgress: true,
+      observe: 'body',
+    });
+  }
+
+  deleteSelectedDoctors(
+    selectedItems: Array<String>
+  ): Observable<Array<String>> {
+    return this.http.post<Array<String>>(
+      this.apiDoctorUrl + '/batch',
+      selectedItems,
+      {
         reportProgress: true,
         observe: 'body',
-      })
-      .pipe(catchError(this.handleError));
+      }
+    );
   }
-  handleError(error: any) {
-    let errorMessage = '';
-    if (error.error instanceof ErrorEvent) {
-      errorMessage = error.error.message;
-    } else {
-      errorMessage = `Error Code: ${error.status}\nMessage: ${error.message}`;
-    }
-    console.log(errorMessage);
-    return throwError(errorMessage);
+
+  updateDoctor(doctor: Doctor, key: string): Observable<Doctor> {
+    return this.http.post<Doctor>(
+      this.apiDoctorUrl + `/updateDoctor/${key}`,
+      doctor,
+      {
+        reportProgress: true,
+        observe: 'body',
+      }
+    );
+  }
+
+  fetchAll(): Observable<Doctor> {
+    return this.http.post<Doctor>(
+      this.apiDoctorUrl + `/fetchAll`,
+      {},
+      {
+        reportProgress: true,
+        observe: 'body',
+      }
+    );
   }
 }

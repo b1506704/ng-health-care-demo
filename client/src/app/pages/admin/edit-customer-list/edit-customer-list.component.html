@@ -1,1 +1,151 @@
-<p>doctor-list works!</p>
+<dx-toolbar [ngStyle]="{ paddingLeft: '25px', paddingRight: '25px' }">
+  <dxi-item [location]="'before'" [text]="'Customer Mananagement'"> </dxi-item>
+  <dxi-item
+    location="center"
+    locateInMenu="auto"
+    [visible]="isSelectInfoVisible"
+  >
+    <div *dxTemplate>
+      <div style="font-size: small">{{ selectInfoText }}</div>
+    </div>
+  </dxi-item>
+  <dxi-item location="center" locateInMenu="auto">
+    <dx-button
+      icon="trash"
+      type="danger"
+      [visible]="isSelectInfoVisible"
+      hint="Delete current selected items"
+      (onClick)="deleteSelectedItems()"
+    >
+    </dx-button>
+  </dxi-item>
+  <dxi-item location="after" locateInMenu="auto">
+    <dx-button
+      icon="arrowright"
+      type="outline"
+      text="Doctor Management"
+      hint="Navigate to Edit Doctor"
+      (onClick)="navigateToEditDoctor()"
+    >
+    </dx-button>
+  </dxi-item>
+</dx-toolbar>
+<dx-data-grid
+  id="gridContainer"
+  [dataSource]="customerList"
+  keyExpr="_id"
+  [showBorders]="true"
+  [allowColumnReordering]="true"
+  [rowAlternationEnabled]="true"
+  [columnHidingEnabled]="true"
+  [(selectedRowKeys)]="selectedRows"
+  [sorting]="false"
+  (onOptionChanged)="onOptionChanged($event)"
+  (onSelectionChanged)="selectionChangedHandler()"
+  (onEditingStart)="onEditingStart()"
+  (onInitNewRow)="onInitNewRow()"
+  (onSaved)="onSaved($event)"
+  (onEditCanceled)="onEditCanceled()"
+  (onToolbarPreparing)="onToolbarPreparing($event)"
+>
+  <!-- (onExporting)="onExporting($event)" -->
+  <!-- [allowColumnResizing]="true"
+      [allowColumnReordering]="true" -->
+  <!-- (onCellClick)="onCellClick($event)" -->
+  <!-- [focusedRowEnabled]="true" -->
+  <!-- (onFocusedRowChanged)="onFocusedRowChanged($event)" -->
+  <!-- (onFocusedRowChanging)="onFocusedRowChanging($event)"
+      [(autoNavigateToFocusedRow)]="autoNavigateToFocusedRow"
+      [(focusedRowKey)]="focusedRowKey" -->
+  <!-- (onRowInserted)="$event.component.navigateToRow($event.key)" -->
+  <!-- [refreshMode]="'full'" -->
+  <dxo-editing
+    [allowUpdating]="true"
+    [allowDeleting]="true"
+    [allowAdding]="true"
+    [useIcons]="true"
+    [selectTextOnEditStart]="true"
+  >
+  </dxo-editing>
+  <dxo-selection
+    [selectAllMode]="'page'"
+    [showCheckBoxesMode]="'onClick'"
+    mode="multiple"
+  ></dxo-selection>
+
+  <!-- <dxo-scrolling [mode]="scrollingMode" [rowRenderingMode]="'virtual'"></dxo-scrolling> -->
+
+  <!-- <dxo-header-filter [visible]="true"> </dxo-header-filter> -->
+  <!-- enable to save state of data grid to local storage -->
+  <!-- <dxo-state-storing
+        [enabled]="true"
+        type="localStorage"
+        storageKey="storage"
+      ></dxo-state-storing> -->
+
+  <!-- <dxo-filter-panel [visible]="true"> </dxo-filter-panel> -->
+
+  <!-- <dxo-filter-row [visible]="true"> </dxo-filter-row> -->
+
+  <!-- <dxo-export [enabled]="true" [allowExportSelectedData]="true" [hidden]="true"></dxo-export> -->
+  <dxo-grouping
+    [contextMenuEnabled]="true"
+    expandMode="rowClick"
+  ></dxo-grouping>
+  <dxo-column-chooser [enabled]="true" mode="select"></dxo-column-chooser>
+  <dxo-paging [pageSize]="pageSize"> </dxo-paging>
+
+  <dxo-pager
+    [visible]="true"
+    [displayMode]="'adaptive'"
+    [allowedPageSizes]="allowedPageSizes"
+    [showPageSizeSelector]="true"
+    [showNavigationButtons]="true"
+  >
+  </dxo-pager>
+  <dxo-load-panel [enabled]="true"></dxo-load-panel>
+
+  <dxi-column dataField="userName" [width]="100">
+    <dxi-validation-rule type="required"></dxi-validation-rule>
+  </dxi-column>
+
+  <dxi-column dataField="fullName">
+    <dxi-validation-rule type="required"></dxi-validation-rule>
+  </dxi-column>
+
+  <dxi-column dataField="age" dataType="number" [width]="60">
+    <dxi-validation-rule type="required"></dxi-validation-rule>
+  </dxi-column>
+
+  <dxi-column dataField="height" dataType="number" [width]="60">
+    <dxi-validation-rule type="required"></dxi-validation-rule>
+  </dxi-column>
+
+  <dxi-column dataField="weight" dataType="number" [width]="60">
+    <dxi-validation-rule type="required"></dxi-validation-rule>
+  </dxi-column>
+
+  <dxi-column dataField="bloodType" [width]="65" [caption]="'B.Type'">
+    <dxi-validation-rule type="required"></dxi-validation-rule>
+    <dxo-lookup [dataSource]="bloodTypeList" displayExpr="name" valueExpr="_id">
+    </dxo-lookup>
+  </dxi-column>
+
+  <dxi-column dataField="gender" [width]="75">
+    <dxi-validation-rule type="required"></dxi-validation-rule>
+    <dxo-lookup
+      [dataSource]="[{ name: 'Male' }, { name: 'Female' }]"
+      displayExpr="name"
+      valueExpr="name"
+    >
+    </dxo-lookup>
+  </dxi-column>
+  <dxi-column dataField="occupation" [width]="100">
+    <dxi-validation-rule type="required"></dxi-validation-rule>
+  </dxi-column>
+
+  <dxi-column dataField="address"> </dxi-column>
+  <div *dxTemplate="let data of 'totalCustomerCount'">
+    <span>Total Customer: {{ customerList.length }} </span>
+  </div>
+</dx-data-grid>

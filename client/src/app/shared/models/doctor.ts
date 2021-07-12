@@ -1,3 +1,10 @@
 export interface Doctor {
-    id: String
+  _id: String;
+  userName: String;
+  fullName: String;
+  age: Number;
+  gender: String;
+  department: String;
+  description: String;
+  role: String;
 }

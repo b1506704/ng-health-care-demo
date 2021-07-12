@@ -1,4 +1,5 @@
 export interface Customer {
+  _id: String;
   userName: String;
   fullName: String;
   age: Number;
