@@ -26,7 +26,7 @@ const routes: Routes = [
       ),
   },
   {
-    path: 'medical_list',
+    path: 'medicine_list',
     loadChildren: () =>
       import('./pages/customer/medicine-list/medicine-list.module').then(
         (m) => m.MedicineListModule

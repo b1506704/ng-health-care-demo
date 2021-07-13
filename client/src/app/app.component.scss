@@ -1,7 +1,77 @@
 :host {
   @import "../themes/generated/variables.base.scss";
-  background-color: darken($base-bg, 5.00);
+  background-color: darken($base-bg, 5);
   display: flex;
   height: 100%;
   width: 100%;
+}
+.overlay {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+  background-color: rgba(0, 0, 0, 0.103);
+  z-index: 999;
+  backdrop-filter: blur(5px);
+  position: absolute;
+}
+.bar_loader,
+.bar_loader:before,
+.bar_loader:after {
+  background: #987c7c;
+  -webkit-animation: load1 1s infinite ease-in-out;
+  animation: load1 1s infinite ease-in-out;
+  width: 1em;
+  height: 4em;
+}
+.bar_loader {
+  color: #e4cece;
+  text-indent: -9999em;
+  margin: 88px auto;
+  position: relative;
+  font-size: 11px;
+  -webkit-transform: translateZ(0);
+  -ms-transform: translateZ(0);
+  transform: translateZ(0);
+  -webkit-animation-delay: -0.16s;
+  animation-delay: -0.16s;
+}
+.bar_loader:before,
+.bar_loader:after {
+  position: absolute;
+  top: 0;
+  content: "";
+}
+.bar_loader:before {
+  left: -1.5em;
+  -webkit-animation-delay: -0.32s;
+  animation-delay: -0.32s;
+}
+.bar_loader:after {
+  left: 1.5em;
+}
+@-webkit-keyframes load1 {
+  0%,
+  80%,
+  100% {
+    box-shadow: 0 0;
+    height: 4em;
+  }
+  40% {
+    box-shadow: 0 -2em;
+    height: 5em;
+  }
+}
+@keyframes load1 {
+  0%,
+  80%,
+  100% {
+    box-shadow: 0 0;
+    height: 4em;
+  }
+  40% {
+    box-shadow: 0 -2em;
+    height: 5em;
+  }
 }

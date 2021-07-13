@@ -1,7 +1,6 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, throwError } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { Observable } from 'rxjs';
 import { Room } from '../../models/room';
 
 @Injectable({
@@ -10,51 +9,196 @@ import { Room } from '../../models/room';
 export class RoomHttpService {
   constructor(private http: HttpClient) {}
   apiRoomUrl = 'https://ng-health-care-demo.herokuapp.com/rooms';
+  // apiRoomUrl = 'http://localhost/rooms';
 
-  fetchRoom(): Observable<Room> {
-    return this.http
-      .get<Room>(this.apiRoomUrl, {
+  fetchRoom(page: number, size: number): Observable<Room> {
+    const params = new HttpParams().set('page', page).set('size', size);
+    console.log(params.toString());
+    return this.http.get<Room>(this.apiRoomUrl, {
+      params: params,
+      reportProgress: true,
+      observe: 'body',
+    });
+  }
+
+  searchRoomByName(
+    value: string,
+    page: number,
+    size: number
+  ): Observable<Room> {
+    const params = new HttpParams()
+      .set('value', value)
+      .set('page', page)
+      .set('size', size);
+    console.log(params.toString());
+    return this.http.post<Room>(
+      this.apiRoomUrl + '/searchByName',
+      {},
+      {
+        params: params,
         reportProgress: true,
         observe: 'body',
-      })
-      .pipe(catchError(this.handleError));
+      }
+    );
+  }
+
+  filterRoomByPrice(
+    criteria: string,
+    value: number,
+    page: number,
+    size: number
+  ): Observable<Room> {
+    const params = new HttpParams()
+      .set('criteria', criteria)
+      .set('value', value)
+      .set('page', page)
+      .set('size', size);
+    console.log(params.toString());
+    return this.http.post<Room>(
+      this.apiRoomUrl,
+      {},
+      {
+        params: params,
+        reportProgress: true,
+        observe: 'body',
+      }
+    );
+  }
+
+  filterRoomByCategory(
+    value: string,
+    page: number,
+    size: number
+  ): Observable<Room> {
+    const params = new HttpParams()
+      .set('value', value)
+      .set('page', page)
+      .set('size', size);
+    console.log(params.toString());
+    return this.http.post<Room>(
+      this.apiRoomUrl + '/filterByCategory',
+      {},
+      {
+        params: params,
+        reportProgress: true,
+        observe: 'body',
+      }
+    );
+  }
+
+  sortRoomByName(
+    value: string,
+    page: number,
+    size: number
+  ): Observable<Room> {
+    const params = new HttpParams()
+      .set('value', value)
+      .set('page', page)
+      .set('size', size);
+    console.log(params.toString());
+    return this.http.post<Room>(
+      this.apiRoomUrl + '/sortByName',
+      {},
+      {
+        params: params,
+        reportProgress: true,
+        observe: 'body',
+      }
+    );
+  }
+
+  sortRoomByPrice(
+    value: string,
+    page: number,
+    size: number
+  ): Observable<Room> {
+    const params = new HttpParams()
+      .set('value', value)
+      .set('page', page)
+      .set('size', size);
+    console.log(params.toString());
+    return this.http.post<Room>(
+      this.apiRoomUrl + '/sortByPrice',
+      {},
+      {
+        params: params,
+        reportProgress: true,
+        observe: 'body',
+      }
+    );
   }
 
   uploadRoom(room: Room): Observable<Room> {
-    return this.http
-      .post<Room>(this.apiRoomUrl, room, {
-        reportProgress: true,
-        observe: 'body',
-      })
-      .pipe(catchError(this.handleError));
+    return this.http.post<Room>(this.apiRoomUrl, room, {
+      reportProgress: true,
+      observe: 'body',
+    });
   }
 
-  deleteRoom(room: Room): Observable<ArrayBuffer> {
-    return this.http
-      .delete<ArrayBuffer>(this.apiRoomUrl + `/${room.id}`, {
+  generateRandomRoom(): Observable<Room> {
+    return this.http.post<Room>(
+      this.apiRoomUrl + '/randomRoom',
+      {},
+      {
         reportProgress: true,
         observe: 'body',
-      })
-      .pipe(catchError(this.handleError));
+      }
+    );
   }
 
-  updateRoom(room: Room): Observable<Room> {
-    return this.http
-      .post<Room>(this.apiRoomUrl + `/updateRoom/${room.id}`, room, {
+  deleteAllRooms(): Observable<Room> {
+    return this.http.post<Room>(this.apiRoomUrl + '/deleteAll',{}, {
+      reportProgress: true,
+      observe: 'body',
+    });
+  }
+
+  deleteRoom(id: string): Observable<ArrayBuffer> {
+    return this.http.delete<ArrayBuffer>(this.apiRoomUrl + `/${id}`, {
+      reportProgress: true,
+      observe: 'body',
+    });
+  }
+
+  getRoom(id: string): Observable<Room> {
+    return this.http.get<Room>(this.apiRoomUrl + `/${id}`, {
+      reportProgress: true,
+      observe: 'body',
+    });
+  }
+
+  deleteSelectedRooms(
+    selectedItems: Array<String>
+  ): Observable<Array<String>> {
+    return this.http.post<Array<String>>(
+      this.apiRoomUrl + '/batch',
+      selectedItems,
+      {
         reportProgress: true,
         observe: 'body',
-      })
-      .pipe(catchError(this.handleError));
+      }
+    );
   }
 
-  handleError(error: any) {
-    let errorMessage = '';
-    if (error.error instanceof ErrorEvent) {
-      errorMessage = error.error.message;
-    } else {
-      errorMessage = `Error Code: ${error.status}\nMessage: ${error.message}`;
-    }
-    console.log(errorMessage);
-    return throwError(errorMessage);
+  updateRoom(room: Room, key: string): Observable<Room> {
+    return this.http.post<Room>(
+      this.apiRoomUrl + `/updateRoom/${key}`,
+      room,
+      {
+        reportProgress: true,
+        observe: 'body',
+      }
+    );
+  }
+
+  fetchAll(): Observable<Room> {
+    return this.http.post<Room>(
+      this.apiRoomUrl + `/fetchAll`,
+      {},
+      {
+        reportProgress: true,
+        observe: 'body',
+      }
+    );
   }
 }

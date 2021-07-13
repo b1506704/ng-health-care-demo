@@ -1,3 +1,7 @@
 <app-side-nav-outer-toolbar title="{{ appInfo.title }}">
-  <router-outlet></router-outlet>
+  <router-outlet>
+    <div class="overlay" *ngIf="lazyLoading">
+      <div class="bar_loader"></div>
+    </div>
+  </router-outlet>
 </app-side-nav-outer-toolbar>
