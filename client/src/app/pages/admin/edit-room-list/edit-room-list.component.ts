@@ -684,7 +684,7 @@ export class EditRoomListComponent implements OnInit, OnDestroy {
   }
 
   navigateToEditBill() {
-    this.router.navigate(['/edit_bill']);
+    this.router.navigate(['/edit_bill_list']);
   }
 
   sourceDataListener() {
@@ -707,5 +707,6 @@ export class EditRoomListComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.sourceDataListener().unsubscribe();
     this.currentPageListener().unsubscribe();
+    this.onRefresh();
   }
 }

@@ -5,7 +5,10 @@
   height: 100%;
   width: 100%;
 }
-
+.menu {
+  background-color: rgba(3, 2, 0, 0.144);
+  backdrop-filter: blur(5px);
+}
 .layout-header {
   z-index: 1501;
 }
@@ -19,10 +22,12 @@
   flex-grow: 1;
 }
 ::ng-deep .dx-toast-custom {
-  background-color: rgba(0, 0, 0, 0.322);
-  color: #fff;
-  backdrop-filter: blur(5px);
-  text-shadow: $neon-light;
+  background-color: rgb(210, 154, 255);
+  color: rgb(0, 0, 0);
+  // backdrop-filter: blur(5px);
+  // text-shadow: $neon-light;
+  font-weight: bold;
+  z-index: 999;
   display: flex;
   width: auto;
   justify-content: center;

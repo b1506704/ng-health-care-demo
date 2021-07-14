@@ -5,7 +5,7 @@ export class AppInfoService {
   constructor() {}
 
   public get title() {
-    return 'Ng Health Care Demo';
+    return 'Tesla Clinic';
   }
 
   public get currentYear() {

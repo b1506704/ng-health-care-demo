@@ -703,5 +703,6 @@ export class EditDoctorListComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.sourceDataListener().unsubscribe();
     this.currentPageListener().unsubscribe();
+    this.onRefresh();
   }
 }

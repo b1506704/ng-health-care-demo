@@ -706,5 +706,6 @@ export class EditCustomerListComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.sourceDataListener().unsubscribe();
     this.currentPageListener().unsubscribe();
+    this.onRefresh();
   }
 }

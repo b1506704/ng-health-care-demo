@@ -17,6 +17,7 @@ const routes: Routes = [
       import('./pages/customer/bill-list/bill-list.module').then(
         (m) => m.BillListModule
       ),
+    canActivate: [AuthGuardService],
   },
   {
     path: 'doctor_list',
@@ -111,6 +112,7 @@ const routes: Routes = [
       import('./pages/admin/admin-home/admin-home.module').then(
         (m) => m.AdminHomeModule
       ),
+    canActivate: [AuthGuardService],
   },
   {
     path: 'edit_user_list',
@@ -198,11 +200,11 @@ const routes: Routes = [
         (m) => m.SignUpModule
       ),
   },
-  {
-    path: '',
-    pathMatch: 'full',
-    redirectTo: 'doctor_home',
-  },
+  // {
+  //   path: '',
+  //   pathMatch: 'full',
+  //   redirectTo: 'doctor_home',
+  // },
   {
     path: '**',
     redirectTo: 'not_found',

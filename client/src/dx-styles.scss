@@ -9,6 +9,11 @@ body {
   box-sizing: border-box;
 }
 
+@font-face {
+  font-family: Hero;
+  src: url("../src/assets/fonts/SVN-Birth-Of-A-Hero.ttf");
+  font-weight: bold;
+}
 .content {
   line-height: 1.5;
 

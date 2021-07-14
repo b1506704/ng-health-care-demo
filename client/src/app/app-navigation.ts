@@ -113,12 +113,12 @@ export const navigationAdmin = [
   {
     text: 'Edit Room',
     path: '/edit_room_list',
-    icon: 'event',
+    icon: 'toolbox',
   },
   {
     text: 'Edit Bill',
     path: '/edit_bill_list',
-    icon: 'card',
+    icon: 'cart',
   },
   {
     text: 'Modify Theme',

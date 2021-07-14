@@ -1,11 +1,12 @@
 import mongoose from "mongoose";
-
+import mongoosePaginate from "mongoose-paginate-v2";
 const scheduleSchema = mongoose.Schema({
   doctorID: { type: String, require: true },
-  startDate: { type: String },
-  endDate: { type: String },
-});
-
+  doctorName: { type: String},
+  startDate: { type: Date },
+  endDate: { type: Date },
+}, { timestamps: true });
+scheduleSchema.plugin(mongoosePaginate);
 var Schedule = mongoose.model("Schedule", scheduleSchema);
 
 export default Schedule;

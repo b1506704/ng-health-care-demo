@@ -62,21 +62,47 @@ export class SideNavigationMenuComponent
   items: Array<any>;
 
   renderItemMenu() {
-    if (!this._items) {
-      this._items = navigationDoctor.map((item) => {
-        if (item.path && !/^\//.test(item.path)) {
-          item.path = `/${item.path}`;
-        }
-        return { ...item, expanded: !this._compactMode };
-      });
-    }
+    this.store.$currentRole.subscribe((data: string) => {
+      switch (data.trim().toLocaleLowerCase()) {
+        case 'customer':
+          this._items = navigationCustomer.map((item) => {
+            if (item.path && !/^\//.test(item.path)) {
+              item.path = `/${item.path}`;
+            }
+            return { ...item, expanded: !this._compactMode };
+          });
+          break;
+        case 'doctor':
+          this._items = navigationDoctor.map((item) => {
+            if (item.path && !/^\//.test(item.path)) {
+              item.path = `/${item.path}`;
+            }
+            return { ...item, expanded: !this._compactMode };
+          });
+          break;
+        case 'admin':
+          this._items = navigationAdmin.map((item) => {
+            if (item.path && !/^\//.test(item.path)) {
+              item.path = `/${item.path}`;
+            }
+            return { ...item, expanded: !this._compactMode };
+          });
+          break;
+        default:
+          this._items = navigationDoctor.map((item) => {
+            if (item.path && !/^\//.test(item.path)) {
+              item.path = `/${item.path}`;
+            }
+            return { ...item, expanded: !this._compactMode };
+          });
+          break;
+      }
+    });
     this.items = this._items;
   }
 
   userRoleListener() {
     this.store.$currentRole.subscribe((data: string) => {
-      // console.log(data);
-      // not switch view?
       if (!this.menu.instance) {
         return;
       }
@@ -104,17 +130,6 @@ export class SideNavigationMenuComponent
           );
           break;
         case 'doctor':
-          this.menu.instance.option(
-            'items',
-            navigationDoctor.map((item) => {
-              if (item.path && !/^\//.test(item.path)) {
-                item.path = `/${item.path}`;
-              }
-              return { ...item, expanded: !this._compactMode };
-            })
-          );
-          break;
-        case undefined:
           this.menu.instance.option(
             'items',
             navigationDoctor.map((item) => {
@@ -160,8 +175,8 @@ export class SideNavigationMenuComponent
   }
 
   ngOnInit(): void {
-    this.renderItemMenu();
     this.userRoleListener();
+    this.renderItemMenu();
   }
 
   ngAfterViewInit() {

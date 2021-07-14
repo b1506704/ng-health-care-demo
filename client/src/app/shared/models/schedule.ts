@@ -1,3 +1,7 @@
 export interface Schedule {
-    id: String
+    _id: String,
+    doctorID: String,
+    doctorName: String,
+    startDate: String,
+    endDate: String,
 }

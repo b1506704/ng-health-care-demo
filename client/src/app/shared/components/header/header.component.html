@@ -1,4 +1,4 @@
-<header>
+<header class="trans-menu">
   <dx-toolbar class="header-toolbar">
     <dxi-item
       *ngIf="menuToggleEnabled"
@@ -12,12 +12,21 @@
       }"
     >
     </dxi-item>
-    <dxi-item
-      location="before"
-      cssClass="header-title"
-      *ngIf="title"
-      [text]="title"
-    >
+    <dxi-item location="before">
+      <!-- widget="dxButton"
+      [options]="{
+        icon: 'like',
+        type: 'normal',
+        onClick: navigateHome
+      }" -->
+      <div *dxTemplate="let data of 'item'">
+        <dx-button icon="like" type="normal"> </dx-button>
+      </div>
+    </dxi-item>
+    <dxi-item location="before" class="neon-header" *ngIf="title">
+      <div *dxTemplate>
+        <div class="neon-header">{{ title }}</div>
+      </div>
     </dxi-item>
     <dxi-item location="center">
       <div *dxTemplate="let data of 'item'">

@@ -36,7 +36,7 @@ export class SideNavOuterToolbarComponent implements OnInit {
   @Input()
   title!: string;
 
-  menuMode = 'shrink';
+  menuMode = 'overlap';
   menuRevealMode = 'expand';
   minMenuSize = 0;
   shaderEnabled = false;
@@ -61,7 +61,7 @@ export class SideNavOuterToolbarComponent implements OnInit {
     const isXSmall = this.screen.sizes['screen-x-small'];
     const isLarge = this.screen.sizes['screen-large'];
 
-    this.menuMode = isLarge ? 'shrink' : 'overlap';
+    this.menuMode = isLarge ? 'overlap' : 'overlap';
     this.menuRevealMode = isXSmall ? 'slide' : 'expand';
     this.minMenuSize = isXSmall ? 0 : 60;
     this.shaderEnabled = !isLarge;
