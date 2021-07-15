@@ -24,6 +24,11 @@ export const navigationCustomer = [
     ],
   },
   {
+    text: 'Doctor Schedule',
+    icon: 'event',
+    path: '/doctor_schedule',
+  },
+  {
     text: 'Heath Care',
     icon: 'like',
     items: [
@@ -80,6 +85,11 @@ export const navigationDoctor = [
       },
     ],
   },
+  {
+    text: 'Schedule List',
+    icon: 'event',
+    path: '/schedule_list',
+  },
 ];
 export const navigationAdmin = [
   {
@@ -109,7 +119,7 @@ export const navigationAdmin = [
     text: 'Edit Schedule',
     path: '/edit_schedule',
     icon: 'event',
-  },  
+  },
   {
     text: 'Edit Room',
     path: '/edit_room_list',

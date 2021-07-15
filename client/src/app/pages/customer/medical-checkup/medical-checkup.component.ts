@@ -1,6 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { Medicine } from 'src/app/shared/models/medicine';
-import { MedicineStore } from 'src/app/shared/services/medicine/medicine-store.service';
 
 @Component({
   selector: 'app-medical-checkup',
@@ -8,12 +6,8 @@ import { MedicineStore } from 'src/app/shared/services/medicine/medicine-store.s
   styleUrls: ['./medical-checkup.component.scss'],
 })
 export class MedicalCheckupComponent implements OnInit {
-  medicineList!: Array<Medicine>;
-  constructor(private medicineStore: MedicineStore) {}
+  constructor() {}
 
   ngOnInit(): void {
-    this.medicineStore.$medicineList.subscribe((data: any) => {
-      this.medicineList = data;
-    });
   }
 }

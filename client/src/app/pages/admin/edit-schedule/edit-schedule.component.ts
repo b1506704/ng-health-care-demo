@@ -166,7 +166,7 @@ export class EditScheduleComponent implements OnInit, OnDestroy {
           type: 'normal',
           icon: 'card',
           disabled: true,
-          hint: 'Sort by date',
+          hint: 'Sort by room',
         },
       },
       {
@@ -183,7 +183,7 @@ export class EditScheduleComponent implements OnInit, OnDestroy {
             { _id: '1', name: 'DESC' },
           ],
           valueExpr: 'name',
-          placeholder: 'Sort by date',
+          placeholder: 'Sort by room',
           displayExpr: 'name',
           onValueChanged: this.onSortValueChanged.bind(this),
         },

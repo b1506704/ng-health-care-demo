@@ -6,7 +6,7 @@
   width="100%"
   [showNavButtons]="true"
   [showIndicator]="true"
-  [selectedItem]="currentItem"
+  (onSelectionChanged)="onSelectionChanged($event)"
 >
   <div *dxTemplate="let galleryItem of 'item'">
     <div

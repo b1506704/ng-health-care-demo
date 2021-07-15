@@ -50,6 +50,14 @@ const routes: Routes = [
     canActivate: [AuthGuardService],
   },
   {
+    path: 'doctor_schedule',
+    loadChildren: () =>
+      import(
+        './pages/customer/schedule-list/schedule-list.module'
+      ).then((m) => m.ScheduleListModule),
+    canActivate: [AuthGuardService],
+  },
+  {
     path: 'prescription_list',
     loadChildren: () =>
       import(
@@ -103,6 +111,14 @@ const routes: Routes = [
       import(
         './pages/doctor/edit-prescription-list/edit-prescription-list.module'
       ).then((m) => m.EditPrescriptionListModule),
+    canActivate: [AuthGuardService],
+  },
+  {
+    path: 'schedule_list',
+    loadChildren: () =>
+      import(
+        './pages/doctor/schedule-list/schedule-list.module'
+      ).then((m) => m.ScheduleListModule),
     canActivate: [AuthGuardService],
   },
   // admin route

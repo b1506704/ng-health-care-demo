@@ -5,7 +5,7 @@
       type="outline"
       text="Doctor List"
       hint="Navigate to Doctor List"
-      (onClick)="(navigateToDoctor)"
+      (onClick)="navigateToDoctor()"
     >
     </dx-button>
   </dxi-item>
@@ -20,6 +20,8 @@
   }"
 >
   <dxi-item widget="dxTextBox" [options]="searchBoxOptions" location="before">
+  </dxi-item>
+  <dxi-item widget="dxButton" [options]="refreshButtonOptions" location="after">
   </dxi-item>
   <dxi-item [locateInMenu]="'auto'" [location]="'after'">
     <dx-button icon="filter" type="normal" [disabled]="true"> </dx-button>
@@ -42,14 +44,15 @@
 </dx-toolbar>
 <dx-scroll-view
   [direction]="'vertical'"
-  [bounceEnabled]="pullDown"
   [pulledDownText]="'...Fetching'"
   [showScrollbar]="true"
   [reachBottomText]="'Loading...'"
   [scrollByContent]="true"
   [scrollByThumb]="true"
+  [height]="'90vh'"
   (onPullDown)="updateTopContent($event)"
   (onReachBottom)="updateBottomContent($event)"
+  [bounceEnabled]="pullDown"
 >
   <ng-container *ngIf="medicineList">
     <div class="card-container">
@@ -72,7 +75,6 @@
               type="outline"
               text="Detail"
               hint="Click to see medicine detail"
-              (onClick)="(navigateToDoctor)"
             ></dx-button>
           </div>
         </ng-container>
@@ -80,3 +82,9 @@
     </div>
   </ng-container>
 </dx-scroll-view>
+<dx-speed-dial-action
+    icon="arrowup"
+    label=""
+    [index]="1"
+    (onClick)="scrollTop()">
+</dx-speed-dial-action>

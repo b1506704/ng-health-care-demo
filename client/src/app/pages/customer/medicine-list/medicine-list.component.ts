@@ -1,7 +1,6 @@
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { Medicine } from 'src/app/shared/models/medicine';
-import { MedicineHttpService } from 'src/app/shared/services/medicine/medicine-http.service';
 import { MedicineStore } from 'src/app/shared/services/medicine/medicine-store.service';
 import { StoreService } from 'src/app/shared/services/store.service';
 import brandList from 'src/app/shared/services/medicine/mock-brand';
@@ -17,11 +16,10 @@ export class MedicineListComponent implements OnInit, OnDestroy {
   scrollView: DxScrollViewComponent;
   medicineList!: Array<Medicine>;
   brandList: Array<Object> = brandList();
-  pageSize: number = 5;
-  allowedPageSizes: Array<number | string> = [5, 10, 15];
+  // item loaded per pull down event
+  pageSize: number = 10;
   pullDown = false;
   updateContentTimer: any;
-  scrollingMode: string = 'standard';
   // standard | virtual | infinite
   currentIndexFromServer: number;
   isSearchingByName: boolean;
@@ -34,6 +32,7 @@ export class MedicineListComponent implements OnInit, OnDestroy {
   timeout: any;
   currentSearchByNameValue: string;
   currentSortByPriceValue: string;
+
   searchBoxOptions: any = {
     valueChangeEvent: 'keyup',
     showClearButton: true,
@@ -53,10 +52,8 @@ export class MedicineListComponent implements OnInit, OnDestroy {
   filterSelectBoxOptions: any = {
     items: this.brandList,
     valueExpr: '_id',
-    // searchExpr: 'name',
     displayExpr: 'name',
     placeholder: 'Filter with brand',
-    // searchEnabled: true,
     onValueChanged: this.onFilterChange.bind(this),
   };
 
@@ -78,27 +75,31 @@ export class MedicineListComponent implements OnInit, OnDestroy {
   constructor(
     private medicineStore: MedicineStore,
     private store: StoreService,
-    private medicineHTTP: MedicineHttpService,
     private router: Router
   ) {}
 
-  ngAfterViewInit() {
-    this.scrollView.instance.option('onReachBottom', this.updateBottomContent);
-  }
-  valueChanged = (data: any) => {
-    this.scrollView.instance.option(
-      'onReachBottom',
-      data.value ? this.updateBottomContent : null
-    );
-  };
-
   updateContent = (args: any, eventName: any) => {
+    const editorMode = this.checkEditorMode();
+    const currentIndex = this.currentIndexFromServer;
     if (this.updateContentTimer) clearTimeout(this.updateContentTimer);
     this.updateContentTimer = setTimeout(() => {
-      if (eventName == 'PullDown') {
-        this.paginatePureData(this.currentIndexFromServer + 1);
-      } else {
-        this.paginatePureData(this.currentIndexFromServer + 1);
+      if (this.medicineList.length) {
+        switch (editorMode) {
+          case 'NORMAL':
+            this.paginatePureData(currentIndex + 1);
+            break;
+          case 'FILTER':
+            this.paginateFilterData(currentIndex + 1);
+            break;
+          case 'SEARCH':
+            this.paginateSearchData(currentIndex + 1);
+            break;
+          case 'SORT':
+            this.paginateSortData(currentIndex + 1);
+            break;
+          default:
+            break;
+        }
       }
       args.component.release();
     }, 500);
@@ -118,9 +119,9 @@ export class MedicineListComponent implements OnInit, OnDestroy {
       this.isSortingByPrice = false;
       console.log(this.currentSearchByNameValue);
       if (this.currentSearchByNameValue !== '') {
-        this.medicineStore.initSearchByNameData(
+        this.medicineStore.initInfiniteSearchByNameData(
           this.currentSearchByNameValue,
-          this.currentIndexFromServer,
+          0,
           this.pageSize
         );
       } else {
@@ -141,11 +142,7 @@ export class MedicineListComponent implements OnInit, OnDestroy {
     this.isFilteringByCategory = false;
     this.currentSortByPriceValue = e.value;
     if (e.value !== '(NONE)') {
-      this.medicineStore.initSortByPriceData(
-        e.value,
-        this.currentIndexFromServer,
-        this.pageSize
-      );
+      this.medicineStore.initInfiniteSortByPriceData(e.value, 0, this.pageSize);
     } else {
       //return to pure editor mode
       this.store.showNotif('SORT MODE OFF', 'custom');
@@ -160,9 +157,9 @@ export class MedicineListComponent implements OnInit, OnDestroy {
     this.currentCategoryFilterValue = e.value;
     console.log(e.value);
     if (e.value !== '-1') {
-      this.medicineStore.initFilterByCategoryData(
+      this.medicineStore.initInfiniteFilterByCategoryData(
         e.value,
-        this.currentIndexFromServer,
+        0,
         this.pageSize
       );
     } else {
@@ -184,145 +181,39 @@ export class MedicineListComponent implements OnInit, OnDestroy {
     }
   }
 
-  onOptionChanged(e: any) {
-    const editorMode = this.checkEditorMode();
-    // event of page index changed
-    if (e.fullName === 'paging.pageIndex') {
-      const currentIndex: number = e.value;
-      console.log(
-        `New page index: ${currentIndex}. Total items: ${this.medicineList.length}`
-      );
-      switch (editorMode) {
-        case 'NORMAL':
-          this.paginatePureData(currentIndex);
-          break;
-        case 'FILTER':
-          this.paginateFilterData(currentIndex);
-          break;
-        case 'SEARCH':
-          this.paginateSearchData(currentIndex);
-          break;
-        case 'SORT':
-          this.paginateSortData(currentIndex);
-          break;
-        default:
-          break;
-      }
-    }
-    // todo: handle virtual scrolling when pagesize = 'all'
-    //
-    // event of page size changed by user's click
-  }
-
   paginatePureData(index: number) {
-    if (index === 0) {
-      this.medicineStore.loadDataAsync(index, this.pageSize);
-      this.medicineStore.loadDataAsync(index + 1, this.pageSize);
-    } else {
-      this.medicineStore.loadDataAsync(index, this.pageSize);
-      this.medicineStore.loadDataAsync(index + 1, this.pageSize);
-      this.medicineStore.loadDataAsync(index - 1, this.pageSize);
-    }
+    this.medicineStore.loadInfiniteDataAsync(index, this.pageSize);
   }
 
   paginateFilterData(index: number) {
-    if (index === 0) {
-      this.medicineStore.filterMedicineByCategory(
-        this.currentCategoryFilterValue,
-        index,
-        this.pageSize
-      );
-      this.medicineStore.filterMedicineByCategory(
-        this.currentCategoryFilterValue,
-        index + 1,
-        this.pageSize
-      );
-    } else {
-      this.medicineStore.filterMedicineByCategory(
-        this.currentCategoryFilterValue,
-        index,
-        this.pageSize
-      );
-      this.medicineStore.filterMedicineByCategory(
-        this.currentCategoryFilterValue,
-        index + 1,
-        this.pageSize
-      );
-      this.medicineStore.filterMedicineByCategory(
-        this.currentCategoryFilterValue,
-        index - 1,
-        this.pageSize
-      );
-    }
+    this.medicineStore.filterInfiniteMedicineByCategory(
+      this.currentCategoryFilterValue,
+      index,
+      this.pageSize
+    );
   }
 
   paginateSearchData(index: number) {
-    if (index === 0) {
-      this.medicineStore.searchMedicineByName(
-        this.currentSearchByNameValue,
-        index,
-        this.pageSize
-      );
-      this.medicineStore.searchMedicineByName(
-        this.currentSearchByNameValue,
-        index + 1,
-        this.pageSize
-      );
-    } else {
-      this.medicineStore.searchMedicineByName(
-        this.currentSearchByNameValue,
-        index,
-        this.pageSize
-      );
-      this.medicineStore.searchMedicineByName(
-        this.currentSearchByNameValue,
-        index + 1,
-        this.pageSize
-      );
-      this.medicineStore.searchMedicineByName(
-        this.currentSearchByNameValue,
-        index - 1,
-        this.pageSize
-      );
-    }
+    this.medicineStore.searchInfiniteMedicineByName(
+      this.currentSearchByNameValue,
+      index,
+      this.pageSize
+    );
   }
 
   paginateSortData(index: number) {
-    if (index === 0) {
-      this.medicineStore.sortMedicineByPrice(
-        this.currentSortByPriceValue,
-        index,
-        this.pageSize
-      );
-      this.medicineStore.sortMedicineByPrice(
-        this.currentSortByPriceValue,
-        index + 1,
-        this.pageSize
-      );
-    } else {
-      this.medicineStore.sortMedicineByPrice(
-        this.currentSortByPriceValue,
-        index,
-        this.pageSize
-      );
-      this.medicineStore.sortMedicineByPrice(
-        this.currentSortByPriceValue,
-        index + 1,
-        this.pageSize
-      );
-      this.medicineStore.sortMedicineByPrice(
-        this.currentSortByPriceValue,
-        index - 1,
-        this.pageSize
-      );
-    }
+    this.medicineStore.sortInfiniteMedicineByPrice(
+      this.currentSortByPriceValue,
+      index,
+      this.pageSize
+    );
   }
 
   onRefresh() {
     this.isFilteringByCategory = false;
     this.isSearchingByName = false;
     this.isSortingByPrice = false;
-    this.medicineStore.initData(this.currentIndexFromServer, this.pageSize);
+    this.medicineStore.initInfiniteData(0, this.pageSize);
   }
 
   navigateToDoctor() {
@@ -341,9 +232,14 @@ export class MedicineListComponent implements OnInit, OnDestroy {
     });
   }
 
+  scrollTop() {
+    this.scrollView.instance.scrollTo({ top: 0, left: 0 });
+  }
+
   ngOnInit(): void {
     this.sourceDataListener();
     this.currentPageListener();
+    this.medicineStore.initInfiniteData(0, this.pageSize);
   }
 
   ngOnDestroy(): void {

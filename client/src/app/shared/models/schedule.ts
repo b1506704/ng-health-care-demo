@@ -4,4 +4,5 @@ export interface Schedule {
     doctorName: String,
     startDate: String,
     endDate: String,
+    room: Number
 }

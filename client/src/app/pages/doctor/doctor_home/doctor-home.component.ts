@@ -40,9 +40,14 @@ export class DoctorHomeComponent implements OnInit {
       link: '/edit_medicine_list',
     },
   ];
-  slideshowDelay: number = 1500;
+  slideshowDelay: number = 2500;
   featureList: Array<any>;
   constructor(private router: Router) {}
+
+  onSelectionChanged(e:any) {
+    this.currentItem = e.addedItems[0];
+  }
+
   navigateInside() {
     this.router.navigate([this.currentItem.link]);
   }

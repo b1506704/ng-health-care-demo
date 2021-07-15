@@ -123,6 +123,10 @@
     </dxo-lookup>
   </dxi-column>
 
+  <dxi-column dataField="room">
+    <dxi-validation-rule type="required"></dxi-validation-rule>
+  </dxi-column>
+
   <div *dxTemplate="let data of 'totalScheduleCount'">
     <span>Total Schedule: {{ scheduleList.length }} </span>
   </div>

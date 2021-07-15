@@ -99,7 +99,7 @@ export const deleteAllSchedules = async (req, res) => {
 };
 
 export const createSchedule = async (req, res) => {
-  const { doctorID, doctorName, startDate, endDate } = req.body;
+  const { doctorID, doctorName, startDate, endDate, room } = req.body;
   console.log(req.body);
 
   try {
@@ -108,6 +108,7 @@ export const createSchedule = async (req, res) => {
       doctorName,
       startDate,
       endDate,
+      room,
     });
     await newSchedule.save();
     res.status(200).json({ message: `Schedule at ${startDate} created` });
@@ -256,7 +257,7 @@ export const sortByName = (req, res) => {
     const query = {};
     // value = desc || asc
     const options = {
-      sort: { startDate: value },
+      sort: { room: value },
       offset: offset,
       limit: limit,
     };
@@ -288,7 +289,7 @@ export const sortByNumber = (req, res) => {
     const query = {};
     // value = desc || asc
     const options = {
-      sort: { totalCost: value },
+      sort: { room: value },
       offset: offset,
       limit: limit,
     };
@@ -325,11 +326,12 @@ export const generateRandomSchedule = async (req, res) => {
         { name: "Dr. Alien" },
         { name: "Dr. Predator" },
       ];
-      const randomDate_1 = new Date(2021, random(1, 12), random(1, 31));
+      const randomDate_1 = new Date(2021, random(1, 12), random(1, 31), random(7,18));
       const randomDate_2 = new Date(
         2021,
         randomDate_1.getMonth(),
-        randomDate_1.getDate() + 6
+        randomDate_1.getDate() + 6,
+        randomDate_1.getHours() + 6
       );
       const randomNumber = random(1, 200);
       const randomName = nameList[random(0, nameList.length - 1)].name;
@@ -338,6 +340,7 @@ export const generateRandomSchedule = async (req, res) => {
         doctorName: `${randomName} Clone`,
         startDate: randomDate_1,
         endDate: randomDate_2,
+        room: `${random(1, 300)}`,
       });
       await newSchedule.save();
     }

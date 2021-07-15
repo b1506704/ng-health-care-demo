@@ -60,6 +60,55 @@ export class MedicineStore extends StateService<MedicineState> {
     return result;
   }
 
+  initInfiniteData(page: number, size: number) {
+    this.medicineService
+      .fetchMedicine(page, size)
+      .toPromise()
+      .then((data: any) => {
+        if (page === 0) {
+          this.setState({
+            medicineList: new Array<Medicine>(size),
+          });
+        } else {
+          this.setState({
+            medicineList: new Array<Medicine>(page * size),
+          });
+        }
+        console.log('Current flag: infite list');
+        console.log(this.state.medicineList);
+        this.setState({ totalItems: data.totalItems });
+        this.setState({ totalPages: data.totalPages });
+        this.setState({ currentPage: data.currentPage });
+      })
+      .then(() => {
+        this.loadDataAsync(page, size);
+      });
+  }
+
+  loadInfiniteDataAsync(page: number, size: number) {
+    this.setIsLoading(true);
+    this.medicineService.fetchMedicine(page, size).subscribe({
+      next: (data: any) => {
+        this.setState({
+          medicineList: this.state.medicineList.concat(data.items),
+        });
+        console.log('Infinite list');
+        console.log(this.state.medicineList);
+        console.log('Server response');
+        console.log(data);
+        this.setState({ totalItems: data.totalItems });
+        this.setState({ totalPages: data.totalPages });
+        this.setState({ currentPage: data.currentPage });
+        this.setIsLoading(false);
+      },
+      error: (data: any) => {
+        this.setIsLoading(false);
+        this.store.showNotif(data.error.errorMessage, 'error');
+        console.log(data);
+      },
+    });
+  }
+
   initData(page: number, size: number) {
     this.medicineService
       .fetchMedicine(page, size)
@@ -99,6 +148,26 @@ export class MedicineStore extends StateService<MedicineState> {
       });
   }
 
+  initInfiniteFilterByCategoryData(value: string, page: number, size: number) {
+    this.store.showNotif('Filtered Mode On', 'custom');
+    this.medicineService
+      .filterMedicineByCategory(value, page, size)
+      .toPromise()
+      .then((data: any) => {
+        this.setState({
+          medicineList: new Array<Medicine>(size),
+        });
+        console.log('Current flag: infinite filtered list');
+        console.log(this.state.medicineList);
+        this.setState({ totalItems: data.totalItems });
+        this.setState({ totalPages: data.totalPages });
+        this.setState({ currentPage: data.currentPage });
+      })
+      .then(() => {
+        this.filterMedicineByCategory(value, page, size);
+      });
+  }
+
   initSearchByNameData(value: string, page: number, size: number) {
     this.store.showNotif('Searched Mode On', 'custom');
     this.medicineService
@@ -119,6 +188,30 @@ export class MedicineStore extends StateService<MedicineState> {
       });
   }
 
+  initInfiniteSearchByNameData(value: string, page: number, size: number) {
+    this.store.showNotif('Searched Mode On', 'custom');
+    this.medicineService
+      .searchMedicineByName(value, page, size)
+      .toPromise()
+      .then((data: any) => {
+        if (data.totalItems !== 0) {
+          this.setState({
+            medicineList: new Array<Medicine>(size),
+          });
+        } else {
+          this.store.showNotif('No result found!', 'custom');
+        }
+        console.log('Current flag: infitite searched list');
+        console.log(this.state.medicineList);
+        this.setState({ totalItems: data.totalItems });
+        this.setState({ totalPages: data.totalPages });
+        this.setState({ currentPage: data.currentPage });
+      })
+      .then(() => {
+        this.searchMedicineByName(value, page, size);
+      });
+  }
+
   initSortByPriceData(value: string, page: number, size: number) {
     this.store.showNotif('Sort Mode On', 'custom');
     this.medicineService
@@ -127,6 +220,26 @@ export class MedicineStore extends StateService<MedicineState> {
       .then((data: any) => {
         this.setState({
           medicineList: new Array<Medicine>(data.totalItems),
+        });
+        console.log('Current flag: sort list');
+        console.log(this.state.medicineList);
+        this.setState({ totalItems: data.totalItems });
+        this.setState({ totalPages: data.totalPages });
+        this.setState({ currentPage: data.currentPage });
+      })
+      .then(() => {
+        this.sortMedicineByPrice(value, page, size);
+      });
+  }
+
+  initInfiniteSortByPriceData(value: string, page: number, size: number) {
+    this.store.showNotif('Sort Mode On', 'custom');
+    this.medicineService
+      .sortMedicineByPrice(value, page, size)
+      .toPromise()
+      .then((data: any) => {
+        this.setState({
+          medicineList: new Array<Medicine>(size),
         });
         console.log('Current flag: sort list');
         console.log(this.state.medicineList);
@@ -436,19 +549,75 @@ export class MedicineStore extends StateService<MedicineState> {
     });
   }
 
+  filterInfiniteMedicineByCategory(value: string, page: number, size: number) {
+    this.setIsLoading(true);
+    this.medicineService.filterMedicineByCategory(value, page, size).subscribe({
+      next: (data: any) => {
+        this.setState({
+          medicineList: this.state.medicineList.concat(data.items),
+        });
+        console.log('Filtered list');
+        console.log(this.state.medicineList);
+        console.log('Server response');
+        console.log(data);
+        this.setState({ totalItems: data.totalItems });
+        this.setState({ totalPages: data.totalPages });
+        this.setState({ currentPage: data.currentPage });
+        this.setIsLoading(false);
+      },
+      error: (data: any) => {
+        this.setIsLoading(false);
+        this.store.showNotif(data.error.errorMessage, 'error');
+        console.log(data);
+      },
+    });
+  }
+
   searchMedicineByName(value: string, page: number, size: number) {
     this.setIsLoading(true);
     this.medicineService.searchMedicineByName(value, page, size).subscribe({
       next: (data: any) => {
-        this.setState({
-          medicineList: this.fillEmpty(
-            page,
-            size,
-            this.state.medicineList,
-            data.items
-          ),
-        });
+        if (data.totalItems !== 0) {
+          this.setState({
+            medicineList: this.fillEmpty(
+              page,
+              size,
+              this.state.medicineList,
+              data.items
+            ),
+          });
+        } else {
+          this.store.showNotif('No result found!', 'custom');
+        }
         console.log('Searched list');
+        console.log(this.state.medicineList);
+        console.log('Server response');
+        console.log(data);
+        this.setState({ totalItems: data.totalItems });
+        this.setState({ totalPages: data.totalPages });
+        this.setState({ currentPage: data.currentPage });
+        this.setIsLoading(false);
+      },
+      error: (data: any) => {
+        this.setIsLoading(false);
+        this.store.showNotif(data.error.errorMessage, 'error');
+        console.log(data);
+      },
+    });
+  }
+
+  searchInfiniteMedicineByName(value: string, page: number, size: number) {
+    this.setIsLoading(true);
+    this.medicineService.searchMedicineByName(value, page, size).subscribe({
+      next: (data: any) => {
+        if (data.totalItems !== 0) {
+          this.setState({
+            medicineList: this.state.medicineList.concat(data.items),
+          });
+        } else {
+          this.store.showNotif('No result found!', 'custome');
+        }
+        console.log('Infite searched list');
         console.log(this.state.medicineList);
         console.log('Server response');
         console.log(data);
@@ -515,6 +684,30 @@ export class MedicineStore extends StateService<MedicineState> {
         console.log(this.state.medicineList);
         console.log('Server response');
         console.log(data);
+        this.setIsLoading(false);
+      },
+      error: (data: any) => {
+        this.setIsLoading(false);
+        this.store.showNotif(data.error.errorMessage, 'error');
+        console.log(data);
+      },
+    });
+  }
+
+  sortInfiniteMedicineByPrice(value: string, page: number, size: number) {
+    this.setIsLoading(true);
+    this.medicineService.sortMedicineByPrice(value, page, size).subscribe({
+      next: (data: any) => {
+        this.setState({
+          medicineList: this.state.medicineList.concat(data.items),
+        });
+        console.log('Infite sorted list');
+        console.log(this.state.medicineList);
+        console.log('Server response');
+        console.log(data);
+        this.setState({ totalItems: data.totalItems });
+        this.setState({ totalPages: data.totalPages });
+        this.setState({ currentPage: data.currentPage });
         this.setIsLoading(false);
       },
       error: (data: any) => {

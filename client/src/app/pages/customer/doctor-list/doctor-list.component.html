@@ -1,1 +1,92 @@
-<p>doctor-list works!</p>
+<dx-toolbar>
+  <dxi-item location="after" locateInMenu="auto">
+    <dx-button
+      icon="arrowright"
+      type="outline"
+      text="Medicine List"
+      hint="Navigate to Medicine List"
+      (onClick)="navigateToMedicine()"
+    >
+    </dx-button>
+  </dxi-item>
+
+  <dxi-item [location]="'center'" [text]="'Doctor List'"> </dxi-item>
+</dx-toolbar>
+<dx-toolbar
+  [ngStyle]="{
+    paddingLeft: '25px',
+    paddingRight: '25px',
+    marginBottom: '50px'
+  }"
+>
+  <dxi-item widget="dxTextBox" [options]="searchBoxOptions" location="before">
+  </dxi-item>
+  <dxi-item widget="dxButton" [options]="refreshButtonOptions" location="after">
+  </dxi-item>
+  <dxi-item [locateInMenu]="'auto'" [location]="'after'">
+    <dx-button icon="filter" type="normal" [disabled]="true"> </dx-button>
+  </dxi-item>
+  <dxi-item
+    widget="dxSelectBox"
+    [options]="filterSelectBoxOptions"
+    location="after"
+  >
+  </dxi-item>
+  <dxi-item [locateInMenu]="'auto'" [location]="'after'">
+    <dx-button icon="user" type="normal" [disabled]="true"> </dx-button>
+  </dxi-item>
+  <dxi-item
+    widget="dxSelectBox"
+    [options]="sortSelectBoxOptions"
+    location="after"
+  >
+  </dxi-item>
+</dx-toolbar>
+<dx-scroll-view
+  [direction]="'vertical'"
+  [pulledDownText]="'...Fetching'"
+  [showScrollbar]="true"
+  [reachBottomText]="'Loading...'"
+  [scrollByContent]="true"
+  [scrollByThumb]="true"
+  [height]="'90vh'"
+  (onPullDown)="updateTopContent($event)"
+  (onReachBottom)="updateBottomContent($event)"
+  [bounceEnabled]="pullDown"
+>
+  <ng-container *ngIf="doctorList">
+    <div class="card-container">
+      <div class="card" *ngFor="let item of doctorList">
+        <ng-container *ngIf="item !== undefined">
+          <div class="card-title">{{ item.fullName }}</div>
+          <div class="card-body">
+            <div class="card-text">Role: {{ item.role }}</div>
+            <div class="card-text">Specialty: {{ item.description }}</div>
+          </div>
+          <div class="card-img">
+            <img
+              src="../../../../assets/imgs/tesla_director.jpg"
+              alt="favipiravir_1"
+              style="height: 100%; width: 100%"
+            />
+          </div>
+          <div>
+            <dx-button
+              icon="arrowright"
+              type="outline"
+              text="Detail"
+              hint="Click to see doctor detail"
+            ></dx-button>
+          </div>
+        </ng-container>
+      </div>
+    </div>
+  </ng-container>
+</dx-scroll-view>
+<dx-speed-dial-action
+  icon="arrowup"
+  label=""
+  [index]="1"
+  (onClick)="scrollTop()"
+>
+</dx-speed-dial-action>
