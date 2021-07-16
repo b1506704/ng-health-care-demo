@@ -127,7 +127,7 @@
 
   <dxi-column dataField="bloodType" [width]="65" [caption]="'B.Type'">
     <dxi-validation-rule type="required"></dxi-validation-rule>
-    <dxo-lookup [dataSource]="bloodTypeList" displayExpr="name" valueExpr="_id">
+    <dxo-lookup [dataSource]="bloodTypeList" displayExpr="name" valueExpr="name">
     </dxo-lookup>
   </dxi-column>
 

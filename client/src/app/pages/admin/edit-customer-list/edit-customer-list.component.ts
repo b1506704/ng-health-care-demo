@@ -140,7 +140,7 @@ export class EditCustomerListComponent implements OnInit, OnDestroy {
         widget: 'dxSelectBox',
         options: {
           items: this.bloodTypeList,
-          valueExpr: '_id',
+          valueExpr: 'name',
           // searchExpr: 'name',
           displayExpr: 'name',
           placeholder: 'Filter with blood type',

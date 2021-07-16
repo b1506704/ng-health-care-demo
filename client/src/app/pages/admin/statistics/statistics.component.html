@@ -1,1 +1,206 @@
-<p>statistics works!</p>
+<dx-toolbar [ngStyle]="{ paddingLeft: '25px', paddingRight: '25px' }">
+  <dxi-item [location]="'before'" [text]="'Overall Statistics'"> </dxi-item>
+  <dxi-item location="after" locateInMenu="auto">
+    <dx-button
+      icon="arrowright"
+      type="outline"
+      text="Theme Management"
+      hint="Navigate to Edit Themme"
+      (onClick)="navigateToEditTheme()"
+    >
+    </dx-button>
+  </dxi-item>
+</dx-toolbar>
+<div class="chart-container">
+  <div class="chart">
+    <dx-chart
+      id="chart"
+      [dataSource]="barChartSource"
+      [loadingIndicator]="loadingIndicator"
+      (onPointClick)="onPointClick($event)"
+    >
+      <dxo-title
+        [text]="barChartTitle"
+        [subtitle]="barChartSubtitle"
+        [horizontalAlignment]="'center'"
+      ></dxo-title>
+      <dxo-size [height]="chartHeight" [width]="chartWidth"> </dxo-size>
+      <dxi-series valueField="totalCount" name="totalCount"></dxi-series>
+      <dxo-common-series-settings
+        argumentField="bloodType"
+        type="bar"
+        hoverMode="allArgumentPoints"
+        selectionMode="allArgumentPoints"
+      >
+        <dxo-label
+          [visible]="true"
+          [format]="{
+            type: 'fixedPoint',
+            precision: '0'
+          }"
+        >
+        </dxo-label>
+      </dxo-common-series-settings>
+      <dxo-legend
+        verticalAlignment="top"
+        horizontalAlignment="center"
+      ></dxo-legend>
+      <dxo-export [enabled]="true"></dxo-export>
+    </dx-chart>
+  </div>
+  <div class="chart">
+    <dx-chart [dataSource]="customerList" [loadingIndicator]="loadingIndicator">
+      <dxo-title
+        [text]="lineChartTitle"
+        [subtitle]="lineChartSubtitle"
+        [horizontalAlignment]="'center'"
+      ></dxo-title>
+      <dxo-size [height]="chartHeight" [width]="chartWidth"> </dxo-size>
+      <dxi-series
+        name="Height"
+        color="green"
+        argumentField="age"
+        valueField="height"
+      ></dxi-series>
+      <dxi-series
+        name="Weight"
+        color="white"
+        argumentField="age"
+        valueField="weight"
+      ></dxi-series>
+      <dxo-common-series-settings>
+        <dxo-point [size]="7"></dxo-point>
+      </dxo-common-series-settings>
+      <dxo-tooltip
+        [enabled]="true"
+        [shared]="true"
+        [customizeTooltip]="customizeTooltip"
+      >
+      </dxo-tooltip>
+      <dxo-argument-axis [visualRange]="visualLineRange"> </dxo-argument-axis>
+      <dxo-legend verticalAlignment="top" horizontalAlignment="center">
+      </dxo-legend>
+      <dxo-export [enabled]="true"></dxo-export>
+    </dx-chart>
+    <dx-range-selector [dataSource]="customerList" [(value)]="visualLineRange">
+      <dxo-size [height]="70"></dxo-size>
+      <dxo-margin [left]="10"></dxo-margin>
+      <dxo-scale [minorTickCount]="1"></dxo-scale>
+      <dxo-behavior callValueChanged="onMoving"></dxo-behavior>
+      <dxo-chart>
+        <dxi-series argumentField="age" valueField="height"></dxi-series>
+        <dxi-series argumentField="age" valueField="weight"></dxi-series>
+      </dxo-chart>
+    </dx-range-selector>
+  </div>
+  <div class="chart">
+    <dx-polar-chart
+      id="zoomedChart"
+      [dataSource]="customerList"
+      [loadingIndicator]="loadingIndicator"
+    >
+      <dxo-title
+        [text]="polarChartTitle"
+        [subtitle]="polarChartSubtitle"
+        [horizontalAlignment]="'center'"
+      ></dxo-title>
+      <dxo-size [height]="chartHeight" [width]="chartWidth"> </dxo-size>
+      <dxi-series type="scatter" name="Height" valueField="height">
+        <dxo-point [size]="8"></dxo-point>
+      </dxi-series>
+      <dxi-series type="line" name="Expected average" valueField="weight">
+        <dxo-point [visible]="false"></dxo-point>
+      </dxi-series>
+      <dxo-common-series-settings argumentField="weight" [closed]="false">
+      </dxo-common-series-settings>
+      <dxo-argument-axis [startAngle]="90" [tickInterval]="30">
+      </dxo-argument-axis>
+      <dxo-value-axis [visualRange]="visualPolarRange"></dxo-value-axis>
+      <dxo-export [enabled]="true"></dxo-export>
+      <dxo-legend
+        hoverMode="excludePoints"
+        verticalAlignment="top"
+        horizontalAlignment="center"
+      >
+      </dxo-legend>
+    </dx-polar-chart>
+    <dx-range-selector [(value)]="visualPolarRange">
+      <dxo-size [height]="100"></dxo-size>
+      <dxo-margin [top]="10" [left]="60" [bottom]="10" [right]="50">
+      </dxo-margin>
+      <dxo-scale
+        [startValue]="0"
+        [endValue]="200"
+        [minorTickInterval]="0.5"
+        [tickInterval]="5"
+      >
+        <dxo-minor-tick [visible]="false"></dxo-minor-tick>
+      </dxo-scale>
+      <dxo-behavior callValueChanged="onMoving"></dxo-behavior>
+    </dx-range-selector>
+  </div>
+  <div class="chart">
+    <dx-funnel
+      id="pyramid"
+      [dataSource]="funnelChartSource"
+      argumentField="job"
+      valueField="totalCount"
+      [inverted]="true"
+      algorithm="dynamicHeight"
+      [sortData]="true"
+    >
+      <dxo-title
+        [text]="funnelChartTitle"
+        [subtitle]="funnelChartSubtitle"
+        [horizontalAlignment]="'center'"
+      ></dxo-title>
+      <dxo-size [height]="chartHeight" [width]="chartWidth"> </dxo-size>
+      <dxo-tooltip [enabled]="true"></dxo-tooltip>
+      <dxo-item>
+        <dxo-border [visible]="true"></dxo-border>
+      </dxo-item>
+      <dxo-legend
+        visible="true"
+        verticalAlignment="bottom"
+        horizontalAlignment="center"
+      ></dxo-legend>
+      <!-- <dxo-label
+        visible="true"
+        horizontalAlignment="bottom"
+        verticalAlignment="center"
+        backgroundColor="none"
+      >
+        <dxo-font [size]="16"></dxo-font>
+      </dxo-label> -->
+      <dxo-export [enabled]="true"></dxo-export>
+    </dx-funnel>
+  </div>
+  <div class="chart">
+    <dx-pie-chart id="pie" [dataSource]="pieChartSource">
+      <dxo-title
+        [text]="pieChartTitle"
+        [subtitle]="pieChartSubtitle"
+        [horizontalAlignment]="'center'"
+      ></dxo-title>
+      <dxo-size [height]="chartHeight" [width]="chartWidth"> </dxo-size>
+      <dxo-legend
+        orientation="horizontal"
+        itemTextPosition="right"
+        horizontalAlignment="center"
+        verticalAlignment="bottom"
+        [columnCount]="2"
+      ></dxo-legend>
+      <dxo-export [enabled]="true"></dxo-export>
+      <dxi-series argumentField="gender" valueField="totalCount">
+        <dxo-label
+          [visible]="true"
+          position="columns"
+          [customizeText]="customizeLabel"
+        >
+          <dxo-font [size]="16"></dxo-font>
+          <dxo-connector [visible]="true" [width]="0.5"></dxo-connector>
+        </dxo-label>
+      </dxi-series>
+    </dx-pie-chart>
+  </div>
+</div>

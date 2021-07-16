@@ -229,6 +229,68 @@ export const filterCustomerByCategory = (req, res) => {
   }
 };
 
+export const filterCustomerByJob = (req, res) => {
+  const { value, page, size } = req.query;
+  console.log(`Page: ${page}  Size: ${size}. Value: ${value}`);
+  try {
+    const { limit, offset } = getPagination(page, size);
+    console.log(`Limit: ${limit}  Offset: ${offset}`);
+    const query = { occupation: value };
+    const options = {
+      sort: { createdAt: "desc" },
+      offset: offset,
+      limit: limit,
+    };
+    Customer.paginate(query, options)
+      .then((data) => {
+        res.status(200).json({
+          totalItems: data.totalDocs,
+          items: data.docs,
+          totalPages: data.totalPages,
+          currentPage: data.page - 1,
+          nextPage: data.nextPage,
+          prevPage: data.prevPage,
+        });
+      })
+      .catch((error) => {
+        res.status(404).json({ errorMessage: error.message });
+      });
+  } catch (error) {
+    res.status(404).json({ errorMessage: "Failed to get data!" });
+  }
+};
+
+export const filterCustomerByGender = (req, res) => {
+  const { value, page, size } = req.query;
+  console.log(`Page: ${page}  Size: ${size}. Value: ${value}`);
+  try {
+    const { limit, offset } = getPagination(page, size);
+    console.log(`Limit: ${limit}  Offset: ${offset}`);
+    const query = { gender: value };
+    const options = {
+      sort: { createdAt: "desc" },
+      offset: offset,
+      limit: limit,
+    };
+    Customer.paginate(query, options)
+      .then((data) => {
+        res.status(200).json({
+          totalItems: data.totalDocs,
+          items: data.docs,
+          totalPages: data.totalPages,
+          currentPage: data.page - 1,
+          nextPage: data.nextPage,
+          prevPage: data.prevPage,
+        });
+      })
+      .catch((error) => {
+        res.status(404).json({ errorMessage: error.message });
+      });
+  } catch (error) {
+    res.status(404).json({ errorMessage: "Failed to get data!" });
+  }
+};
+
 export const searchCustomerByName = (req, res) => {
   const { value, page, size } = req.query;
   console.log(`Page: ${page}  Size: ${size}. Value: ${value}`);
@@ -335,31 +397,53 @@ export const generateRandomCustomer = async (req, res) => {
         { _id: "1", name: "B" },
         { _id: "2", name: "O" },
       ];
-      const nameList = [
-        "Elon Musk",
-        "Tim Cahill",
-        "David De Gea",
-        "Manuel Neuer",
-        "Phi Minh Long",
-        "Au Trung",
-        "Thach Sung",
-        "Alien",
-        "Predator",
+      const nameList = ["Alpha", "Beta", "Gama", "Alien", "Predator"];
+      const jobList = [
+        "Student",
+        "Teacher",
+        "Thief",
+        "Space Pirate",
+        "Spaceship Commander",
+        "Sea Pirate",
+        "Shogun",
+        "Music Conductor",
+        "Fullstack Developer",
+        "Mecha Pilot",
+        "Tester",
+        "Galatic Defender",
+        "Engineer",
+      ];
+      const locationList = [
+        "Earth, Asia, Vietnam",
+        "Venus, Neith, 3022",
+        "Mars, Phobos, 3021",
+        "Mars, Deimos, 3022",
+        "Jupiter, Ganymede, 3021",
+        "Jupiter, Europa, 3022",
+        "Jupiter, Io, 3023",
+        "Saturn, Enceladus, 3021",
+        "Saturn, Titan, 3022",
+        "Pluto, Charon, 3021",
       ];
       const randomNumber = random(1, 200);
-      const randomBloodType = bloodType[random(0, bloodType.length - 1)]._id;
+      const randomAge = random(1, 120);
+      const randomWeight = random(40, 120);
+      const randomHeight = random(120, 220);
+      const randomBloodType = bloodType[random(0, bloodType.length - 1)].name;
       const randomName = nameList[random(0, nameList.length - 1)];
+      const randomJob = jobList[random(0, jobList.length - 1)];
+      const randomLocation = locationList[random(0, locationList.length - 1)];
       const randomGender = genderList[random(0, genderList.length - 1)];
       const newCustomer = new Customer({
         userName: `user#${randomNumber}`,
         fullName: `${randomName} Clone #${randomNumber}`,
-        age: randomNumber,
+        age: randomAge,
         gender: randomGender,
-        occupation: `Job #${randomNumber}`,
-        address: `Location #${randomNumber}`,
+        occupation: randomJob,
+        address: randomLocation,
         bloodType: randomBloodType,
-        height: randomNumber,
-        weight: randomNumber,
+        height: randomHeight,
+        weight: randomWeight,
       });
       await newCustomer.save();
     }

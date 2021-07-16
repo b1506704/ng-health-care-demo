@@ -15,6 +15,8 @@ import {
   sortByName,
   sortByNumber,
   fetchAll,
+  filterCustomerByJob,
+  filterCustomerByGender,
 } from "../controllers/customers.js";
 
 const router = express.Router();
@@ -29,6 +31,8 @@ router.post("/batch", deleteSelectedCustomers);
 router.post("/updateCustomer/:_id", updateCustomer);
 router.post("/filterByPrice", filterCustomerByPrice);
 router.post("/filterByCategory", filterCustomerByCategory);
+router.post("/filterByJob", filterCustomerByJob);
+router.post("/filterByGender", filterCustomerByGender);
 router.post("/searchByName", searchCustomerByName);
 router.post("/sortByName", sortByName);
 router.post("/sortByPrice", sortByNumber);

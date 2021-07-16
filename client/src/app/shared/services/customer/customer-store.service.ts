@@ -9,6 +9,9 @@ import { confirm } from 'devextreme/ui/dialog';
 
 interface CustomerState {
   customerList: Array<Customer>;
+  bloodTypeStatistics: Array<Object>;
+  jobStatistics: Array<Object>;
+  genderStatistics: Array<Object>;
   exportData: Array<Customer>;
   selectedCustomer: Object;
   totalPages: number;
@@ -23,6 +26,9 @@ const initialState: CustomerState = {
   totalPages: 0,
   currentPage: 0,
   totalItems: 0,
+  bloodTypeStatistics: [],
+  jobStatistics: [],
+  genderStatistics: [],
   responseMsg: '',
 };
 @Injectable({
@@ -58,6 +64,94 @@ export class CustomerStore extends StateService<CustomerState> {
     console.log('Filled array result');
     console.log(result);
     return result;
+  }
+
+  getBloodTypeCount(value: string) {
+    this.store.setIsLoading(true);
+    return this.customerService
+      .filterCustomerByCategory(value, 0, 5)
+      .toPromise()
+      .then((data: any) => {
+        this.setState({
+          bloodTypeStatistics: this.state.bloodTypeStatistics.concat({
+            bloodType: value,
+            totalCount: data.totalItems,
+          }),
+        });
+        this.store.setIsLoading(false);
+      });
+  }
+
+  getBloodTypeStatistics() {
+    // value = 'O' | 'A' | 'B' |
+    this.setState({ bloodTypeStatistics: [] });
+    this.getBloodTypeCount('O').then(() => {
+      this.getBloodTypeCount('A').then(() => {
+        this.getBloodTypeCount('B');
+      });
+    });
+  }
+
+  getJobCount(value: string) {
+    this.store.setIsLoading(true);
+    return this.customerService
+      .filterCustomerByJob(value, 0, 5)
+      .toPromise()
+      .then((data: any) => {
+        this.setState({
+          jobStatistics: this.state.jobStatistics.concat({
+            job: value,
+            totalCount: data.totalItems,
+          }),
+        });
+        this.store.setIsLoading(false);
+      });
+  }
+
+  getJobStatistics() {
+    const jobList = [
+      'Student',
+      'Teacher',
+      'Thief',
+      'Space Pirate',
+      'Spaceship Commander',
+      'Sea Pirate',
+      'Shogun',
+      'Music Conductor',
+      'Fullstack Developer',
+      'Mecha Pilot',
+      'Tester',
+      'Galatic Defender',
+      'Engineer',
+    ];
+    this.setState({ jobStatistics: [] });
+    jobList.forEach((element) => {
+      this.getJobCount(element);
+    });
+  }
+
+  getGenderCount(value: string) {
+    this.store.setIsLoading(true);
+    return this.customerService
+      .filterCustomerByGender(value, 0, 5)
+      .toPromise()
+      .then((data: any) => {
+        this.setState({
+          genderStatistics: this.state.genderStatistics.concat({
+            gender: value,
+            totalCount: data.totalItems,
+          }),
+        });
+        this.store.setIsLoading(false);
+      });
+  }
+
+  getGenderStatistics() {
+    const genderList = ['Male', 'Female'];
+    this.setState({ genderStatistics: [] });
+    genderList.forEach((element) => {
+      this.getGenderCount(element);
+    });
   }
 
   initData(page: number, size: number) {
@@ -159,7 +253,6 @@ export class CustomerStore extends StateService<CustomerState> {
       });
   }
 
-
   loadDataAsync(page: number, size: number) {
     this.setIsLoading(true);
     this.customerService.fetchCustomer(page, size).subscribe({
@@ -225,6 +318,18 @@ export class CustomerStore extends StateService<CustomerState> {
 
   $customerList: Observable<Array<Customer>> = this.select(
     (state) => state.customerList
+  );
+
+  $bloodTypeStatistics: Observable<Array<Object>> = this.select(
+    (state) => state.bloodTypeStatistics
+  );
+
+  $jobStatistics: Observable<Array<Object>> = this.select(
+    (state) => state.jobStatistics
+  );
+
+  $genderStatistics: Observable<Array<Object>> = this.select(
+    (state) => state.genderStatistics
   );
 
   $exportData: Observable<Array<Customer>> = this.select(

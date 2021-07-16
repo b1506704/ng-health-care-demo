@@ -86,6 +86,48 @@ export class CustomerHttpService {
     );
   }
 
+  filterCustomerByJob(
+    value: string,
+    page: number,
+    size: number
+  ): Observable<Customer> {
+    const params = new HttpParams()
+      .set('value', value)
+      .set('page', page)
+      .set('size', size);
+    console.log(params.toString());
+    return this.http.post<Customer>(
+      this.apiCustomerUrl + '/filterByJob',
+      {},
+      {
+        params: params,
+        reportProgress: true,
+        observe: 'body',
+      }
+    );
+  }
+
+  filterCustomerByGender(
+    value: string,
+    page: number,
+    size: number
+  ): Observable<Customer> {
+    const params = new HttpParams()
+      .set('value', value)
+      .set('page', page)
+      .set('size', size);
+    console.log(params.toString());
+    return this.http.post<Customer>(
+      this.apiCustomerUrl + '/filterByGender',
+      {},
+      {
+        params: params,
+        reportProgress: true,
+        observe: 'body',
+      }
+    );
+  }
+
   sortCustomerByName(
     value: string,
     page: number,
@@ -147,10 +189,14 @@ export class CustomerHttpService {
   }
 
   deleteAllCustomers(): Observable<Customer> {
-    return this.http.post<Customer>(this.apiCustomerUrl + '/deleteAll',{}, {
-      reportProgress: true,
-      observe: 'body',
-    });
+    return this.http.post<Customer>(
+      this.apiCustomerUrl + '/deleteAll',
+      {},
+      {
+        reportProgress: true,
+        observe: 'body',
+      }
+    );
   }
 
   deleteCustomer(id: string): Observable<ArrayBuffer> {
