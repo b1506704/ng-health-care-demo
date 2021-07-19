@@ -1,0 +1,97 @@
+<div
+  class="right"
+  style="
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  "
+>
+  <h3>Patient Health Condition {{ patientStatus }}</h3>
+  <div id="gauge-demo">
+    <dx-linear-gauge
+      class="gauge-element"
+      [value]="patientData.bodyTemperature"
+    >
+      <dxo-title text="Body Temperature (°C)">
+        <dxo-font [size]="16"></dxo-font>
+      </dxo-title>
+      <dxo-geometry orientation="vertical"></dxo-geometry>
+      <dxo-scale
+        [startValue]="0"
+        [endValue]="100"
+        [tickInterval]="30"
+      ></dxo-scale>
+      <dxo-range-container backgroundColor="none">
+        <dxi-range
+          [startValue]="-40"
+          [endValue]="0"
+          color="#679EC5"
+        ></dxi-range>
+        <dxi-range [startValue]="0" [endValue]="40"></dxi-range>
+      </dxo-range-container>
+    </dx-linear-gauge>
+
+    <dx-linear-gauge class="gauge-element" [value]="patientData.sweat">
+      <dxo-value-indicator type="rhombus" color="#A4DDED"></dxo-value-indicator>
+      <dxo-title text="Sweat (%)">
+        <dxo-font [size]="16"></dxo-font>
+      </dxo-title>
+      <dxo-geometry orientation="vertical"></dxo-geometry>
+      <dxo-scale
+        [startValue]="0"
+        [endValue]="100"
+        [tickInterval]="10"
+      ></dxo-scale>
+      <dxo-range-container backgroundColor="#CACACA"></dxo-range-container>
+    </dx-linear-gauge>
+
+    <dx-linear-gauge class="gauge-element" [value]="patientData.bloodPressure">
+      <dxo-value-indicator type="circle" color="#E3A857"></dxo-value-indicator>
+      <dxo-title text="Blood Pressure (mm Hg)">
+        <dxo-font [size]="16"></dxo-font>
+      </dxo-title>
+      <dxo-geometry orientation="vertical"></dxo-geometry>
+      <dxo-scale
+        [startValue]="90"
+        [endValue]="300"
+        [customTicks]="[90, 110, 200, 300]"
+      >
+        <dxo-label>
+          <dxo-format type="decimal"></dxo-format>
+        </dxo-label>
+      </dxo-scale>
+      <dxo-range-container backgroundColor="#CACACA">
+        <dxi-range
+          [startValue]="10"
+          [endValue]="100"
+          color="#679EC5"
+        ></dxi-range>
+        <dxi-range
+          [startValue]="110"
+          [endValue]="200"
+          color="#A6C567"
+        ></dxi-range>
+        <dxi-range
+          [startValue]="210"
+          [endValue]="300"
+          color="#E18E92"
+        ></dxi-range>
+      </dxo-range-container>
+    </dx-linear-gauge>
+  </div>
+  <dx-circular-gauge id="gauge" [value]="patientData.heartRate">
+    <dxo-scale [startValue]="0" [endValue]="210" [tickInterval]="20">
+      <dxo-label [customizeText]="customizeText"></dxo-label>
+    </dxo-scale>
+    <dxo-title
+      text="Heart Rate"
+      horizontalAlignment="center"
+      verticalAlignment="bottom"
+    >
+      <dxo-font [size]="16" color="white"> </dxo-font>
+      <dxo-margin top="0"></dxo-margin>
+    </dxo-title>
+    <dxo-tooltip [enabled]="true"></dxo-tooltip>
+  </dx-circular-gauge>
+</div>

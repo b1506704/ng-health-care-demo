@@ -325,7 +325,7 @@ export const generateRandomRoom = async (req, res) => {
     for (let i = 0; i < 100; i++) {
       const randomNumber = random(1, 200);
       const vacancyStatus = [{ name: "FULL" }, { name: "AVAILABLE" }];
-      let customerList = ["user1", "user2"];
+      let customerList = [{id: "user1"}, {id: "user2"}];
       const randomVacancyStatus =
         vacancyStatus[random(0, vacancyStatus.length - 1)].name;
       const randomDate_1 = new Date(
@@ -340,7 +340,7 @@ export const generateRandomRoom = async (req, res) => {
       let isFillingCustomer = false;
       for (let j = 0; j < randomNumber; j++) {
         isFillingCustomer = true;
-        customerList = [...customerList, `user#${j}`];
+        customerList = [...customerList, {id: `user${j}`}];
         if (j === randomNumber - 1) {
           isFillingCustomer = false;
         }

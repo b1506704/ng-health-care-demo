@@ -9,6 +9,7 @@ const doctorSchema = mongoose.Schema(
     department: { type: String },
     description: { type: String },
     role: { type: String },
+    yearsOfExperience: { type: Number}
   },
   { timestamps: true }
 );

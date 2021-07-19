@@ -23,13 +23,9 @@ export class EditScheduleComponent implements OnInit, OnDestroy {
   scheduleList!: Array<Schedule>;
   doctorList: Array<Object> = [
     { name: '(NONE)' },
-    { name: 'Dr. Elon Musk Clone' },
-    { name: 'Dr. Tim Cahill Clone' },
-    { name: 'Dr. David De Gea Clone' },
-    { name: 'Dr. Manuel Neuer Clone' },
-    { name: 'Dr. Phi Minh Long Clone' },
-    { name: 'Dr. Au Trung Clone' },
-    { name: 'Dr. Thach Sung Clone' },
+    { name: 'Dr. Strange Clone' },
+    { name: 'Dr. Alpha Clone' },
+    { name: 'Dr. Beta Clone' },
     { name: 'Dr. Alien Clone' },
     { name: 'Dr. Predator Clone' },
   ];

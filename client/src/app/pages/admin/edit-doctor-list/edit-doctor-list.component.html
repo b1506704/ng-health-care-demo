@@ -122,7 +122,7 @@
     <dxo-lookup
       [dataSource]="departmentList"
       displayExpr="name"
-      valueExpr="_id"
+      valueExpr="name"
     >
     </dxo-lookup>
   </dxi-column>
@@ -149,7 +149,7 @@
     >
     </dxo-lookup>
   </dxi-column>
-
+  <dxi-column dataField="yearsOfExperience"> </dxi-column>
   <dxi-column dataField="description"> </dxi-column>
   <div *dxTemplate="let data of 'totalDoctorCount'">
     <span>Total Doctor: {{ doctorList.length }} </span>

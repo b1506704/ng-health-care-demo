@@ -140,7 +140,7 @@ export class EditDoctorListComponent implements OnInit, OnDestroy {
         widget: 'dxSelectBox',
         options: {
           items: this.departmentList,
-          valueExpr: '_id',
+          valueExpr: 'name',
           // searchExpr: 'name',
           displayExpr: 'name',
           placeholder: 'Filter with department',
@@ -230,7 +230,7 @@ export class EditDoctorListComponent implements OnInit, OnDestroy {
     this.isSortingByName = false;
     this.currentCategoryFilterValue = e.value;
     console.log(e.value);
-    if (e.value !== '-1') {
+    if (e.value !== '(NONE)') {
       this.doctorStore.initFilterByCategoryData(
         e.value,
         this.dataGrid.instance.pageIndex(),

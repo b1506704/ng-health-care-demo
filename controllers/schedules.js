@@ -316,17 +316,18 @@ export const generateRandomSchedule = async (req, res) => {
   try {
     for (let i = 0; i < 100; i++) {
       const nameList = [
-        { name: "Dr. Elon Musk" },
-        { name: "Dr. Tim Cahill" },
-        { name: "Dr. David De Gea" },
-        { name: "Dr. Manuel Neuer" },
-        { name: "Dr. Phi Minh Long" },
-        { name: "Dr. Au Trung" },
-        { name: "Dr. Thach Sung" },
+        { name: "Dr. Strange" },
+        { name: "Dr. Alpha" },
+        { name: "Dr. Beta" },
         { name: "Dr. Alien" },
         { name: "Dr. Predator" },
       ];
-      const randomDate_1 = new Date(2021, random(1, 12), random(1, 31), random(7,18));
+      const randomDate_1 = new Date(
+        2021,
+        random(1, 12),
+        random(1, 31),
+        random(7, 18)
+      );
       const randomDate_2 = new Date(
         2021,
         randomDate_1.getMonth(),

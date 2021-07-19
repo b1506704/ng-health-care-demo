@@ -52,9 +52,9 @@ const routes: Routes = [
   {
     path: 'doctor_schedule',
     loadChildren: () =>
-      import(
-        './pages/customer/schedule-list/schedule-list.module'
-      ).then((m) => m.ScheduleListModule),
+      import('./pages/customer/schedule-list/schedule-list.module').then(
+        (m) => m.ScheduleListModule
+      ),
     canActivate: [AuthGuardService],
   },
   {
@@ -90,12 +90,26 @@ const routes: Routes = [
     canActivate: [AuthGuardService],
   },
   {
-    path: 'edit_health_condition_list',
+    path: 'room_monitor',
+    loadChildren: () =>
+      import('./pages/doctor/room-monitor/room-monitor.module').then(
+        (m) => m.RoomMonitorModule
+      ),
+    canActivate: [AuthGuardService],
+  },
+  {
+    path: 'room/:id',
     loadChildren: () =>
       import(
         './pages/doctor/edit-health-condition-list/edit-health-condition-list.module'
       ).then((m) => m.EditHealthConditionModule),
-    canActivate: [AuthGuardService],
+  },
+  {
+    path: 'condition/:id',
+    loadChildren: () =>
+      import(
+        './pages/doctor/edit-health-condition-list/condition-detail/condition-detail.module'
+      ).then((m) => m.ConditionDetailModule),
   },
   {
     path: 'edit_medical_checkup_list',
@@ -116,9 +130,9 @@ const routes: Routes = [
   {
     path: 'schedule_list',
     loadChildren: () =>
-      import(
-        './pages/doctor/schedule-list/schedule-list.module'
-      ).then((m) => m.ScheduleListModule),
+      import('./pages/doctor/schedule-list/schedule-list.module').then(
+        (m) => m.ScheduleListModule
+      ),
     canActivate: [AuthGuardService],
   },
   // admin route

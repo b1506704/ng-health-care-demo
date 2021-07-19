@@ -11,6 +11,9 @@ interface DoctorState {
   doctorList: Array<Doctor>;
   exportData: Array<Doctor>;
   selectedDoctor: Object;
+  roleStatistics: Array<Object>;
+  departmentStatistics: Array<Object>;
+  genderStatistics: Array<Object>;
   totalPages: number;
   currentPage: number;
   totalItems: number;
@@ -20,6 +23,9 @@ const initialState: DoctorState = {
   doctorList: [],
   selectedDoctor: {},
   exportData: [],
+  roleStatistics: [],
+  departmentStatistics: [],
+  genderStatistics: [],
   totalPages: 0,
   currentPage: 0,
   totalItems: 0,
@@ -272,7 +278,6 @@ export class DoctorStore extends StateService<DoctorState> {
       });
   }
 
-
   loadDataAsync(page: number, size: number) {
     this.setIsLoading(true);
     this.doctorService.fetchDoctor(page, size).subscribe({
@@ -338,6 +343,18 @@ export class DoctorStore extends StateService<DoctorState> {
 
   $doctorList: Observable<Array<Doctor>> = this.select(
     (state) => state.doctorList
+  );
+
+  $departmentStatistics: Observable<Array<Object>> = this.select(
+    (state) => state.departmentStatistics
+  );
+
+  $roleStatistics: Observable<Array<Object>> = this.select(
+    (state) => state.roleStatistics
+  );
+
+  $genderStatistics: Observable<Array<Object>> = this.select(
+    (state) => state.genderStatistics
   );
 
   $exportData: Observable<Array<Doctor>> = this.select(
@@ -414,23 +431,21 @@ export class DoctorStore extends StateService<DoctorState> {
     this.confirmDialog('').then((confirm: boolean) => {
       if (confirm) {
         this.setIsLoading(true);
-        this.doctorService
-          .deleteSelectedDoctors(selectedDoctors)
-          .subscribe({
-            next: (data: any) => {
-              this.setState({ responseMsg: data });
-              console.log(data);
-              this.loadDataAsync(page, size);
-              console.log(this.state.doctorList);
-              this.setIsLoading(false);
-              this.store.showNotif(data.message, 'custom');
-            },
-            error: (data: any) => {
-              this.setIsLoading(false);
-              this.store.showNotif(data.error.errorMessage, 'error');
-              console.log(data);
-            },
-          });
+        this.doctorService.deleteSelectedDoctors(selectedDoctors).subscribe({
+          next: (data: any) => {
+            this.setState({ responseMsg: data });
+            console.log(data);
+            this.loadDataAsync(page, size);
+            console.log(this.state.doctorList);
+            this.setIsLoading(false);
+            this.store.showNotif(data.message, 'custom');
+          },
+          error: (data: any) => {
+            this.setIsLoading(false);
+            this.store.showNotif(data.error.errorMessage, 'error');
+            console.log(data);
+          },
+        });
       }
     });
   }
@@ -502,8 +517,7 @@ export class DoctorStore extends StateService<DoctorState> {
   getDoctor(id: string | number) {
     return this.$doctorList.pipe(
       map(
-        (doctors: Array<Doctor>) =>
-          doctors.find((doctor) => doctor._id === id)!
+        (doctors: Array<Doctor>) => doctors.find((doctor) => doctor._id === id)!
       )
     );
   }
@@ -732,6 +746,88 @@ export class DoctorStore extends StateService<DoctorState> {
         this.store.showNotif(data.error.errorMessage, 'error');
         console.log(data);
       },
+    });
+  }
+
+  getRoleCount(value: string) {
+    this.store.setIsLoading(true);
+    return this.doctorService
+      .filterDoctorByRole(value, 0, 5)
+      .toPromise()
+      .then((data: any) => {
+        this.setState({
+          roleStatistics: this.state.roleStatistics.concat({
+            role: value,
+            totalCount: data.totalItems,
+          }),
+        });
+        this.store.setIsLoading(false);
+      });
+  }
+
+  getRoleStatistics() {
+    const roleList = ['Doctor', 'Nurses', 'Assistants'];
+    this.setState({ roleStatistics: [] });
+    roleList.forEach((element) => {
+      this.getRoleCount(element);
+    });
+  }
+
+  getDepartmentCount(value: string) {
+    this.store.setIsLoading(true);
+    return this.doctorService
+      .filterDoctorByCategory(value, 0, 5)
+      .toPromise()
+      .then((data: any) => {
+        this.setState({
+          departmentStatistics: this.state.departmentStatistics.concat({
+            department: value,
+            totalCount: data.totalItems,
+          }),
+        });
+        this.store.setIsLoading(false);
+      });
+  }
+
+  getDepartmentStatistics() {
+    const departmentList = [
+      'Dermatology',
+      'Oncology',
+      'Endocrinology',
+      'Gastroenterology',
+      'Hepato-Biliary-Pancreatic',
+      'Neurology',
+      'Respiratory',
+      'Infectious',
+      'Ophthalmology',
+    ];
+    this.setState({ departmentStatistics: [] });
+    departmentList.forEach((element) => {
+      this.getDepartmentCount(element);
+    });
+  }
+
+  getGenderCount(value: string) {
+    this.store.setIsLoading(true);
+    return this.doctorService
+      .filterDoctorByGender(value, 0, 5)
+      .toPromise()
+      .then((data: any) => {
+        this.setState({
+          genderStatistics: this.state.genderStatistics.concat({
+            gender: value,
+            totalCount: data.totalItems,
+          }),
+        });
+        this.store.setIsLoading(false);
+      });
+  }
+
+  getGenderStatistics() {
+    const genderList = ['Male', 'Female'];
+    this.setState({ genderStatistics: [] });
+    genderList.forEach((element) => {
+      this.getGenderCount(element);
     });
   }
 

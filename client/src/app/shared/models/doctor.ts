@@ -7,4 +7,5 @@ export interface Doctor {
   department: String;
   description: String;
   role: String;
+  yearsOfExperience: Number;
 }

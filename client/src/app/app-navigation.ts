@@ -73,7 +73,7 @@ export const navigationDoctor = [
     items: [
       {
         text: 'Monitor Patient',
-        path: '/edit_health_condition_list',
+        path: '/room_monitor',
       },
       {
         text: 'Edit Medical Checkup',

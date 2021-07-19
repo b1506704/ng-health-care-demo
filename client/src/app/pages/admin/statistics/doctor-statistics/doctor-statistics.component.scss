@@ -1,0 +1,43 @@
+.chart-container {
+  display: flex;
+  flex-direction: column;
+  // flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+}
+.chart {
+  margin-top: 15px;
+  // border-bottom: 5px solid purple;
+  padding: 15px;
+  border-radius: 15px;
+  background-color: rgba(0, 0, 0, 0.404);
+  box-shadow: rgb(253, 253, 255) 0px 30px 60px -12px inset,
+    rgba(0, 0, 0, 0.3) 0px 18px 36px -18px inset;
+}
+
+::ng-deep .tooltip-header {
+  margin-bottom: 5px;
+  font-size: 16px;
+  font-weight: 500;
+  padding-bottom: 5px;
+  border-bottom: 1px solid #c5c5c5;
+}
+
+::ng-deep .tooltip-body {
+  width: 170px;
+}
+
+::ng-deep .tooltip-body .series-name {
+  font-weight: normal;
+  opacity: 0.6;
+  display: inline-block;
+  line-height: 1.5;
+  padding-right: 10px;
+  width: 126px;
+}
+
+::ng-deep .tooltip-body .value-text {
+  display: inline-block;
+  line-height: 1.5;
+  width: 30px;
+}

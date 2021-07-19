@@ -86,6 +86,69 @@ export class DoctorHttpService {
     );
   }
 
+  filterDoctorByRole(
+    value: string,
+    page: number,
+    size: number
+  ): Observable<Doctor> {
+    const params = new HttpParams()
+      .set('value', value)
+      .set('page', page)
+      .set('size', size);
+    console.log(params.toString());
+    return this.http.post<Doctor>(
+      this.apiDoctorUrl + '/filterByRole',
+      {},
+      {
+        params: params,
+        reportProgress: true,
+        observe: 'body',
+      }
+    );
+  }
+
+  filterDoctorByAge(
+    value: string,
+    page: number,
+    size: number
+  ): Observable<Doctor> {
+    const params = new HttpParams()
+      .set('value', value)
+      .set('page', page)
+      .set('size', size);
+    console.log(params.toString());
+    return this.http.post<Doctor>(
+      this.apiDoctorUrl + '/filterByAge',
+      {},
+      {
+        params: params,
+        reportProgress: true,
+        observe: 'body',
+      }
+    );
+  }
+
+  filterDoctorByGender(
+    value: string,
+    page: number,
+    size: number
+  ): Observable<Doctor> {
+    const params = new HttpParams()
+      .set('value', value)
+      .set('page', page)
+      .set('size', size);
+    console.log(params.toString());
+    return this.http.post<Doctor>(
+      this.apiDoctorUrl + '/filterByGender',
+      {},
+      {
+        params: params,
+        reportProgress: true,
+        observe: 'body',
+      }
+    );
+  }
+
   sortDoctorByName(
     value: string,
     page: number,
@@ -147,10 +210,14 @@ export class DoctorHttpService {
   }
 
   deleteAllDoctors(): Observable<Doctor> {
-    return this.http.post<Doctor>(this.apiDoctorUrl + '/deleteAll',{}, {
-      reportProgress: true,
-      observe: 'body',
-    });
+    return this.http.post<Doctor>(
+      this.apiDoctorUrl + '/deleteAll',
+      {},
+      {
+        reportProgress: true,
+        observe: 'body',
+      }
+    );
   }
 
   deleteDoctor(id: string): Observable<ArrayBuffer> {

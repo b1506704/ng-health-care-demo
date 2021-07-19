@@ -10,6 +10,7 @@ import { confirm } from 'devextreme/ui/dialog';
 interface RoomState {
   roomList: Array<Room>;
   exportData: Array<Room>;
+  roomInstance: Room;
   selectedRoom: Object;
   totalPages: number;
   currentPage: number;
@@ -19,6 +20,7 @@ interface RoomState {
 const initialState: RoomState = {
   roomList: [],
   selectedRoom: {},
+  roomInstance: undefined,
   exportData: [],
   totalPages: 0,
   currentPage: 0,
@@ -79,6 +81,55 @@ export class RoomStore extends StateService<RoomState> {
       });
   }
 
+  initInfiniteData(page: number, size: number) {
+    this.roomService
+      .fetchRoom(page, size)
+      .toPromise()
+      .then((data: any) => {
+        if (page === 0) {
+          this.setState({
+            roomList: new Array<Room>(size),
+          });
+        } else {
+          this.setState({
+            roomList: new Array<Room>(page * size),
+          });
+        }
+        console.log('Current flag: infite list');
+        console.log(this.state.roomList);
+        this.setState({ totalItems: data.totalItems });
+        this.setState({ totalPages: data.totalPages });
+        this.setState({ currentPage: data.currentPage });
+      })
+      .then(() => {
+        this.loadDataAsync(page, size);
+      });
+  }
+
+  loadInfiniteDataAsync(page: number, size: number) {
+    this.setIsLoading(true);
+    this.roomService.fetchRoom(page, size).subscribe({
+      next: (data: any) => {
+        this.setState({
+          roomList: this.state.roomList.concat(data.items),
+        });
+        console.log('Infinite list');
+        console.log(this.state.roomList);
+        console.log('Server response');
+        console.log(data);
+        this.setState({ totalItems: data.totalItems });
+        this.setState({ totalPages: data.totalPages });
+        this.setState({ currentPage: data.currentPage });
+        this.setIsLoading(false);
+      },
+      error: (data: any) => {
+        this.setIsLoading(false);
+        this.store.showNotif(data.error.errorMessage, 'error');
+        console.log(data);
+      },
+    });
+  }
+
   initFilterByCategoryData(value: string, page: number, size: number) {
     this.store.showNotif('Filtered Mode On', 'custom');
     this.roomService
@@ -89,6 +140,26 @@ export class RoomStore extends StateService<RoomState> {
           roomList: new Array<Room>(data.totalItems),
         });
         console.log('Current flag: filtered list');
+        console.log(this.state.roomList);
+        this.setState({ totalItems: data.totalItems });
+        this.setState({ totalPages: data.totalPages });
+        this.setState({ currentPage: data.currentPage });
+      })
+      .then(() => {
+        this.filterRoomByCategory(value, page, size);
+      });
+  }
+
+  initInfiniteFilterByCategoryData(value: string, page: number, size: number) {
+    this.store.showNotif('Filtered Mode On', 'custom');
+    this.roomService
+      .filterRoomByCategory(value, page, size)
+      .toPromise()
+      .then((data: any) => {
+        this.setState({
+          roomList: new Array<Room>(size),
+        });
+        console.log('Current flag: infinite filtered list');
         console.log(this.state.roomList);
         this.setState({ totalItems: data.totalItems });
         this.setState({ totalPages: data.totalPages });
@@ -119,6 +190,30 @@ export class RoomStore extends StateService<RoomState> {
       });
   }
 
+  initInfiniteSearchByNameData(value: string, page: number, size: number) {
+    this.store.showNotif('Searched Mode On', 'custom');
+    this.roomService
+      .searchRoomByName(value, page, size)
+      .toPromise()
+      .then((data: any) => {
+        if (data.totalItems !== 0) {
+          this.setState({
+            roomList: new Array<Room>(size),
+          });
+        } else {
+          this.store.showNotif('No result found!', 'custom');
+        }
+        console.log('Current flag: infitite searched list');
+        console.log(this.state.roomList);
+        this.setState({ totalItems: data.totalItems });
+        this.setState({ totalPages: data.totalPages });
+        this.setState({ currentPage: data.currentPage });
+      })
+      .then(() => {
+        this.searchRoomByName(value, page, size);
+      });
+  }
+
   initSortByPriceData(value: string, page: number, size: number) {
     this.store.showNotif('Sort Mode On', 'custom');
     this.roomService
@@ -127,6 +222,26 @@ export class RoomStore extends StateService<RoomState> {
       .then((data: any) => {
         this.setState({
           roomList: new Array<Room>(data.totalItems),
+        });
+        console.log('Current flag: sort list');
+        console.log(this.state.roomList);
+        this.setState({ totalItems: data.totalItems });
+        this.setState({ totalPages: data.totalPages });
+        this.setState({ currentPage: data.currentPage });
+      })
+      .then(() => {
+        this.sortRoomByPrice(value, page, size);
+      });
+  }
+
+  initInfiniteSortByPriceData(value: string, page: number, size: number) {
+    this.store.showNotif('Sort Mode On', 'custom');
+    this.roomService
+      .sortRoomByPrice(value, page, size)
+      .toPromise()
+      .then((data: any) => {
+        this.setState({
+          roomList: new Array<Room>(size),
         });
         console.log('Current flag: sort list');
         console.log(this.state.roomList);
@@ -159,18 +274,12 @@ export class RoomStore extends StateService<RoomState> {
       });
   }
 
-
   loadDataAsync(page: number, size: number) {
     this.setIsLoading(true);
     this.roomService.fetchRoom(page, size).subscribe({
       next: (data: any) => {
         this.setState({
-          roomList: this.fillEmpty(
-            page,
-            size,
-            this.state.roomList,
-            data.items
-          ),
+          roomList: this.fillEmpty(page, size, this.state.roomList, data.items),
         });
         console.log('Pure list');
         console.log(this.state.roomList);
@@ -194,12 +303,7 @@ export class RoomStore extends StateService<RoomState> {
     this.roomService.fetchRoom(page, size).subscribe({
       next: (data: any) => {
         this.setState({
-          roomList: this.fillEmpty(
-            page,
-            size,
-            this.state.roomList,
-            data.items
-          ),
+          roomList: this.fillEmpty(page, size, this.state.roomList, data.items),
         });
         this.setState({ totalItems: data.totalItems });
         this.setState({ totalPages: data.totalPages });
@@ -223,9 +327,7 @@ export class RoomStore extends StateService<RoomState> {
     this.store.setIsLoading(_isLoading);
   }
 
-  $roomList: Observable<Array<Room>> = this.select(
-    (state) => state.roomList
-  );
+  $roomList: Observable<Array<Room>> = this.select((state) => state.roomList);
 
   $exportData: Observable<Array<Room>> = this.select(
     (state) => state.exportData
@@ -240,6 +342,8 @@ export class RoomStore extends StateService<RoomState> {
   $selectedRoom: Observable<Object> = this.select(
     (state) => state.selectedRoom
   );
+
+  $roomInstance: Observable<Room> = this.select((state) => state.roomInstance);
 
   uploadRoom(room: Room, page: number, size: number) {
     this.confirmDialog('').then((confirm: boolean) => {
@@ -301,23 +405,21 @@ export class RoomStore extends StateService<RoomState> {
     this.confirmDialog('').then((confirm: boolean) => {
       if (confirm) {
         this.setIsLoading(true);
-        this.roomService
-          .deleteSelectedRooms(selectedRooms)
-          .subscribe({
-            next: (data: any) => {
-              this.setState({ responseMsg: data });
-              console.log(data);
-              this.loadDataAsync(page, size);
-              console.log(this.state.roomList);
-              this.setIsLoading(false);
-              this.store.showNotif(data.message, 'custom');
-            },
-            error: (data: any) => {
-              this.setIsLoading(false);
-              this.store.showNotif(data.error.errorMessage, 'error');
-              console.log(data);
-            },
-          });
+        this.roomService.deleteSelectedRooms(selectedRooms).subscribe({
+          next: (data: any) => {
+            this.setState({ responseMsg: data });
+            console.log(data);
+            this.loadDataAsync(page, size);
+            console.log(this.state.roomList);
+            this.setIsLoading(false);
+            this.store.showNotif(data.message, 'custom');
+          },
+          error: (data: any) => {
+            this.setIsLoading(false);
+            this.store.showNotif(data.error.errorMessage, 'error');
+            console.log(data);
+          },
+        });
       }
     });
   }
@@ -386,13 +488,16 @@ export class RoomStore extends StateService<RoomState> {
     this.setState({ currentPage: _currentPage });
   }
 
-  getRoom(id: string | number) {
-    return this.$roomList.pipe(
-      map(
-        (rooms: Array<Room>) =>
-          rooms.find((room) => room._id === id)!
-      )
-    );
+  getRoom(id: string) {
+    this.setIsLoading(true);
+    return this.roomService
+      .getRoom(id)
+      .toPromise()
+      .then((data: any) => {
+        this.setState({ roomInstance: data });
+        console.log(data);
+        this.setIsLoading(false);
+      });
   }
 
   filterRoomByPrice(
@@ -402,30 +507,23 @@ export class RoomStore extends StateService<RoomState> {
     size: number
   ) {
     this.setIsLoading(true);
-    this.roomService
-      .filterRoomByPrice(criteria, value, page, size)
-      .subscribe({
-        next: (data: any) => {
-          this.setState({ responseMsg: data });
-          this.setState({
-            roomList: this.fillEmpty(
-              page,
-              size,
-              this.state.roomList,
-              data.items
-            ),
-          });
-          this.setState({ totalItems: data.totalItems });
-          this.setState({ totalPages: data.totalPages });
-          this.setState({ currentPage: data.currentPage });
-          this.setIsLoading(false);
-        },
-        error: (data: any) => {
-          this.setIsLoading(false);
-          this.store.showNotif(data.error.errorMessage, 'error');
-          console.log(data);
-        },
-      });
+    this.roomService.filterRoomByPrice(criteria, value, page, size).subscribe({
+      next: (data: any) => {
+        this.setState({ responseMsg: data });
+        this.setState({
+          roomList: this.fillEmpty(page, size, this.state.roomList, data.items),
+        });
+        this.setState({ totalItems: data.totalItems });
+        this.setState({ totalPages: data.totalPages });
+        this.setState({ currentPage: data.currentPage });
+        this.setIsLoading(false);
+      },
+      error: (data: any) => {
+        this.setIsLoading(false);
+        this.store.showNotif(data.error.errorMessage, 'error');
+        console.log(data);
+      },
+    });
   }
 
   filterRoomByCategory(value: string, page: number, size: number) {
@@ -433,12 +531,31 @@ export class RoomStore extends StateService<RoomState> {
     this.roomService.filterRoomByCategory(value, page, size).subscribe({
       next: (data: any) => {
         this.setState({
-          roomList: this.fillEmpty(
-            page,
-            size,
-            this.state.roomList,
-            data.items
-          ),
+          roomList: this.fillEmpty(page, size, this.state.roomList, data.items),
+        });
+        console.log('Filtered list');
+        console.log(this.state.roomList);
+        console.log('Server response');
+        console.log(data);
+        this.setState({ totalItems: data.totalItems });
+        this.setState({ totalPages: data.totalPages });
+        this.setState({ currentPage: data.currentPage });
+        this.setIsLoading(false);
+      },
+      error: (data: any) => {
+        this.setIsLoading(false);
+        this.store.showNotif(data.error.errorMessage, 'error');
+        console.log(data);
+      },
+    });
+  }
+
+  filterInfiniteRoomByCategory(value: string, page: number, size: number) {
+    this.setIsLoading(true);
+    this.roomService.filterRoomByCategory(value, page, size).subscribe({
+      next: (data: any) => {
+        this.setState({
+          roomList: this.state.roomList.concat(data.items),
         });
         console.log('Filtered list');
         console.log(this.state.roomList);
@@ -462,14 +579,37 @@ export class RoomStore extends StateService<RoomState> {
     this.roomService.searchRoomByName(value, page, size).subscribe({
       next: (data: any) => {
         this.setState({
-          roomList: this.fillEmpty(
-            page,
-            size,
-            this.state.roomList,
-            data.items
-          ),
+          roomList: this.fillEmpty(page, size, this.state.roomList, data.items),
         });
         console.log('Searched list');
+        console.log(this.state.roomList);
+        console.log('Server response');
+        console.log(data);
+        this.setState({ totalItems: data.totalItems });
+        this.setState({ totalPages: data.totalPages });
+        this.setState({ currentPage: data.currentPage });
+        this.setIsLoading(false);
+      },
+      error: (data: any) => {
+        this.setIsLoading(false);
+        this.store.showNotif(data.error.errorMessage, 'error');
+        console.log(data);
+      },
+    });
+  }
+
+  searchInfiniteRoomByName(value: string, page: number, size: number) {
+    this.setIsLoading(true);
+    this.roomService.searchRoomByName(value, page, size).subscribe({
+      next: (data: any) => {
+        if (data.totalItems !== 0) {
+          this.setState({
+            roomList: this.state.roomList.concat(data.items),
+          });
+        } else {
+          this.store.showNotif('No result found!', 'custome');
+        }
+        console.log('Infite searched list');
         console.log(this.state.roomList);
         console.log('Server response');
         console.log(data);
@@ -492,12 +632,7 @@ export class RoomStore extends StateService<RoomState> {
       next: (data: any) => {
         this.setState({ responseMsg: data });
         this.setState({
-          roomList: this.fillEmpty(
-            page,
-            size,
-            this.state.roomList,
-            data.items
-          ),
+          roomList: this.fillEmpty(page, size, this.state.roomList, data.items),
         });
         this.setState({ totalItems: data.totalItems });
         this.setState({ totalPages: data.totalPages });
@@ -516,18 +651,37 @@ export class RoomStore extends StateService<RoomState> {
     });
   }
 
+  sortInfiniteRoomByPrice(value: string, page: number, size: number) {
+    this.setIsLoading(true);
+    this.roomService.sortRoomByPrice(value, page, size).subscribe({
+      next: (data: any) => {
+        this.setState({
+          roomList: this.state.roomList.concat(data.items),
+        });
+        console.log('Infite sorted list');
+        console.log(this.state.roomList);
+        console.log('Server response');
+        console.log(data);
+        this.setState({ totalItems: data.totalItems });
+        this.setState({ totalPages: data.totalPages });
+        this.setState({ currentPage: data.currentPage });
+        this.setIsLoading(false);
+      },
+      error: (data: any) => {
+        this.setIsLoading(false);
+        this.store.showNotif(data.error.errorMessage, 'error');
+        console.log(data);
+      },
+    });
+  }
+
   sortRoomByPrice(value: string, page: number, size: number) {
     this.setIsLoading(true);
     this.roomService.sortRoomByPrice(value, page, size).subscribe({
       next: (data: any) => {
         this.setState({ responseMsg: data });
         this.setState({
-          roomList: this.fillEmpty(
-            page,
-            size,
-            this.state.roomList,
-            data.items
-          ),
+          roomList: this.fillEmpty(page, size, this.state.roomList, data.items),
         });
         this.setState({ totalItems: data.totalItems });
         this.setState({ totalPages: data.totalPages });

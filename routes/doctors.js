@@ -15,6 +15,9 @@ import {
   sortByName,
   sortByNumber,
   fetchAll,
+  filterDoctorByRole,
+  filterDoctorByAge,
+  filterDoctorByGender,
 } from "../controllers/doctors.js";
 
 const router = express.Router();
@@ -29,6 +32,9 @@ router.post("/batch", deleteSelectedDoctors);
 router.post("/updateDoctor/:_id", updateDoctor);
 router.post("/filterByPrice", filterDoctorByPrice);
 router.post("/filterByCategory", filterDoctorByCategory);
+router.post("/filterByRole", filterDoctorByRole);
+router.post("/filterByAge", filterDoctorByAge);
+router.post("/filterByGender", filterDoctorByGender);
 router.post("/searchByName", searchDoctorByName);
 router.post("/sortByName", sortByName);
 router.post("/sortByPrice", sortByNumber);

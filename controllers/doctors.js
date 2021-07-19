@@ -99,8 +99,16 @@ export const deleteAllDoctors = async (req, res) => {
 };
 
 export const createDoctor = async (req, res) => {
-  const { userName, fullName, age, gender, department, role, description } =
-    req.body;
+  const {
+    userName,
+    fullName,
+    age,
+    gender,
+    department,
+    role,
+    description,
+    yearsOfExperience,
+  } = req.body;
   console.log(req.body);
 
   try {
@@ -112,6 +120,7 @@ export const createDoctor = async (req, res) => {
       department,
       role,
       description,
+      yearsOfExperience,
     });
     await newDoctor.save();
     res.status(200).json({ message: `Doctor ${fullName} created` });
@@ -194,6 +203,99 @@ export const filterDoctorByCategory = (req, res) => {
     const { limit, offset } = getPagination(page, size);
     console.log(`Limit: ${limit}  Offset: ${offset}`);
     const query = { department: value };
+    const options = {
+      sort: { createdAt: "desc" },
+      offset: offset,
+      limit: limit,
+    };
+    Doctor.paginate(query, options)
+      .then((data) => {
+        res.status(200).json({
+          totalItems: data.totalDocs,
+          items: data.docs,
+          totalPages: data.totalPages,
+          currentPage: data.page - 1,
+          nextPage: data.nextPage,
+          prevPage: data.prevPage,
+        });
+      })
+      .catch((error) => {
+        res.status(404).json({ errorMessage: error.message });
+      });
+  } catch (error) {
+    res.status(404).json({ errorMessage: "Failed to get data!" });
+  }
+};
+
+export const filterDoctorByRole = (req, res) => {
+  const { value, page, size } = req.query;
+  console.log(`Page: ${page}  Size: ${size}. Value: ${value}`);
+  try {
+    const { limit, offset } = getPagination(page, size);
+    console.log(`Limit: ${limit}  Offset: ${offset}`);
+    const query = { role: value };
+    const options = {
+      sort: { createdAt: "desc" },
+      offset: offset,
+      limit: limit,
+    };
+    Doctor.paginate(query, options)
+      .then((data) => {
+        res.status(200).json({
+          totalItems: data.totalDocs,
+          items: data.docs,
+          totalPages: data.totalPages,
+          currentPage: data.page - 1,
+          nextPage: data.nextPage,
+          prevPage: data.prevPage,
+        });
+      })
+      .catch((error) => {
+        res.status(404).json({ errorMessage: error.message });
+      });
+  } catch (error) {
+    res.status(404).json({ errorMessage: "Failed to get data!" });
+  }
+};
+
+export const filterDoctorByGender = (req, res) => {
+  const { value, page, size } = req.query;
+  console.log(`Page: ${page}  Size: ${size}. Value: ${value}`);
+  try {
+    const { limit, offset } = getPagination(page, size);
+    console.log(`Limit: ${limit}  Offset: ${offset}`);
+    const query = { gender: value };
+    const options = {
+      sort: { createdAt: "desc" },
+      offset: offset,
+      limit: limit,
+    };
+    Doctor.paginate(query, options)
+      .then((data) => {
+        res.status(200).json({
+          totalItems: data.totalDocs,
+          items: data.docs,
+          totalPages: data.totalPages,
+          currentPage: data.page - 1,
+          nextPage: data.nextPage,
+          prevPage: data.prevPage,
+        });
+      })
+      .catch((error) => {
+        res.status(404).json({ errorMessage: error.message });
+      });
+  } catch (error) {
+    res.status(404).json({ errorMessage: "Failed to get data!" });
+  }
+};
+
+export const filterDoctorByAge = (req, res) => {
+  const { value, page, size } = req.query;
+  console.log(`Page: ${page}  Size: ${size}. Value: ${value}`);
+  try {
+    const { limit, offset } = getPagination(page, size);
+    console.log(`Limit: ${limit}  Offset: ${offset}`);
+    const query = { age: value };
     const options = {
       sort: { createdAt: "desc" },
       offset: offset,
@@ -326,29 +428,28 @@ export const generateRandomDoctor = async (req, res) => {
       ];
       const department = departmentList();
       const nameList = [
-        "Dr. Elon Musk",
-        "Dr. Tim Cahill",
-        "Dr. David De Gea",
-        "Dr. Manuel Neuer",
-        "Dr. Phi Minh Long",
-        "Dr. Au Trung",
-        "Dr. Thach Sung",
+        "Dr. Strange",
+        "Dr. Alpha",
+        "Dr. Beta",
         "Dr. Alien",
         "Dr. Predator",
       ];
       const randomNumber = random(1, 200);
-      const randomDepartment = department[random(0, department.length - 1)]._id;
+      const randomAge = random(20, 70);
+      const randomExperience = random(20, 50);
+      const randomDepartment = department[random(0, department.length - 1)].name;
       const randomRole = roleList[random(0, roleList.length - 1)].name;
       const randomName = nameList[random(0, nameList.length - 1)];
       const randomGender = genderList[random(0, genderList.length - 1)];
       const newDoctor = new Doctor({
         userName: `user#${randomNumber}`,
         fullName: `${randomName} Clone #${randomNumber}`,
-        age: randomNumber,
+        age: randomAge,
         gender: randomGender,
         department: randomDepartment,
         description: `Specialize in #${randomNumber} treatment`,
         role: randomRole,
+        yearsOfExperience: randomExperience,
       });
       await newDoctor.save();
     }
