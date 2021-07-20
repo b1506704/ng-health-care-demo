@@ -104,13 +104,7 @@ const routes: Routes = [
         './pages/doctor/edit-health-condition-list/edit-health-condition-list.module'
       ).then((m) => m.EditHealthConditionModule),
   },
-  {
-    path: 'condition/:id',
-    loadChildren: () =>
-      import(
-        './pages/doctor/edit-health-condition-list/condition-detail/condition-detail.module'
-      ).then((m) => m.ConditionDetailModule),
-  },
+  
   {
     path: 'edit_medical_checkup_list',
     loadChildren: () =>

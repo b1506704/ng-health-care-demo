@@ -1,15 +1,9 @@
 import { OnDestroy } from '@angular/core';
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, ParamMap, Router } from '@angular/router';
-import { Observable } from 'rxjs';
-import { switchMap } from 'rxjs/operators';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Customer } from 'src/app/shared/models/customer';
 import { HealthCondition } from 'src/app/shared/models/health-condition';
-import { Room } from 'src/app/shared/models/room';
-import { RoomStore } from 'src/app/shared/services/room/room-store.service';
-import { StoreService } from 'src/app/shared/services/store.service';
-import random from '../../../../utils/RandomNumber';
-
+import { Socket } from 'ngx-socket-io';
 @Component({
   selector: 'app-condition-detail',
   templateUrl: './condition-detail.component.html',
@@ -18,60 +12,52 @@ import random from '../../../../utils/RandomNumber';
 export class ConditionDetailComponent implements OnInit, OnDestroy {
   visualRange: Object = {};
   patientData!: HealthCondition;
+  patientID: String;
   randomInterval: any;
-
+  currentPatient: Customer;
   patientStatus: string = 'Healthy';
+  currentDocument = this.socket.fromEvent<Object>('document');
+  documents = this.socket.fromEvent<string[]>('documents');
+
   customizeText(arg: any) {
     return arg.valueText + ' BPM';
   }
 
-  constructor(
-    private store: StoreService,
-    private roomStore: RoomStore,
-    private router: Router,
-    private route: ActivatedRoute
-  ) {}
+  constructor(private socket: Socket, private route: ActivatedRoute) {}
 
-  patientDataListener() {
-    return this.store.$patientData.subscribe((data: any) => {
-      if (data.heartRate >= 180) {
-        this.patientStatus = 'CRITICAL';
-      } else if (data.heartRate >= 110) {
-        this.patientStatus = 'NORMAL';
-      } else if (data.heartRate >= 60) {
-        this.patientStatus = 'HEALTHY';
-      } else if (data.heartRate >= 20) {
-        this.patientStatus = 'DYING';
-      } else if (data.heartRate === 0) {
-        this.patientStatus = 'DEAD';
-      }
-      this.patientData = data;
+  getDocument(id: string) {
+    this.socket.emit('getDoc', id);
+  }
+
+  newDocument() {
+    this.socket.emit('addDoc', { id: this.patientID, doc: '' });
+  }
+
+  editDocument(document: Document) {
+    this.socket.emit('editDoc', document);
+  }
+
+  getPatientID() {
+    return this.route.paramMap.subscribe((param) => {
+      this.patientID = param.get('id');
+      this.newDocument();
+      this.getDocument(param.get('id'));
     });
   }
 
-  // getRoom() {
-  //   this.roomDetail$ = this.route.paramMap.pipe(
-  //     switchMap((params: ParamMap) =>
-  //       this.roomStore.getRoom(params.get('_id')!)
-  //     )
-  //   );
-  // }
+  pmPatient() {}
+
+  alertPatient() {}
+
+  summonPatient() {}
 
   ngOnInit(): void {
-    this.randomInterval = setInterval(() => {
-      const patientData = {
-        bloodPressure: random(70, 200),
-        sweat: random(1, 100),
-        bodyTemperature: random(10, 90),
-        heartRate: random(0, 210),
-      };
-      this.store.setPatientData(patientData);
-    }, 1200);
-    this.patientDataListener();
+    this.getPatientID();
+    this.documents.subscribe((data: any) => {
+      console.log('DATA FROM SOCKET');
+      console.log(data);
+    });
   }
 
-  ngOnDestroy(): void {
-    this.patientDataListener().unsubscribe();
-    clearInterval(this.randomInterval);
-  }
+  ngOnDestroy(): void {}
 }

@@ -1,22 +1,24 @@
 <ng-container *ngIf="roomDetail">
+  <h2>Room {{ roomDetail.number }}</h2>
   <dx-box>
     <dxi-item [ratio]="1">
       <dx-list
-        class="list"
-        [dataSource]="roomDetail.customerID"
-        [grouped]="true"
+        [height]="500"
+        [dataSource]="customerList"
         [searchEnabled]="true"
+        searchExpr="id"
+        searchMode="contains"
         selectionMode="single"
         (onSelectionChanged)="listSelectionChanged($event)"
-        [selectedItemKeys]="[roomDetail.customerID.id]"
-        >
+        [selectedItemKeys]="[customerList.id]"
+      >
         <div *dxTemplate="let data of 'item'">
-          <div>{{data.id}}</div>
+          <div>{{ data.id }}</div>
         </div>
       </dx-list>
     </dxi-item>
-    <dxi-item [ratio]="3">
-      <!-- <router-outlet></router-outlet> -->
+    <dxi-item [ratio]="5">
+      <router-outlet></router-outlet>
     </dxi-item>
   </dx-box>
 </ng-container>

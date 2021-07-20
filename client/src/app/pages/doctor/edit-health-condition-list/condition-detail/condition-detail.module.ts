@@ -6,7 +6,12 @@ import {
   DxCircularGaugeModule,
   DxLinearGaugeModule,
   DxListModule,
+  DxSpeedDialActionModule,
+  DxToolbarModule,
 } from 'devextreme-angular';
+import { SocketIoConfig, SocketIoModule } from 'ngx-socket-io';
+
+const config: SocketIoConfig = { url: 'http://localhost:80', options: {} };
 
 @NgModule({
   imports: [
@@ -15,6 +20,9 @@ import {
     DxLinearGaugeModule,
     DxCircularGaugeModule,
     DxListModule,
+    DxToolbarModule,
+    DxSpeedDialActionModule,
+    SocketIoModule.forRoot(config),
   ],
   declarations: [ConditionDetailComponent],
 })

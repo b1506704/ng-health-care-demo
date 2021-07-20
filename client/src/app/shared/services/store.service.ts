@@ -27,6 +27,7 @@ const initialState: StoreState = {
   currentUser: {},
   currentRole: 'Doctor',
   patientData: {
+    customerID: '',
     bloodPressure: 110,
     sweat: 30,
     bodyTemperature: 33,
@@ -98,5 +99,4 @@ export class StoreService extends StateService<StoreState> {
     notify({ message: message, width: 150 }, type);
     this.setResponseMsg(message);
   }
-
 }
