@@ -11,18 +11,22 @@ import {
 } from 'devextreme-angular';
 import { SocketIoConfig, SocketIoModule } from 'ngx-socket-io';
 
-const config: SocketIoConfig = { url: 'http://localhost:80', options: {} };
+// const config: SocketIoConfig = { url: 'http://localhost:80', options: {} };
+const config: SocketIoConfig = {
+  url: 'https://ng-health-care-demo.herokuapp.com',
+  options: {},
+};
 
 @NgModule({
   imports: [
     CommonModule,
+    SocketIoModule.forRoot(config),
     ConditionDetailRoutingModule,
     DxLinearGaugeModule,
     DxCircularGaugeModule,
     DxListModule,
     DxToolbarModule,
     DxSpeedDialActionModule,
-    SocketIoModule.forRoot(config),
   ],
   declarations: [ConditionDetailComponent],
 })

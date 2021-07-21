@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import notify from 'devextreme/ui/notify';
 import { Observable } from 'rxjs';
-import { HealthCondition } from '../models/health-condition';
 import { User } from '../models/user';
 import { NotificationService } from './notification.service';
 import { StateService } from './state.service';
@@ -13,7 +12,6 @@ interface StoreState {
   selectedUser: Object;
   currentUser: Object;
   currentRole: String;
-  patientData: HealthCondition;
   isLoading: Boolean;
   notifType: string;
   responseMsg: string;
@@ -26,13 +24,6 @@ const initialState: StoreState = {
   selectedUser: {},
   currentUser: {},
   currentRole: 'Doctor',
-  patientData: {
-    customerID: '',
-    bloodPressure: 110,
-    sweat: 30,
-    bodyTemperature: 33,
-    heartRate: 90,
-  },
   isLoading: false,
   responseMsg: '',
   notifType: '',
@@ -57,10 +48,6 @@ export class StoreService extends StateService<StoreState> {
     (state) => state.lastVisitTime
   );
 
-  $patientData: Observable<HealthCondition> = this.select(
-    (state) => state.patientData
-  );
-
   $currentUser: Observable<Object> = this.select((state) => state.currentUser);
 
   $currentRole: Observable<String> = this.select((state) => state.currentRole);
@@ -81,10 +68,6 @@ export class StoreService extends StateService<StoreState> {
 
   setLastVisit(_date: Date) {
     this.setState({ lastVisitTime: _date });
-  }
-
-  setPatientData(_patientData: HealthCondition) {
-    this.setState({ patientData: _patientData });
   }
 
   setCurrentUser(_user: Object) {

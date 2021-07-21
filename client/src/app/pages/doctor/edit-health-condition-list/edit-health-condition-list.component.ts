@@ -1,6 +1,6 @@
 import { OnDestroy } from '@angular/core';
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, ParamMap, Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { HealthCondition } from 'src/app/shared/models/health-condition';
 import { Room } from 'src/app/shared/models/room';
 import { RoomStore } from 'src/app/shared/services/room/room-store.service';
@@ -52,6 +52,14 @@ export class EditHealthConditionListComponent implements OnInit, OnDestroy {
       relativeTo: this.route,
     });
   };
+
+  navigateToRoom() {
+    this.router.navigate(['/room_monitor']);
+  }
+
+  navigateToSchedule() {
+    this.router.navigate(['/schedule_list']);
+  }
 
   ngOnInit(): void {
     this.getRoomID();

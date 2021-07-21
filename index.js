@@ -62,7 +62,7 @@ const io = new Server(server, {
 
 let patientData;
 let patientStatus;
-const documents = {};
+const conditions = {};
 const randomInterval = setInterval(() => {
   patientData = {
     bloodPressure: random(70, 200),
@@ -94,24 +94,35 @@ io.on("connection", (socket) => {
     previousId = currentId;
   };
 
-  socket.on("getDoc", (docId) => {
-    safeJoin(docId);
-    socket.emit("document", documents[docId]);
+  socket.on("getCondition", (customerID) => {
+    safeJoin(customerID);
+    setInterval(() => {
+      conditions[customerID] = {
+        id: customerID,
+        condition: {
+          bloodPressure: random(70, 200),
+          respiratoryRate: random(1, 100),
+          bodyTemperature: random(10, 90),
+          heartRate: random(0, 210),
+        },
+      };
+      socket.emit("condition", conditions[customerID]);
+    }, 1200);
   });
 
-  socket.on("addDoc", (doc) => {
-    documents[doc.id] = doc;
-    safeJoin(doc.id);
-    io.emit("documents", Object.keys(documents));
-    socket.emit("document", doc);
+  socket.on("newCondition", (condition) => {
+    conditions[condition.id] = condition;
+    safeJoin(condition.id);
+    io.emit("conditions", Object.keys(conditions));
+    socket.emit("condition", condition);
   });
 
-  socket.on("editDoc", (doc) => {
-    documents[doc.id] = doc;
-    socket.to(doc.id).emit("document", doc);
+  socket.on("editCondition", (condition) => {
+    conditions[condition.id] = condition;
+    socket.to(condition.id).emit("condition", condition);
   });
 
-  io.emit("documents", Object.keys(documents));
+  io.emit("conditions", Object.keys(conditions));
 
   console.log(`Socket ${socket.id} has connected`);
 

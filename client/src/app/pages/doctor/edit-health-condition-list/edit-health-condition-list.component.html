@@ -1,24 +1,50 @@
 <ng-container *ngIf="roomDetail">
-  <h2>Room {{ roomDetail.number }}</h2>
-  <dx-box>
-    <dxi-item [ratio]="1">
-      <dx-list
-        [height]="500"
-        [dataSource]="customerList"
-        [searchEnabled]="true"
-        searchExpr="id"
-        searchMode="contains"
-        selectionMode="single"
-        (onSelectionChanged)="listSelectionChanged($event)"
-        [selectedItemKeys]="[customerList.id]"
+  <dx-toolbar>
+    <dxi-item location="before" locateInMenu="auto">
+      <dx-button
+        icon="arrowleft"
+        type="outline"
+        text="To Room"
+        hint="Navigate to Room List"
+        (onClick)="navigateToRoom()"
       >
-        <div *dxTemplate="let data of 'item'">
-          <div>{{ data.id }}</div>
-        </div>
-      </dx-list>
+      </dx-button>
     </dxi-item>
-    <dxi-item [ratio]="5">
-      <router-outlet></router-outlet>
+    <dxi-item location="after" locateInMenu="auto">
+      <dx-button
+        icon="arrowright"
+        type="outline"
+        text="Schedule List"
+        hint="Navigate to Schedule List"
+        (onClick)="navigateToSchedule()"
+      >
+      </dx-button>
     </dxi-item>
-  </dx-box>
+
+    <dxi-item [location]="'center'" [text]="'Room' + roomDetail.number">
+    </dxi-item>
+  </dx-toolbar>
+  <div style="margin-left: 15px">
+    <dx-box>
+      <dxi-item [ratio]="1">
+        <dx-list
+          [height]="500"
+          [dataSource]="customerList"
+          [searchEnabled]="true"
+          searchExpr="id"
+          searchMode="contains"
+          selectionMode="single"
+          (onSelectionChanged)="listSelectionChanged($event)"
+          [selectedItemKeys]="[customerList.id]"
+        >
+          <div *dxTemplate="let data of 'item'">
+            <div>{{ data.id }}</div>
+          </div>
+        </dx-list>
+      </dxi-item>
+      <dxi-item [ratio]="5">
+        <router-outlet></router-outlet>
+      </dxi-item>
+    </dx-box>
+  </div>
 </ng-container>
