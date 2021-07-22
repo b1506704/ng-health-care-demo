@@ -3,6 +3,7 @@ import express from "express";
 import Room from "../models/room.js";
 import getPagination from "../middleware/getPagination.js";
 import random from "../middleware/RandomNumber.js";
+import Customer from "../models/customer.js";
 
 const router = express.Router();
 
@@ -325,7 +326,7 @@ export const generateRandomRoom = async (req, res) => {
     for (let i = 0; i < 100; i++) {
       const randomNumber = random(1, 200);
       const vacancyStatus = [{ name: "FULL" }, { name: "AVAILABLE" }];
-      let customerList = [{id: "user1"}, {id: "user2"}];
+      const toAddCustomer = await Customer.find().limit(randomNumber);
       const randomVacancyStatus =
         vacancyStatus[random(0, vacancyStatus.length - 1)].name;
       const randomDate_1 = new Date(
@@ -337,25 +338,15 @@ export const generateRandomRoom = async (req, res) => {
         random(1, 60)
       );
       const randomDate_2 = new Date();
-      let isFillingCustomer = false;
-      for (let j = 0; j < randomNumber; j++) {
-        isFillingCustomer = true;
-        customerList = [...customerList, {id: `user${j}`}];
-        if (j === randomNumber - 1) {
-          isFillingCustomer = false;
-        }
-      }
-      if (isFillingCustomer === false) {
-        const newRoom = new Room({
-          number: `R${randomNumber}`,
-          customerID: customerList,
-          vacancyStatus: randomVacancyStatus,
-          totalSlot: customerList.length + 5,
-          admissionDate: randomDate_1,
-          dischargeDate: randomDate_2,
-        });
-        await newRoom.save();
-      }
+      const newRoom = new Room({
+        number: `R${randomNumber}`,
+        customerID: toAddCustomer,
+        vacancyStatus: randomVacancyStatus,
+        totalSlot: toAddCustomer.length + 5,
+        admissionDate: randomDate_1,
+        dischargeDate: randomDate_2,
+      });
+      await newRoom.save();
     }
     res.status(200).json({ message: `Rooms created randomly` });
   } catch (error) {

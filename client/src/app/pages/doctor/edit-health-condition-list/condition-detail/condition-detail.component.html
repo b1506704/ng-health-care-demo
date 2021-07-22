@@ -1,119 +1,231 @@
-<h2 style="width: 100%; text-align: center">Patient {{ patientID }}</h2>
-<!-- <dx-toolbar> -->
-<!-- <dxi-item widget="dxSwitch" location="before" locateInMenu="auto"> </dxi-item> -->
-<!-- <dxi-item locateInMenu="auto" location="center">
-    <div *dxTemplate>Status {{ patientStatus }}</div>
-  </dxi-item> -->
-<!-- </dx-toolbar> -->
-<div id="gauge-demo">
-  <ng-container *ngIf="patientData">
-    <dx-linear-gauge
-      class="gauge-element"
-      [value]="patientData.bodyTemperature"
-    >
-      <dxo-title text="Body Temperature (°C)">
-        <dxo-font [size]="16"></dxo-font>
-      </dxo-title>
-      <dxo-geometry orientation="vertical"></dxo-geometry>
-      <dxo-scale
-        [startValue]="0"
-        [endValue]="100"
-        [tickInterval]="30"
-      ></dxo-scale>
-      <dxo-range-container backgroundColor="none">
-        <dxi-range
-          [startValue]="-40"
-          [endValue]="0"
-          color="#679EC5"
-        ></dxi-range>
-        <dxi-range [startValue]="0" [endValue]="40"></dxi-range>
-      </dxo-range-container>
-    </dx-linear-gauge>
-
-    <dx-linear-gauge
-      class="gauge-element"
-      [value]="patientData.respiratoryRate"
-    >
-      <dxo-value-indicator type="rhombus" color="#A4DDED"></dxo-value-indicator>
-      <dxo-title text="Respiratory Rate (%)">
-        <dxo-font [size]="16"></dxo-font>
-      </dxo-title>
-      <dxo-geometry orientation="vertical"></dxo-geometry>
-      <dxo-scale
-        [startValue]="0"
-        [endValue]="100"
-        [tickInterval]="10"
-      ></dxo-scale>
-      <dxo-range-container backgroundColor="#CACACA"></dxo-range-container>
-    </dx-linear-gauge>
-
-    <dx-linear-gauge class="gauge-element" [value]="patientData.bloodPressure">
-      <dxo-value-indicator type="circle" color="#E3A857"></dxo-value-indicator>
-      <dxo-title text="Blood Pressure (mm Hg)">
-        <dxo-font [size]="16"></dxo-font>
-      </dxo-title>
-      <dxo-geometry orientation="vertical"></dxo-geometry>
-      <dxo-scale
-        [startValue]="90"
-        [endValue]="300"
-        [customTicks]="[90, 110, 200, 300]"
-      >
-        <dxo-label>
-          <dxo-format type="decimal"></dxo-format>
-        </dxo-label>
-      </dxo-scale>
-      <dxo-range-container backgroundColor="#CACACA">
-        <dxi-range
-          [startValue]="10"
-          [endValue]="100"
-          color="#679EC5"
-        ></dxi-range>
-        <dxi-range
-          [startValue]="110"
-          [endValue]="200"
-          color="#A6C567"
-        ></dxi-range>
-        <dxi-range
-          [startValue]="210"
-          [endValue]="300"
-          color="#E18E92"
-        ></dxi-range>
-      </dxo-range-container>
-    </dx-linear-gauge>
-  </ng-container>
-</div>
-<dx-circular-gauge id="gauge" [value]="patientData.heartRate">
-  <dxo-scale [startValue]="0" [endValue]="210" [tickInterval]="20">
-    <dxo-label [customizeText]="customizeText"></dxo-label>
-  </dxo-scale>
-  <dxo-title
-    text="Heart Rate"
-    horizontalAlignment="center"
-    verticalAlignment="bottom"
+<div style="height: 60vh">
+  <div
+    *ngIf="patientData"
+    style="display: flex; justify-content: space-around; align-items: center"
   >
-    <dxo-font [size]="16" color="white"> </dxo-font>
-    <dxo-margin top="0"></dxo-margin>
-  </dxo-title>
-  <dxo-tooltip [enabled]="true"></dxo-tooltip>
-</dx-circular-gauge>
-<dx-speed-dial-action
-  icon="user"
-  label="Message Customer"
-  [index]="1"
-  (onClick)="pmPatient()"
->
-</dx-speed-dial-action>
-<dx-speed-dial-action
-  icon="info"
-  label="Alert Patient"
-  [index]="2"
-  (onClick)="alertPatient()"
->
-</dx-speed-dial-action>
-<dx-speed-dial-action
-  icon="upload"
-  label="Call Patient"
-  [index]="3"
-  (onClick)="summonPatient()"
->
-</dx-speed-dial-action>
+    <h2 style="text-align: center">Patient {{ customerData.fullName }}</h2>
+    <div>
+      HR: {{ patientData.heartRate }}. RR: {{ patientData.respiratoryRate }}.
+      BT: {{ patientData.bodyTemperature }}. BP:
+      {{ patientData.bloodPressure }}.
+    </div>
+  </div>
+  <div class="overlay" *ngIf="!patientData">
+    <div class="bar_loader"></div>
+  </div>
+  <ng-container *ngIf="patientData">
+    <div
+      style="display: flex; justify-content: space-evenly; align-items: center"
+    >
+      <div
+        style="
+          display: flex;
+          width: 150px;
+          justify-content: space-evenly;
+          align-items: flex-start;
+          flex-direction: column;
+          padding: 15px;
+          height: 55vh;
+          border-radius: 15px;
+          background-color: rgba(0, 0, 0, 0.404);
+          box-shadow: rgb(253, 253, 255) 0px 30px 60px -12px inset,
+            rgba(0, 0, 0, 0.3) 0px 18px 36px -18px inset;
+        "
+      >
+        <p
+          style="
+            font-family: hero;
+            font-size: large;
+            font-weight: bold;
+            width: 100%;
+            text-align: center;
+            color: rgb(185, 203, 252);
+          "
+        >
+          Device Monitor
+        </p>
+        <div>
+          <p>Thermometer</p>
+          <dx-switch
+            (onValueChanged)="thermometerSwitchListener($event)"
+            [value]="true"
+          >
+          </dx-switch>
+        </div>
+        <div>
+          <p>Stethoscope</p>
+          <dx-switch
+            (onValueChanged)="stethoscopeSwitchListener($event)"
+            [value]="true"
+          >
+          </dx-switch>
+        </div>
+        <div>
+          <p>Co2</p>
+          <dx-switch
+            (onValueChanged)="co2SwitchListener($event)"
+            [value]="true"
+          >
+          </dx-switch>
+        </div>
+        <div>
+          <p>Aneroid</p>
+          <dx-switch
+            (onValueChanged)="aneroidSwitchListener($event)"
+            [value]="true"
+          >
+          </dx-switch>
+        </div>
+      </div>
+      <div
+        style="
+          display: flex;
+          justify-content: space-evenly;
+          align-items: flex-start;
+          flex-direction: column;
+          padding: 15px;
+          height: 55vh;
+          border-radius: 15px;
+          background-color: rgba(0, 0, 0, 0.404);
+          box-shadow: rgb(253, 253, 255) 0px 30px 60px -12px inset,
+            rgba(0, 0, 0, 0.3) 0px 18px 36px -18px inset;
+        "
+      >
+        <ng-container *ngIf="customerData">
+          <p
+            style="
+              font-family: hero;
+              font-size: large;
+              font-weight: bold;
+              width: 100%;
+              text-align: center;
+              color: rgb(185, 203, 252);
+            "
+          >
+            Patient Info
+          </p>
+          <div>Full Name: {{ customerData.fullName }}</div>
+          <div>Age: {{ customerData.age }}</div>
+          <div>Gender: {{ customerData.gender }}</div>
+          <div>Blood Type: {{ customerData.bloodType }}</div>
+          <div>Height: {{ customerData.height }}</div>
+          <div>Weight: {{ customerData.weight }}</div>
+          <div>Job: {{ customerData.occupation }}</div>
+          <div>Address: {{ customerData.address }}</div>
+        </ng-container>
+      </div>
+      <div id="gauge-demo">
+        <dx-linear-gauge
+          class="gauge-element"
+          [value]="patientData.bodyTemperature"
+        >
+          <dxo-title text="Body Temperature (°C)">
+            <dxo-font [size]="16"></dxo-font>
+          </dxo-title>
+          <dxo-geometry orientation="vertical"></dxo-geometry>
+          <dxo-scale
+            [startValue]="0"
+            [endValue]="100"
+            [tickInterval]="30"
+          ></dxo-scale>
+          <dxo-range-container backgroundColor="none">
+            <dxi-range
+              [startValue]="-40"
+              [endValue]="0"
+              color="#679EC5"
+            ></dxi-range>
+            <dxi-range [startValue]="0" [endValue]="40"></dxi-range>
+          </dxo-range-container>
+        </dx-linear-gauge>
+
+        <dx-linear-gauge
+          class="gauge-element"
+          [value]="patientData.respiratoryRate"
+        >
+          <dxo-value-indicator
+            type="rhombus"
+            color="#A4DDED"
+          ></dxo-value-indicator>
+          <dxo-title text="Respiratory Rate (%)">
+            <dxo-font [size]="16"></dxo-font>
+          </dxo-title>
+          <dxo-geometry orientation="vertical"></dxo-geometry>
+          <dxo-scale
+            [startValue]="0"
+            [endValue]="100"
+            [tickInterval]="10"
+          ></dxo-scale>
+          <dxo-range-container backgroundColor="#CACACA"></dxo-range-container>
+        </dx-linear-gauge>
+
+        <dx-linear-gauge
+          class="gauge-element"
+          [value]="patientData.bloodPressure"
+        >
+          <dxo-value-indicator
+            type="circle"
+            color="#E3A857"
+          ></dxo-value-indicator>
+          <dxo-title text="Blood Pressure (mm Hg)">
+            <dxo-font [size]="16"></dxo-font>
+          </dxo-title>
+          <dxo-geometry orientation="vertical"></dxo-geometry>
+          <dxo-scale
+            [startValue]="90"
+            [endValue]="300"
+            [customTicks]="[90, 110, 200, 300]"
+          >
+            <dxo-label>
+              <dxo-format type="decimal"></dxo-format>
+            </dxo-label>
+          </dxo-scale>
+          <dxo-range-container backgroundColor="#CACACA">
+            <dxi-range
+              [startValue]="10"
+              [endValue]="100"
+              color="#679EC5"
+            ></dxi-range>
+            <dxi-range
+              [startValue]="110"
+              [endValue]="200"
+              color="#A6C567"
+            ></dxi-range>
+            <dxi-range
+              [startValue]="210"
+              [endValue]="300"
+              color="#E18E92"
+            ></dxi-range>
+          </dxo-range-container>
+        </dx-linear-gauge>
+        <dx-circular-gauge id="gauge" [value]="patientData.heartRate">
+          <dxo-scale [startValue]="0" [endValue]="210" [tickInterval]="20">
+            <dxo-label [customizeText]="customizeText"></dxo-label>
+          </dxo-scale>
+          <dxo-title
+            text="Heart Rate"
+            horizontalAlignment="center"
+            verticalAlignment="bottom"
+          >
+            <dxo-font [size]="16" color="white"> </dxo-font>
+            <dxo-margin top="0"></dxo-margin>
+          </dxo-title>
+          <dxo-tooltip [enabled]="true"></dxo-tooltip>
+        </dx-circular-gauge>
+      </div>
+    </div>
+  </ng-container>
+  <dx-speed-dial-action
+    icon="user"
+    label="Message Customer"
+    [index]="1"
+    (onClick)="pmPatient()"
+  >
+  </dx-speed-dial-action>
+  <dx-speed-dial-action
+    icon="upload"
+    label="Call Patient"
+    [index]="2"
+    (onClick)="summonPatient()"
+  >
+  </dx-speed-dial-action>
+</div>

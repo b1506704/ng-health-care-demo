@@ -1,139 +1,88 @@
 ::ng-deep #gauge-demo {
-  width: 100%;
-  margin: 0 auto;
+  // width: 100%;
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  flex-wrap: wrap;
+  padding: 15px;
+  border-radius: 15px;
+  background-color: rgba(0, 0, 0, 0.404);
+  box-shadow: rgb(253, 253, 255) 0px 30px 60px -12px inset,
+    rgba(0, 0, 0, 0.3) 0px 18px 36px -18px inset;
 }
 
 ::ng-deep #gauge-demo .gauge-element {
-  height: 250px;
-  width: 33%;
-  float: left;
+  height: 50vh;
+  // width: 33%;
 }
 
-::ng-deep #gauge-demo::after {
-  content: ".";
-  display: block;
-  clear: both;
-  visibility: hidden;
-  line-height: 0;
-  height: 0;
-}
-::ng-deep .left {
-  float: left;
-  width: 330px;
-  height: 100%;
-  padding: 20px;
-  background: rgba(191, 191, 191, 0.15);
-  margin-right: 30px;
-}
-
-::ng-deep .right {
-  overflow: hidden;
-}
-
-::ng-deep .left .list .dx-list-group-header {
-  color: #f05b41;
-  font-weight: normal;
-  font-size: 18px;
-}
-
-::ng-deep .left .list .hotel {
-  float: left;
-}
-
-::ng-deep .left .list .hotel .name {
-  font-weight: bold;
-}
-
-::ng-deep .right .header {
-  height: 70px;
-}
-
-::ng-deep .right .header .name-container {
-  float: left;
-}
-
-::ng-deep .right .header .name {
-  font-size: 30px;
-  font-weight: bold;
-}
-
-::ng-deep .right .header .price-container {
-  padding-top: 27px;
-}
-
-::ng-deep .right .name-container .type {
-  margin-top: 0;
-}
-
-::ng-deep .right .tile {
-  margin: 0 -12px 0 -12px;
-}
-
-::ng-deep .right .tile-image {
-  height: 100%;
-  width: 100%;
-  background-size: cover;
-}
-
-::ng-deep .right .address {
-  padding-top: 30px;
-  font-size: 18px;
-  opacity: 0.7;
-}
-
-::ng-deep .right .description {
-  margin: 10px 0;
-}
-
-::ng-deep .type {
-  margin: 3px 0 5px 0;
-  height: 14px;
-  background-image: url("data:image/svg+xml;charset=utf8,%3Csvg%20version%3D%221.1%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20xmlns%3Axlink%3D%22http%3A%2F%2Fwww.w3.org%2F1999%2Fxlink%22%20width%3D%2218px%22%20height%3D%2214px%22%20%3E%3Cpolyline%20fill%3D%22%23F05B41%22%20points%3D%227.5%2C0%209.972%2C4.399%2014.999%2C5.348%2011.5%2C9.015%2012.135%2C14%207.5%2C11.866%202.865%2C14%203.5%2C9.015%200.001%2C5.348%205.028%2C4.399%207.5%2C0%20%22%2F%3E%3C%2Fsvg%3E");
-  background-size: 18px 14px;
-}
-
-::ng-deep .type.gold {
-  width: 54px;
-}
-
-::ng-deep .type.platinum {
-  width: 72px;
-}
-
-::ng-deep .type.diamond {
-  width: 90px;
-}
-
-::ng-deep .price-container {
-  float: right;
-  padding-top: 13px;
-}
-
-::ng-deep .price-container > div {
-  display: inline-block;
-}
-
-::ng-deep .price-container .price {
-  font-size: 25px;
-}
-
-::ng-deep .price-container .caption {
-  font-size: 11px;
-  line-height: 12px;
-  padding-left: 2px;
-  opacity: 0.7;
-}
-.right h3 {
-  font-weight: 200;
-  font-size: 28px;
-  text-align: center;
-  margin-bottom: 20px;
-}
-::ng-deep #gauge {
-  height: 250px;
-  margin-top: 50px;
+::ng-deep .overlay {
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 100%;
+  // height: 100%;
+  // width: 100%;
+  background-color: rgba(0, 0, 0, 0.103);
+  z-index: 999;
+  backdrop-filter: blur(5px);
+  position: relative;
+}
+::ng-deep .bar_loader,
+::ng-deep .bar_loader:before,
+::ng-deep .bar_loader:after {
+  background: #987c7c;
+  -webkit-animation: load1 1s infinite ease-in-out;
+  animation: load1 1s infinite ease-in-out;
+  width: 1em;
+  height: 4em;
+}
+::ng-deep .bar_loader {
+  color: #e4cece;
+  text-indent: -9999em;
+  margin: 88px auto;
+  position: relative;
+  font-size: 11px;
+  -webkit-transform: translateZ(0);
+  -ms-transform: translateZ(0);
+  transform: translateZ(0);
+  -webkit-animation-delay: -0.16s;
+  animation-delay: -0.16s;
+}
+::ng-deep .bar_loader:before,
+::ng-deep .bar_loader:after {
+  position: absolute;
+  top: 0;
+  content: "";
+}
+::ng-deep .bar_loader:before {
+  left: -1.5em;
+  -webkit-animation-delay: -0.32s;
+  animation-delay: -0.32s;
+}
+::ng-deep .bar_loader:after {
+  left: 1.5em;
+}
+@-webkit-keyframes load1 {
+  0%,
+  80%,
+  100% {
+    box-shadow: 0 0;
+    height: 4em;
+  }
+  40% {
+    box-shadow: 0 -2em;
+    height: 5em;
+  }
+}
+@keyframes load1 {
+  0%,
+  80%,
+  100% {
+    box-shadow: 0 0;
+    height: 4em;
+  }
+  40% {
+    box-shadow: 0 -2em;
+    height: 5em;
+  }
 }

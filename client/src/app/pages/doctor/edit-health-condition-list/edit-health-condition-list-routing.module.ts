@@ -9,10 +9,14 @@ const routes: Routes = [
     children: [
       {
         path: 'condition/:id',
+        outlet: 'conditionOutlet',
         loadChildren: () =>
           import('./condition-detail/condition-detail.module').then(
             (m) => m.ConditionDetailModule
           ),
+        data: {
+          alwaysRefresh: true,
+        },
       },
     ],
   },

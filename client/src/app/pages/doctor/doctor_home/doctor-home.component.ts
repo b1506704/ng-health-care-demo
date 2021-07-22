@@ -17,7 +17,7 @@ export class DoctorHomeComponent implements OnInit {
       title: 'REAL-TIME MONITORING SERVICE',
       subTitle: 'Stable and high-quality on-bed device tracking',
       imgUrl: this.baseImgUrl + 'landing_page_1.jpg',
-      link: '/edit_health_condition_list',
+      link: '/room_monitor',
     },
     {
       title: 'USER-FRIENDLY PRESCRIPTION MANAGEMENT SYSTEM',

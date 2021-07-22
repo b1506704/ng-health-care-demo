@@ -62,29 +62,15 @@ const io = new Server(server, {
 
 let patientData;
 let patientStatus;
+
 const conditions = {};
-const randomInterval = setInterval(() => {
-  patientData = {
-    bloodPressure: random(70, 200),
-    sweat: random(1, 100),
-    bodyTemperature: random(10, 90),
-    heartRate: random(0, 210),
-  };
-  if (patientData.heartRate >= 180) {
-    patientStatus = "CRITICAL";
-  } else if (patientData.heartRate >= 110) {
-    patientStatus = "NORMAL";
-  } else if (patientData.heartRate >= 60) {
-    patientStatus = "HEALTHY";
-  } else if (patientData.heartRate >= 20) {
-    patientStatus = "DYING";
-  } else if (patientData.heartRate === 0) {
-    patientStatus = "DEAD";
-  }
-}, 1200);
 
 io.on("connection", (socket) => {
   let previousId;
+  let co2Switch = random(1, 100);
+  let thermometerSwitch = random(10, 90);
+  let aneroidSwitch =  random(70, 200);
+  let stethoscopeSwitch =  random(0, 210);
 
   const safeJoin = (currentId) => {
     socket.leave(previousId);
@@ -96,18 +82,16 @@ io.on("connection", (socket) => {
 
   socket.on("getCondition", (customerID) => {
     safeJoin(customerID);
-    setInterval(() => {
-      conditions[customerID] = {
-        id: customerID,
-        condition: {
-          bloodPressure: random(70, 200),
-          respiratoryRate: random(1, 100),
-          bodyTemperature: random(10, 90),
-          heartRate: random(0, 210),
-        },
-      };
-      socket.emit("condition", conditions[customerID]);
-    }, 1200);
+    conditions[customerID] = {
+      id: customerID,
+      condition: {
+        bloodPressure: aneroidSwitch,
+        respiratoryRate: co2Switch,
+        bodyTemperature: thermometerSwitch,
+        heartRate: stethoscopeSwitch,
+      },
+    };
+    socket.emit("condition", conditions[customerID]);
   });
 
   socket.on("newCondition", (condition) => {
@@ -115,6 +99,38 @@ io.on("connection", (socket) => {
     safeJoin(condition.id);
     io.emit("conditions", Object.keys(conditions));
     socket.emit("condition", condition);
+  });
+
+  socket.on("co2", (power) => {
+    if (power === true) {
+      co2Switch = random(1, 100);
+    } else {
+      co2Switch = 0;
+    }
+  });
+
+  socket.on("thermometer", (power) => {
+    if (power === true) {
+      thermometerSwitch = random(10, 90);
+    } else {
+      thermometerSwitch = 0;
+    }
+  });
+
+  socket.on("aneroid", (power) => {
+    if (power === true) {
+      aneroidSwitch = random(70, 200);
+    } else {
+      aneroidSwitch = 0;
+    }
+  });
+
+  socket.on("stethoscope", (power) => {
+    if (power === true) {
+      stethoscopeSwitch = random(0, 210);
+    } else {
+      stethoscopeSwitch = 0;
+    }
   });
 
   socket.on("editCondition", (condition) => {

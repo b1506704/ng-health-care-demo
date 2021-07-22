@@ -21,29 +21,29 @@
       </dx-button>
     </dxi-item>
 
-    <dxi-item [location]="'center'" [text]="'Room' + roomDetail.number">
+    <dxi-item [location]="'center'" [text]="'Room ' + roomDetail.number">
     </dxi-item>
   </dx-toolbar>
   <div style="margin-left: 15px">
     <dx-box>
       <dxi-item [ratio]="1">
         <dx-list
-          [height]="500"
+          [height]="'70vh'"
           [dataSource]="customerList"
           [searchEnabled]="true"
-          searchExpr="id"
+          searchExpr="fullName"
           searchMode="contains"
           selectionMode="single"
           (onSelectionChanged)="listSelectionChanged($event)"
-          [selectedItemKeys]="[customerList.id]"
+          [selectedItemKeys]="[customerList._id]"
         >
           <div *dxTemplate="let data of 'item'">
-            <div>{{ data.id }}</div>
+            <div>{{ data.fullName }}</div>
           </div>
         </dx-list>
       </dxi-item>
-      <dxi-item [ratio]="5">
-        <router-outlet></router-outlet>
+      <dxi-item [ratio]="6">
+        <router-outlet name="conditionOutlet"></router-outlet>
       </dxi-item>
     </dx-box>
   </div>

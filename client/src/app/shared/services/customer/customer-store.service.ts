@@ -14,6 +14,7 @@ interface CustomerState {
   genderStatistics: Array<Object>;
   exportData: Array<Customer>;
   selectedCustomer: Object;
+  customerInstance: Customer;
   totalPages: number;
   currentPage: number;
   totalItems: number;
@@ -22,6 +23,7 @@ interface CustomerState {
 const initialState: CustomerState = {
   customerList: [],
   selectedCustomer: {},
+  customerInstance: undefined,
   exportData: [],
   totalPages: 0,
   currentPage: 0,
@@ -346,6 +348,10 @@ export class CustomerStore extends StateService<CustomerState> {
     (state) => state.selectedCustomer
   );
 
+  $customerInstance: Observable<Customer> = this.select(
+    (state) => state.customerInstance
+  );
+
   uploadCustomer(customer: Customer, page: number, size: number) {
     this.confirmDialog('').then((confirm: boolean) => {
       if (confirm) {
@@ -491,13 +497,16 @@ export class CustomerStore extends StateService<CustomerState> {
     this.setState({ currentPage: _currentPage });
   }
 
-  getCustomer(id: string | number) {
-    return this.$customerList.pipe(
-      map(
-        (customers: Array<Customer>) =>
-          customers.find((customer) => customer._id === id)!
-      )
-    );
+  getCustomer(id: string) {
+    this.setIsLoading(true);
+    return this.customerService
+      .getCustomer(id)
+      .toPromise()
+      .then((data: any) => {
+        this.setState({ customerInstance: data });
+        console.log(data);
+        this.setIsLoading(false);
+      });
   }
 
   filterCustomerByPrice(
