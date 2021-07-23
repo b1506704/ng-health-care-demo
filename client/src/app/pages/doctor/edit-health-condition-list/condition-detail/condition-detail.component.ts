@@ -1,18 +1,20 @@
-import { Component, ElementRef, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Customer } from 'src/app/shared/models/customer';
-import { HealthCondition } from 'src/app/shared/models/health-condition';
 import { Socket } from 'ngx-socket-io';
-import { BedCondition } from 'src/app/shared/models/bed-condition';
 import { CustomerStore } from 'src/app/shared/services/customer/customer-store.service';
-import random from 'src/app/utils/RandomNumber';
 import { StoreService } from 'src/app/shared/services/store.service';
+import { DxScrollViewComponent, DxTextBoxComponent } from 'devextreme-angular';
 @Component({
   selector: 'app-condition-detail',
   templateUrl: './condition-detail.component.html',
   styleUrls: ['./condition-detail.component.scss'],
 })
 export class ConditionDetailComponent implements OnInit, OnDestroy {
+  @ViewChild(DxScrollViewComponent, { static: false })
+  dxScrollView: DxScrollViewComponent;
+  @ViewChild(DxTextBoxComponent, { static: false })
+  dxTextBox: DxTextBoxComponent;
   visualRange: Object = {};
   patientData!: any;
   patientID: string;
@@ -27,8 +29,25 @@ export class ConditionDetailComponent implements OnInit, OnDestroy {
   stethoscopeInterval: any;
   aneroidInterval: any;
   thermometerInterval: any;
+  popupVisible: boolean = false;
+  positionOf: string;
+  sendMessageButtonOption: any = {
+    icon: 'arrowright',
+    text: 'Send',
+    type: 'normal',
+    onClick: this.sendMessage.bind(this),
+  };
+  clearMessageButtonOption: any = {
+    icon: 'trash',
+    text: 'Clear',
+    type: 'normal',
+    onClick: this.clearMessage.bind(this),
+  };
+  currentMessage: string = '';
+  messageList: Array<string> = [];
   currentCondition = this.socket.fromEvent<any>('condition');
   conditions = this.socket.fromEvent<Array<any>>('conditions');
+  message = this.socket.fromEvent<any>('message');
 
   customizeText(arg: any) {
     return arg.valueText + ' BPM';
@@ -69,10 +88,35 @@ export class ConditionDetailComponent implements OnInit, OnDestroy {
     });
   }
 
-  pmPatient() {}
+  pmPatient() {
+    this.popupVisible = true;
+  }
+
+  onTextBoxValueChanged(e: any) {
+    this.currentMessage = e.value;
+  }
+
+  onEnterKey() {
+    this.sendMessage();
+  }
+
+  sendMessage() {
+    if (this.currentMessage.trim() !== '') {
+      this.socket.emit('sendMessage', this.currentMessage);
+      this.dxTextBox.instance.reset();
+      this.dxScrollView.instance.scrollBy(
+        this.dxScrollView.instance.scrollHeight() + 100
+      );
+    }
+  }
+
+  clearMessage() {
+    this.messageList = [];
+  }
 
   disconnect() {
     this.socket.removeListener('condition', this.getCondition);
+    this.socket.removeListener('message', this.sendMessage);
     clearInterval(this.patientDataInterval);
     clearInterval(this.stethoscopeInterval);
     clearInterval(this.co2Interval);
@@ -166,10 +210,21 @@ export class ConditionDetailComponent implements OnInit, OnDestroy {
     }
   }
 
+  messageListener() {
+    return this.message.subscribe((data: any) => {
+      console.log('CURRENT MESSAGE');
+      console.log(data);
+      this.messageList = this.messageList.concat(data);
+      if (data !== '') {
+        this.popupVisible = true;
+      }
+    });
+  }
+
   patientDataListener() {
     return this.currentCondition.subscribe((data: any) => {
-      console.log('CURRENT EMITTED DATA');
-      console.log(data);
+      // console.log('CURRENT EMITTED DATA');
+      // console.log(data);
       if (data.condition) {
         this.patientData = data.condition;
       }
@@ -193,6 +248,7 @@ export class ConditionDetailComponent implements OnInit, OnDestroy {
     this.thermometerSocket();
     this.aneroidSocket();
     this.stethoscopeSocket();
+    this.messageListener();
     this.patientDataListener();
     this.patientListListener();
   }
@@ -201,6 +257,7 @@ export class ConditionDetailComponent implements OnInit, OnDestroy {
     this.getPatientID().unsubscribe();
     this.patientDataListener().unsubscribe();
     this.patientListListener().unsubscribe();
+    this.messageListener().unsubscribe();
     this.disconnect();
   }
 }

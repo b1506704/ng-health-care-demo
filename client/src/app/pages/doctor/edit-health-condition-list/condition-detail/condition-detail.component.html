@@ -228,4 +228,68 @@
     (onClick)="summonPatient()"
   >
   </dx-speed-dial-action>
+  <dx-popup
+    [width]="400"
+    [height]="380"
+    [showTitle]="true"
+    [shading]="true"
+    [title]="customerData ? customerData.fullName : null"
+    [dragEnabled]="true"
+    [closeOnOutsideClick]="false"
+    [showCloseButton]="true"
+    [(visible)]="popupVisible"
+    [position]="'right'"
+    [classList]="['popup']"
+  >
+    <div *dxTemplate="let data of 'content'">
+      <dx-scroll-view
+        width="100%"
+        height="100%"
+        [scrollByContent]="true"
+        [scrollByThumb]="true"
+        bounceEnabled="true"
+      >
+        <div
+          style="
+            text-align: end;
+            font-weight: bold;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            width: 100%;
+            background-color: rgba(0, 0, 0, 0.493);
+            color: rgb(255, 249, 249);
+          "
+          *ngFor="let item of messageList"
+        >
+          {{ item }}
+        </div>
+      </dx-scroll-view>
+    </div>
+    <dxi-toolbar-item
+      widget="dxButton"
+      toolbar="bottom"
+      location="after"
+      [options]="sendMessageButtonOption"
+    >
+    </dxi-toolbar-item>
+    <dxi-toolbar-item
+      widget="dxButton"
+      toolbar="bottom"
+      location="before"
+      [options]="clearMessageButtonOption"
+    >
+    </dxi-toolbar-item>
+    <dxi-toolbar-item toolbar="bottom" location="center">
+      <dx-text-box
+        (onValueChanged)="onTextBoxValueChanged($event)"
+        [showClearButton]="true"
+        (onEnterKey)="onEnterKey()"
+        [placeholder]="'Enter message...'"
+      >
+      </dx-text-box>
+    </dxi-toolbar-item>
+  </dx-popup>
 </div>

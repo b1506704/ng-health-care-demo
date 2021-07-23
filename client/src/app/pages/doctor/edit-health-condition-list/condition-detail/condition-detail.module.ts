@@ -1,10 +1,14 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
+  DxButtonModule,
   DxCircularGaugeModule,
   DxLinearGaugeModule,
+  DxPopupModule,
+  DxScrollViewModule,
   DxSpeedDialActionModule,
   DxSwitchModule,
+  DxTextBoxModule,
 } from 'devextreme-angular';
 import { SocketIoConfig, SocketIoModule } from 'ngx-socket-io';
 import { ConditionDetailComponent } from './condition-detail.component';
@@ -23,6 +27,10 @@ const config: SocketIoConfig = {
     ConditionDetailRoutingModule,
     DxSpeedDialActionModule,
     DxSwitchModule,
+    DxPopupModule,
+    DxScrollViewModule,
+    DxTextBoxModule,
+    DxButtonModule
   ],
   declarations: [ConditionDetailComponent],
 })

@@ -10,6 +10,7 @@ import {
 import { HealthCondition } from 'src/app/shared/models/health-condition';
 import { Room } from 'src/app/shared/models/room';
 import { RoomStore } from 'src/app/shared/services/room/room-store.service';
+
 export class CustomReuseStrategy extends RouteReuseStrategy {
   retrieve(route: ActivatedRouteSnapshot): DetachedRouteHandle | null {
     return null;
@@ -39,6 +40,7 @@ export class CustomReuseStrategy extends RouteReuseStrategy {
     handle: DetachedRouteHandle | null
   ): void {}
 }
+
 @Component({
   selector: 'app-edit-health-condition-list',
   templateUrl: './edit-health-condition-list.component.html',
@@ -58,7 +60,6 @@ export class EditHealthConditionListComponent implements OnInit, OnDestroy {
   }
 
   constructor(
-    // private store: StoreService,
     private roomStore: RoomStore,
     private router: Router,
     private route: ActivatedRoute

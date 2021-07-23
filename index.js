@@ -64,13 +64,14 @@ let patientData;
 let patientStatus;
 
 const conditions = {};
+const messages = {};
 
 io.on("connection", (socket) => {
   let previousId;
   let co2Switch = random(1, 100);
   let thermometerSwitch = random(10, 90);
-  let aneroidSwitch =  random(70, 200);
-  let stethoscopeSwitch =  random(0, 210);
+  let aneroidSwitch = random(70, 200);
+  let stethoscopeSwitch = random(0, 210);
 
   const safeJoin = (currentId) => {
     socket.leave(previousId);
@@ -138,7 +139,13 @@ io.on("connection", (socket) => {
     socket.to(condition.id).emit("condition", condition);
   });
 
+  socket.on("sendMessage", (message) => {
+    console.log(message);
+    io.emit("message", message);
+  });
+
   io.emit("conditions", Object.keys(conditions));
+  io.emit("messages", Object.keys(messages));
 
   console.log(`Socket ${socket.id} has connected`);
 
