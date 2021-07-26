@@ -18,12 +18,14 @@ import {
   filterDoctorByRole,
   filterDoctorByAge,
   filterDoctorByGender,
+  getDoctorByUserName
 } from "../controllers/doctors.js";
 
 const router = express.Router();
 
 router.get("/", getDoctors);
 router.get("/:_id", getDoctor);
+router.post("/byUserName", getDoctorByUserName);
 router.post("/randomDoctor", generateRandomDoctor);
 router.post("/deleteAll", deleteAllDoctors);
 router.post("/", createDoctor);

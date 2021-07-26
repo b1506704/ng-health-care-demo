@@ -60,18 +60,21 @@ const io = new Server(server, {
   },
 });
 
-let patientData;
-let patientStatus;
-
 const conditions = {};
 const messages = {};
+const commands = {};
 
+let isCo2 = true;
+let isThermometer = true;
+let isAneroid = true;
+let isStethoscope = true;
+let co2Switch = random(1, 100);
+let thermometerSwitch = random(10, 90);
+let aneroidSwitch = random(70, 200);
+let stethoscopeSwitch = random(0, 210);
 io.on("connection", (socket) => {
   let previousId;
-  let co2Switch = random(1, 100);
-  let thermometerSwitch = random(10, 90);
-  let aneroidSwitch = random(70, 200);
-  let stethoscopeSwitch = random(0, 210);
+  // to do: set interval these values
 
   const safeJoin = (currentId) => {
     socket.leave(previousId);
@@ -92,7 +95,7 @@ io.on("connection", (socket) => {
         heartRate: stethoscopeSwitch,
       },
     };
-    socket.emit("condition", conditions[customerID]);
+    io.to(customerID).emit("condition", conditions[customerID]);
   });
 
   socket.on("newCondition", (condition) => {
@@ -102,54 +105,77 @@ io.on("connection", (socket) => {
     socket.emit("condition", condition);
   });
 
-  socket.on("co2", (power) => {
-    if (power === true) {
+  socket.on("co2Switch", (power) => {
+    isCo2 = power;
+  });
+
+  const co2Listener = () => {
+    if (isCo2 === true) {
       co2Switch = random(1, 100);
     } else {
       co2Switch = 0;
     }
+  };
+
+  socket.on("co2", co2Listener);
+
+  socket.on("thermometerSwitch", (power) => {
+    isThermometer = power;
   });
 
-  socket.on("thermometer", (power) => {
-    if (power === true) {
+  const thermometerListener = () => {
+    if (isThermometer === true) {
       thermometerSwitch = random(10, 90);
     } else {
       thermometerSwitch = 0;
     }
+  };
+
+  socket.on("thermometer", thermometerListener);
+
+  socket.on("aneroidSwitch", (power) => {
+    isAneroid = power;
   });
 
-  socket.on("aneroid", (power) => {
-    if (power === true) {
+  const aneroidListener = () => {
+    if (isAneroid === true) {
       aneroidSwitch = random(70, 200);
     } else {
       aneroidSwitch = 0;
     }
+  };
+
+  socket.on("aneroid", aneroidListener);
+
+  socket.on("stethoscopeSwitch", (power) => {
+    isStethoscope = power;
   });
 
-  socket.on("stethoscope", (power) => {
-    if (power === true) {
+  const stethoscopeListener = () => {
+    if (isStethoscope === true) {
       stethoscopeSwitch = random(0, 210);
     } else {
       stethoscopeSwitch = 0;
     }
-  });
+  };
 
-  socket.on("editCondition", (condition) => {
-    conditions[condition.id] = condition;
-    socket.to(condition.id).emit("condition", condition);
-  });
+  socket.on("stethoscope", stethoscopeListener);
 
   socket.on("sendMessage", (message) => {
     console.log(message);
-    io.emit("message", message);
+    io.to(previousId).emit("message", message);
+  });
+
+  socket.on("call", (command) => {
+    console.log(command);
+    io.to(previousId).emit("command", command);
   });
 
   io.emit("conditions", Object.keys(conditions));
+  // chat history of system
   io.emit("messages", Object.keys(messages));
 
   console.log(`Socket ${socket.id} has connected`);
-
-  // ...
 });
 
 app.use(express.static("./client/dist/ng-health-care-demo"));

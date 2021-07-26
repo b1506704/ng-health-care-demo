@@ -10,6 +10,7 @@ import { confirm } from 'devextreme/ui/dialog';
 interface DoctorState {
   doctorList: Array<Doctor>;
   exportData: Array<Doctor>;
+  doctorInstance: Doctor;
   selectedDoctor: Object;
   roleStatistics: Array<Object>;
   departmentStatistics: Array<Object>;
@@ -22,6 +23,7 @@ interface DoctorState {
 const initialState: DoctorState = {
   doctorList: [],
   selectedDoctor: {},
+  doctorInstance: undefined,
   exportData: [],
   roleStatistics: [],
   departmentStatistics: [],
@@ -361,6 +363,10 @@ export class DoctorStore extends StateService<DoctorState> {
     (state) => state.exportData
   );
 
+  $doctorInstance: Observable<Doctor> = this.select(
+    (state) => state.doctorInstance
+  );
+
   $totalPages: Observable<Number> = this.select((state) => state.totalPages);
 
   $totalItems: Observable<Number> = this.select((state) => state.totalItems);
@@ -520,6 +526,18 @@ export class DoctorStore extends StateService<DoctorState> {
         (doctors: Array<Doctor>) => doctors.find((doctor) => doctor._id === id)!
       )
     );
+  }
+
+  getDoctorByUserName(userName: string) {
+    this.setIsLoading(true);
+    return this.doctorService
+      .getDoctorByUserName(userName)
+      .toPromise()
+      .then((data: any) => {
+        this.setState({ doctorInstance: data });
+        console.log(data);
+        this.setIsLoading(false);
+      });
   }
 
   filterDoctorByPrice(

@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
 import { Customer } from '../../models/customer';
 import { StateService } from '../state.service';
 import { StoreService } from '../store.service';
@@ -501,6 +500,18 @@ export class CustomerStore extends StateService<CustomerState> {
     this.setIsLoading(true);
     return this.customerService
       .getCustomer(id)
+      .toPromise()
+      .then((data: any) => {
+        this.setState({ customerInstance: data });
+        console.log(data);
+        this.setIsLoading(false);
+      });
+  }
+
+  getCustomerByUserName(userName: string) {
+    this.setIsLoading(true);
+    return this.customerService
+      .getCustomerByUserName(userName)
       .toPromise()
       .then((data: any) => {
         this.setState({ customerInstance: data });

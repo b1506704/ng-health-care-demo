@@ -7,27 +7,21 @@ import { StateService } from './state.service';
 
 interface StoreState {
   userList: Array<User>;
-  filteredUserList: Array<User>;
-  searchedUserList: Array<User>;
   selectedUser: Object;
   currentUser: Object;
   currentRole: String;
   isLoading: Boolean;
   notifType: string;
   responseMsg: string;
-  lastVisitTime: Date;
 }
 const initialState: StoreState = {
   userList: [],
-  filteredUserList: [],
-  searchedUserList: [],
   selectedUser: {},
   currentUser: {},
   currentRole: 'Doctor',
   isLoading: false,
   responseMsg: '',
   notifType: '',
-  lastVisitTime: new Date(),
 };
 @Injectable({
   providedIn: 'root',
@@ -43,10 +37,6 @@ export class StoreService extends StateService<StoreState> {
   $responseMsg: Observable<String> = this.select((state) => state.responseMsg);
 
   $notifType: Observable<String> = this.select((state) => state.notifType);
-
-  $lastVisitTime: Observable<Date> = this.select(
-    (state) => state.lastVisitTime
-  );
 
   $currentUser: Observable<Object> = this.select((state) => state.currentUser);
 
@@ -66,9 +56,6 @@ export class StoreService extends StateService<StoreState> {
     this.setState({ notifType: type });
   }
 
-  setLastVisit(_date: Date) {
-    this.setState({ lastVisitTime: _date });
-  }
 
   setCurrentUser(_user: Object) {
     this.setState({ currentUser: _user });

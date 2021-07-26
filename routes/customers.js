@@ -17,12 +17,14 @@ import {
   fetchAll,
   filterCustomerByJob,
   filterCustomerByGender,
+  getCustomerByUserName
 } from "../controllers/customers.js";
 
 const router = express.Router();
 
 router.get("/", getCustomers);
 router.get("/:_id", getCustomer);
+router.post("/byUserName", getCustomerByUserName);
 router.post("/randomCustomer", generateRandomCustomer);
 router.post("/deleteAll", deleteAllCustomers);
 router.post("/", createCustomer);

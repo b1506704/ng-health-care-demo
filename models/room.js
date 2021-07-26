@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 import mongoosePaginate from "mongoose-paginate-v2";
 const roomSchema = mongoose.Schema(
   {
-    number: { type: String },
+    number: { type: String, unique: true },
     vacancyStatus: { type: String, required: true, default: "vancant" },
     totalSlot: { type: Number },
     customerID: { type: Array },

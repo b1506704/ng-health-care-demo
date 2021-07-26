@@ -11,6 +11,6 @@ export class AuthService {
     this.userService.loginUser(user);
   }
   sendRegisterRequest(user: User) {
-    this.userService.uploadUser(user);
+    this.userService.uploadUser(user, 0, 5);
   }
 }

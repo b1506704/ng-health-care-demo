@@ -105,12 +105,15 @@
   </dxo-pager>
   <dxo-load-panel [enabled]="true"></dxo-load-panel>
 
-  <dxi-column dataField="userName" [width]="100">
-    <dxi-validation-rule type="required"></dxi-validation-rule>
+  <dxi-column dataField="userName" [width]="100" [allowEditing]="false">
+    
   </dxi-column>
 
   <dxi-column dataField="fullName">
     <dxi-validation-rule type="required"></dxi-validation-rule>
+  </dxi-column>
+
+  <dxi-column dataField="assignedRoom" [width]="100" [allowEditing]="false">
   </dxi-column>
 
   <dxi-column dataField="age" dataType="number" [width]="60">
@@ -127,7 +130,11 @@
 
   <dxi-column dataField="bloodType" [width]="65" [caption]="'B.Type'">
     <dxi-validation-rule type="required"></dxi-validation-rule>
-    <dxo-lookup [dataSource]="bloodTypeList" displayExpr="name" valueExpr="name">
+    <dxo-lookup
+      [dataSource]="bloodTypeList"
+      displayExpr="name"
+      valueExpr="name"
+    >
     </dxo-lookup>
   </dxi-column>
 

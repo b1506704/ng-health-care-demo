@@ -698,6 +698,9 @@ export class EditDiseaseListComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.sourceDataListener();
     this.currentPageListener();
+    setTimeout(() => {
+      this.onRefresh();
+    }, 150);
   }
 
   ngOnDestroy(): void {

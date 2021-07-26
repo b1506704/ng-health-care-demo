@@ -213,6 +213,20 @@ export class CustomerHttpService {
     });
   }
 
+  getCustomerByUserName(userName: string): Observable<Customer> {
+    const params = new HttpParams().set('userName', userName);
+    console.log(params.toString());
+    return this.http.post<Customer>(
+      this.apiCustomerUrl + '/byUserName',
+      {},
+      {
+        params: params,
+        reportProgress: true,
+        observe: 'body',
+      }
+    );
+  }
+
   deleteSelectedCustomers(
     selectedItems: Array<String>
   ): Observable<Array<String>> {

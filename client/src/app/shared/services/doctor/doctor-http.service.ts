@@ -234,6 +234,20 @@ export class DoctorHttpService {
     });
   }
 
+  getDoctorByUserName(userName: string): Observable<Doctor> {
+    const params = new HttpParams().set('userName', userName);
+    console.log(params.toString());
+    return this.http.post<Doctor>(
+      this.apiDoctorUrl + '/byUserName',
+      {},
+      {
+        params: params,
+        reportProgress: true,
+        observe: 'body',
+      }
+    );
+  }
+
   deleteSelectedDoctors(
     selectedItems: Array<String>
   ): Observable<Array<String>> {

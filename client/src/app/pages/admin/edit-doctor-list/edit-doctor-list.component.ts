@@ -84,7 +84,7 @@ export class EditDoctorListComponent implements OnInit, OnDestroy {
         options: {
           type: 'danger',
           icon: 'parentfolder',
-          hint: 'Generate random 100+ items',
+          hint: 'Generate random 10 items',
           onClick: this.onAddRandom.bind(this),
         },
       },
@@ -567,7 +567,7 @@ export class EditDoctorListComponent implements OnInit, OnDestroy {
   onAddRandom() {
     this.doctorStore
       .confirmDialog(
-        'This will generate random 100+ items in database. Are you sure'
+        'This will generate random 10 items in database. Are you sure'
       )
       .then((result: boolean) => {
         if (result) {
@@ -584,7 +584,7 @@ export class EditDoctorListComponent implements OnInit, OnDestroy {
             })
             .then(() => {
               this.store.setIsLoading(false);
-              this.store.showNotif('Generated 100+ random items', 'custom');
+              this.store.showNotif('Generated 10 random items', 'custom');
             });
         }
       });
@@ -698,6 +698,9 @@ export class EditDoctorListComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.sourceDataListener();
     this.currentPageListener();
+    setTimeout(() => {
+      this.onRefresh();
+    }, 150);
   }
 
   ngOnDestroy(): void {

@@ -1,6 +1,7 @@
 import express from "express";
-
+import User from "../models/user.js";
 import Doctor from "../models/doctor.js";
+import cryptMessage from "../middleware/cryptMessage.js";
 import getPagination from "../middleware/getPagination.js";
 import random from "../middleware/RandomNumber.js";
 import departmentList from "../middleware/mock-department.js";
@@ -63,11 +64,26 @@ export const getDoctor = async (req, res) => {
   }
 };
 
+export const getDoctorByUserName = async (req, res) => {
+  const { userName } = req.query;
+  try {
+    const doctor = await Doctor.findOne({ userName: userName });
+    if (doctor) {
+      res.status(200).json(doctor);
+    } else {
+      res.status(404).json({ errorMessage: "Requested data does not exist!" });
+    }
+  } catch (error) {
+    res.status(404).json({ errorMessage: "Failed to get data!" });
+  }
+};
+
 export const deleteSelectedDoctors = async (req, res) => {
   const selectedItems = req.body;
   try {
     for (let i = 0; i < selectedItems.length; i++) {
-      await Doctor.findOneAndDelete({ _id: selectedItems[i] });
+      const doctor = await Doctor.findOneAndDelete({ _id: selectedItems[i] });
+      await User.findOneAndDelete({ userName: doctor.userName });
       if (i === selectedItems.length - 1) {
         res.status(200).json({
           message: `${i + 1} doctor deleted`,
@@ -83,6 +99,7 @@ export const deleteDoctor = async (req, res) => {
   const { _id } = req.params;
   try {
     const doctor = await Doctor.findOneAndDelete({ _id: _id });
+    await User.findOneAndDelete({ userName: doctor.userName });
     res.status(200).json({ message: `1 Doctor deleted` });
   } catch (error) {
     res.status(404).json({ errorMessage: "Doctor not found!" });
@@ -92,6 +109,7 @@ export const deleteDoctor = async (req, res) => {
 export const deleteAllDoctors = async (req, res) => {
   try {
     await Doctor.deleteMany({});
+    await User.deleteMany({ role: "Doctor" });
     res.status(200).json({ message: "All doctors deleted!" });
   } catch (error) {
     res.status(404).json({ errorMessage: "Failed to perform command" });
@@ -100,7 +118,6 @@ export const deleteAllDoctors = async (req, res) => {
 
 export const createDoctor = async (req, res) => {
   const {
-    userName,
     fullName,
     age,
     gender,
@@ -112,8 +129,20 @@ export const createDoctor = async (req, res) => {
   console.log(req.body);
 
   try {
+    const userList = await User.find();
+    let index = userList.length + 1;
+    let randomUserName = `user#${index}`;
+    let check = await User.findOne({ userName: randomUserName });
+
+    while (check !== null) {
+      index = index + 1;
+      console.log(index);
+      randomUserName = `user#${index}`;
+      check = await User.findOne({ userName: randomUserName });
+    }
+
     const newDoctor = new Doctor({
-      userName,
+      userName: randomUserName,
       fullName,
       age,
       gender,
@@ -123,6 +152,13 @@ export const createDoctor = async (req, res) => {
       yearsOfExperience,
     });
     await newDoctor.save();
+    const newUser = new User({
+      userName: randomUserName,
+      passWord: randomUserName,
+      role: "Doctor",
+    });
+    newUser.passWord = await cryptMessage(randomUserName);
+    await newUser.save();
     res.status(200).json({ message: `Doctor ${fullName} created` });
   } catch (error) {
     res.status(404).json({ errorMessage: "Failed to create doctor!" });
@@ -419,7 +455,7 @@ export const sortByNumber = (req, res) => {
 
 export const generateRandomDoctor = async (req, res) => {
   try {
-    for (let i = 0; i < 100; i++) {
+    for (let i = 0; i < 10; i++) {
       const genderList = ["Male", "Female"];
       const roleList = [
         { name: "Doctor" },
@@ -437,12 +473,24 @@ export const generateRandomDoctor = async (req, res) => {
       const randomNumber = random(1, 200);
       const randomAge = random(20, 70);
       const randomExperience = random(20, 50);
-      const randomDepartment = department[random(0, department.length - 1)].name;
+      const randomDepartment =
+        department[random(0, department.length - 1)].name;
       const randomRole = roleList[random(0, roleList.length - 1)].name;
       const randomName = nameList[random(0, nameList.length - 1)];
       const randomGender = genderList[random(0, genderList.length - 1)];
+      const userList = await User.find();
+      let index = userList.length + 1;
+      let randomUserName = `user#${index}`;
+      let check = await User.findOne({ userName: randomUserName });
+
+      while (check !== null) {
+        index = index + 1;
+        console.log(index);
+        randomUserName = `user#${index}`;
+        check = await User.findOne({ userName: randomUserName });
+      }
       const newDoctor = new Doctor({
-        userName: `user#${randomNumber}`,
+        userName: randomUserName,
         fullName: `${randomName} Clone #${randomNumber}`,
         age: randomAge,
         gender: randomGender,
@@ -452,6 +500,14 @@ export const generateRandomDoctor = async (req, res) => {
         yearsOfExperience: randomExperience,
       });
       await newDoctor.save();
+      const newUser = new User({
+        userName: randomUserName,
+        passWord: randomUserName,
+        role: "Doctor",
+      });
+      newUser.passWord = await cryptMessage(randomUserName);
+      await newUser.save();
+      console.log(`Doctor ${newDoctor.userName} created!`);
     }
     res.status(200).json({ message: `Doctors created randomly` });
   } catch (error) {

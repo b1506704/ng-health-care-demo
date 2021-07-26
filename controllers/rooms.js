@@ -68,7 +68,11 @@ export const deleteSelectedRooms = async (req, res) => {
   const selectedItems = req.body;
   try {
     for (let i = 0; i < selectedItems.length; i++) {
-      await Room.findOneAndDelete({ _id: selectedItems[i] });
+      const room = await Room.findOneAndDelete({ _id: selectedItems[i] });
+      await Customer.updateMany(
+        { assignedRoom: room.number },
+        { $set: { assignedRoom: null } }
+      );
       if (i === selectedItems.length - 1) {
         res.status(200).json({
           message: `${i + 1} room deleted`,
@@ -84,6 +88,10 @@ export const deleteRoom = async (req, res) => {
   const { _id } = req.params;
   try {
     const room = await Room.findOneAndDelete({ _id: _id });
+    await Customer.updateMany(
+      { assignedRoom: room.number },
+      { $set: { assignedRoom: null } }
+    );
     res.status(200).json({ message: `1 Room deleted` });
   } catch (error) {
     res.status(404).json({ errorMessage: "Room not found!" });
@@ -93,6 +101,7 @@ export const deleteRoom = async (req, res) => {
 export const deleteAllRooms = async (req, res) => {
   try {
     await Room.deleteMany({});
+    await Customer.updateMany({}, { $set: { assignedRoom: null } });
     res.status(200).json({ message: "All rooms deleted!" });
   } catch (error) {
     res.status(404).json({ errorMessage: "Failed to perform command" });
@@ -323,10 +332,10 @@ export const sortByNumber = (req, res) => {
 
 export const generateRandomRoom = async (req, res) => {
   try {
-    for (let i = 0; i < 100; i++) {
-      const randomNumber = random(1, 200);
-      const vacancyStatus = [{ name: "FULL" }, { name: "AVAILABLE" }];
-      const toAddCustomer = await Customer.find().limit(randomNumber);
+    const roomList = await Room.find();
+    for (let i = roomList.length; i < roomList.length + 100; i++) {
+      const randomSlot = random(20, 100);
+      const vacancyStatus = [{ name: "AVAILABLE" }];
       const randomVacancyStatus =
         vacancyStatus[random(0, vacancyStatus.length - 1)].name;
       const randomDate_1 = new Date(
@@ -339,10 +348,10 @@ export const generateRandomRoom = async (req, res) => {
       );
       const randomDate_2 = new Date();
       const newRoom = new Room({
-        number: `R${randomNumber}`,
-        customerID: toAddCustomer,
+        number: `R${i}`,
+        customerID: [],
         vacancyStatus: randomVacancyStatus,
-        totalSlot: toAddCustomer.length + 5,
+        totalSlot: randomSlot,
         admissionDate: randomDate_1,
         dischargeDate: randomDate_2,
       });

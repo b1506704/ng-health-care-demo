@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
+  DxActionSheetModule,
   DxButtonModule,
   DxCircularGaugeModule,
   DxLinearGaugeModule,
@@ -30,7 +31,8 @@ const config: SocketIoConfig = {
     DxPopupModule,
     DxScrollViewModule,
     DxTextBoxModule,
-    DxButtonModule
+    DxButtonModule,
+    DxActionSheetModule
   ],
   declarations: [ConditionDetailComponent],
 })

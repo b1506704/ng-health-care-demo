@@ -223,9 +223,9 @@
   </dx-speed-dial-action>
   <dx-speed-dial-action
     icon="upload"
-    label="Call Patient"
+    label="Command Patient"
     [index]="2"
-    (onClick)="summonPatient()"
+    (onClick)="commandPatient()"
   >
   </dx-speed-dial-action>
   <dx-popup
@@ -251,20 +251,32 @@
       >
         <div
           style="
-            text-align: end;
-            font-weight: bold;
-            padding: 15px;
-            border-radius: 10px;
+            display: flex;
+            justify-content: flex-end;
+            align-items: flex-end;
+            flex-direction: column;
             margin-bottom: 15px;
-            word-wrap: break-word;
-            overflow-wrap: break-word;
-            width: 100%;
-            background-color: rgba(0, 0, 0, 0.493);
-            color: rgb(255, 249, 249);
           "
           *ngFor="let item of messageList"
         >
-          {{ item }}
+          <div>{{ item.sender }}</div>
+          <div
+            style="
+              text-align: end;
+              font-weight: bold;
+              padding: 15px;
+              border-radius: 10px;
+
+              word-wrap: break-word;
+              overflow-wrap: break-word;
+              width: 100%;
+              background-color: rgba(0, 0, 0, 0.493);
+              color: rgb(255, 249, 249);
+            "
+          >
+            {{ item.message }}
+          </div>
+          <div>{{ item.date }}</div>
         </div>
       </dx-scroll-view>
     </div>
@@ -292,4 +304,14 @@
       </dx-text-box>
     </dxi-toolbar-item>
   </dx-popup>
+  <dx-action-sheet
+    title="Choose action"
+    [items]="commands"
+    [visible]="isCallPatientActionVisible"
+    [showTitle]="true"
+    [showCancelButton]="true"
+    (onItemClick)="sendCommand($event)"
+    (onCancelClick)="closeCommand()"
+  >
+  </dx-action-sheet>
 </div>

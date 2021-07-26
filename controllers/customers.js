@@ -1,9 +1,11 @@
 import express from "express";
 
 import Customer from "../models/customer.js";
+import User from "../models/user.js";
+import Room from "../models/room.js";
 import getPagination from "../middleware/getPagination.js";
 import random from "../middleware/RandomNumber.js";
-
+import cryptMessage from "../middleware/cryptMessage.js";
 const router = express.Router();
 
 export const getCustomers = (req, res) => {
@@ -63,11 +65,53 @@ export const getCustomer = async (req, res) => {
   }
 };
 
+export const getCustomerByUserName = async (req, res) => {
+  const { userName } = req.query;
+  try {
+    const customer = await Customer.findOne({ userName: userName });
+    if (customer) {
+      res.status(200).json(customer);
+    } else {
+      res.status(404).json({ errorMessage: "Requested data does not exist!" });
+    }
+  } catch (error) {
+    res.status(404).json({ errorMessage: "Failed to get data!" });
+  }
+};
+
 export const deleteSelectedCustomers = async (req, res) => {
   const selectedItems = req.body;
   try {
     for (let i = 0; i < selectedItems.length; i++) {
-      await Customer.findOneAndDelete({ _id: selectedItems[i] });
+      const deletedCustomer = await Customer.findOneAndDelete({
+        _id: selectedItems[i],
+      });
+      await User.findOneAndDelete({ userName: deletedCustomer.userName });
+      const assignedRoom = await Room.findOne({
+        number: deletedCustomer.assignedRoom,
+      });
+      await Customer.findOneAndUpdate(
+        {
+          userName: deletedCustomer.userName,
+        },
+        {
+          assignedRoom: null,
+        },
+        { new: true }
+      );
+      const updatedRoom = await Room.findOneAndUpdate(
+        {
+          number: assignedRoom.number,
+        },
+        {
+          $pull: { customerID: { userName: deletedCustomer.userName } },
+          vacancyStatus: "AVAILABLE",
+        },
+        { new: true }
+      );
+      console.log(
+        `User ${deletedCustomer.userName} removed from room: ${updatedRoom.number}`
+      );
       if (i === selectedItems.length - 1) {
         res.status(200).json({
           message: `${i + 1} customer deleted`,
@@ -83,6 +127,30 @@ export const deleteCustomer = async (req, res) => {
   const { _id } = req.params;
   try {
     const customer = await Customer.findOneAndDelete({ _id: _id });
+    await User.findOneAndDelete({ userName: customer.userName });
+    const assignedRoom = await Room.findOne({ number: customer.assignedRoom });
+    await Customer.findOneAndUpdate(
+      {
+        userName: customer.userName,
+      },
+      {
+        assignedRoom: null,
+      },
+      { new: true }
+    );
+    const updatedRoom = await Room.findOneAndUpdate(
+      {
+        number: assignedRoom.number,
+      },
+      {
+        $pull: { customerID: { userName: customer.userName } },
+        vacancyStatus: "AVAILABLE",
+      },
+      { new: true }
+    );
+    console.log(
+      `User ${customer.userName} removed from room: ${updatedRoom.number}`
+    );
     res.status(200).json({ message: `1 Customer deleted` });
   } catch (error) {
     res.status(404).json({ errorMessage: "Customer not found!" });
@@ -92,6 +160,8 @@ export const deleteCustomer = async (req, res) => {
 export const deleteAllCustomers = async (req, res) => {
   try {
     await Customer.deleteMany({});
+    await User.deleteMany({ role: "Customer" });
+    await Room.updateMany({}, { $set: { customerID: [] } });
     res.status(200).json({ message: "All customers deleted!" });
   } catch (error) {
     res.status(404).json({ errorMessage: "Failed to perform command" });
@@ -100,7 +170,6 @@ export const deleteAllCustomers = async (req, res) => {
 
 export const createCustomer = async (req, res) => {
   const {
-    userName,
     fullName,
     age,
     gender,
@@ -113,8 +182,18 @@ export const createCustomer = async (req, res) => {
   console.log(req.body);
 
   try {
+    const userList = await User.find();
+    let index = userList.length + 1;
+    let userName = `user#${index}`;
+    let check = await User.findOne({ userName: userName });
+    while (check !== null) {
+      index = index + 1;
+      userName = `user#${index}`;
+      console.log(index);
+      check = await User.findOne({ userName: userName });
+    }
     const newCustomer = new Customer({
-      userName,
+      userName: userName,
       fullName,
       age,
       gender,
@@ -125,7 +204,47 @@ export const createCustomer = async (req, res) => {
       weight,
     });
     await newCustomer.save();
-    res.status(200).json({ message: `Customer ${fullName} created` });
+    const newUser = new User({
+      userName: userName,
+      passWord: userName,
+      role: "Customer",
+    });
+    newUser.passWord = await cryptMessage(userName);
+    await newUser.save();
+    const randomRoom = await Room.findOne({ vacancyStatus: "AVAILABLE" });
+    await Customer.findOneAndUpdate(
+      {
+        userName: userName,
+      },
+      {
+        assignedRoom: randomRoom.number,
+      },
+      { new: true }
+    );
+    const updatedRoom = await Room.findOneAndUpdate(
+      {
+        number: randomRoom.number,
+      },
+      {
+        $push: { customerID: newCustomer },
+      },
+      { new: true }
+    );
+    if (randomRoom.customerID.length === randomRoom.totalSlot - 1) {
+      await Room.findOneAndUpdate(
+        {
+          number: randomRoom.number,
+        },
+        {
+          vacancyStatus: "FULL",
+        },
+        { new: true }
+      );
+    }
+    console.log(`User ${userName} assigned to room: ${updatedRoom.number}`);
+    res.status(200).json({
+      message: `Customer ${fullName} created. Assigned room: ${updatedRoom.number}`,
+    });
   } catch (error) {
     res.status(404).json({ errorMessage: "Failed to create customer!" });
   }
@@ -390,7 +509,7 @@ export const sortByNumber = (req, res) => {
 
 export const generateRandomCustomer = async (req, res) => {
   try {
-    for (let i = 0; i < 100; i++) {
+    for (let i = 0; i < 10; i++) {
       const genderList = ["Male", "Female"];
       const bloodType = [
         { _id: "0", name: "A" },
@@ -434,8 +553,21 @@ export const generateRandomCustomer = async (req, res) => {
       const randomJob = jobList[random(0, jobList.length - 1)];
       const randomLocation = locationList[random(0, locationList.length - 1)];
       const randomGender = genderList[random(0, genderList.length - 1)];
+
+      const userList = await User.find();
+      let index = userList.length + 1;
+      let randomUserName = `user#${index}`;
+      let check = await User.findOne({ userName: randomUserName });
+
+      while (check !== null) {
+        index = index + 1;
+        console.log(index);
+        randomUserName = `user#${index}`;
+        check = await User.findOne({ userName: randomUserName });
+      }
+
       const newCustomer = new Customer({
-        userName: `user#${randomNumber}`,
+        userName: randomUserName,
         fullName: `${randomName} Clone #${randomNumber}`,
         age: randomAge,
         gender: randomGender,
@@ -446,6 +578,46 @@ export const generateRandomCustomer = async (req, res) => {
         weight: randomWeight,
       });
       await newCustomer.save();
+      const newUser = new User({
+        userName: randomUserName,
+        passWord: randomUserName,
+        role: "Customer",
+      });
+      newUser.passWord = await cryptMessage(randomUserName);
+      await newUser.save();
+      const randomRoom = await Room.findOne({ vacancyStatus: "AVAILABLE" });
+      await Customer.findOneAndUpdate(
+        {
+          userName: randomUserName,
+        },
+        {
+          assignedRoom: randomRoom.number,
+        },
+        { new: true }
+      );
+      const updatedRoom = await Room.findOneAndUpdate(
+        {
+          number: randomRoom.number,
+        },
+        {
+          $push: { customerID: newCustomer },
+        },
+        { new: true }
+      );
+      if (randomRoom.customerID.length === randomRoom.totalSlot - 1) {
+        await Room.findOneAndUpdate(
+          {
+            number: randomRoom.number,
+          },
+          {
+            vacancyStatus: "FULL",
+          },
+          { new: true }
+        );
+      }
+      console.log(
+        `User ${randomUserName} assigned to room: ${updatedRoom.number}`
+      );
     }
     res.status(200).json({ message: `Customers created randomly` });
   } catch (error) {

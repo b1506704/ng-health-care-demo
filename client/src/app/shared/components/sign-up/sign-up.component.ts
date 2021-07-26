@@ -58,7 +58,7 @@ export class SignUpComponent implements OnInit {
     this.user = {
       userName: '',
       passWord: '',
-      role: 'customer',
+      role: 'Customer',
     };
   }
 }

@@ -11,6 +11,7 @@ const customerSchema = mongoose.Schema(
     bloodType: { type: String },
     height: { type: Number, required: true },
     weight: { type: Number, required: true },
+    assignedRoom: { type: String }
   },
   { timestamps: true }
 );
