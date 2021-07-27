@@ -1,6 +1,6 @@
 import express from "express";
 
-import MedicalCheckup from "../models/medicalCheckup.js";
+import MedicalCheckup from "../models/medical_checkup.js";
 import getPagination from "../middleware/getPagination.js";
 import Prescription from "../models/prescription.js";
 const router = express.Router();

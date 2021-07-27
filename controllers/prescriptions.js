@@ -129,7 +129,6 @@ export const createPrescription = async (req, res) => {
     prescriptionID,
     doctorID,
     customerID,
-    prescriptionID,
     diseaseList,
     medicineList,
     htmlMarkUp,
