@@ -1,64 +1,306 @@
 import express from "express";
 
 import Prescription from "../models/prescription.js";
-
+import getPagination from "../middleware/getPagination.js";
+import Bill from "../models/bill.js";
 const router = express.Router();
 
-export const getPrescriptions = async (req, res) => {
+export const getPrescriptions = (req, res) => {
+  const { page, size } = req.query;
+  console.log(`Page: ${page}  Size: ${size}`);
   try {
-    const prescriptions = await Prescription.find();
-
-    res.status(200).json(prescriptions);
+    const { limit, offset } = getPagination(page, size);
+    console.log(`Limit: ${limit}  Offset: ${offset}`);
+    const options = {
+      sort: { createdAt: "desc" },
+      offset: offset,
+      limit: limit,
+    };
+    Prescription.paginate({}, options)
+      .then((data) => {
+        res.status(200).json({
+          totalItems: data.totalDocs,
+          items: data.docs,
+          totalPages: data.totalPages,
+          currentPage: data.page - 1,
+          nextPage: data.nextPage,
+          prevPage: data.prevPage,
+        });
+      })
+      .catch((error) => {
+        res.status(404).json({ errorMessage: error.message });
+      });
   } catch (error) {
-    res.status(404).json({ message: error.message });
+    res.status(404).json({ errorMessage: "Failed to get data!" });
+  }
+};
+
+export const fetchAll = async (req, res) => {
+  try {
+    const prescription = await Prescription.find();
+    if (prescription) {
+      res.status(200).json(prescription);
+    } else {
+      res.status(404).json({ errorMessage: "Requested data does not exist!" });
+    }
+  } catch (error) {
+    res.status(404).json({ errorMessage: "Failed to get data!" });
+  }
+};
+
+export const getPrescription = async (req, res) => {
+  const { _id } = req.params;
+  try {
+    const prescription = await Prescription.findOne({ _id: _id });
+    if (prescription) {
+      res.status(200).json(prescription);
+    } else {
+      res.status(404).json({ errorMessage: "Requested data does not exist!" });
+    }
+  } catch (error) {
+    res.status(404).json({ errorMessage: "Failed to get data!" });
+  }
+};
+
+export const getPrescriptionByBillID = async (req, res) => {
+  const { billID } = req.query;
+  try {
+    const prescription = await Prescription.findOne({
+      billID,
+    });
+    if (prescription) {
+      res.status(200).json(prescription);
+    } else {
+      res.status(404).json({ errorMessage: "Requested data does not exist!" });
+    }
+  } catch (error) {
+    res.status(404).json({ errorMessage: "Failed to get data!" });
+  }
+};
+
+export const deleteSelectedPrescriptions = async (req, res) => {
+  const selectedItems = req.body;
+  try {
+    for (let i = 0; i < selectedItems.length; i++) {
+      const deletedPrescription = await Prescription.findOneAndDelete({
+        _id: selectedItems[i],
+      });
+      await Bill.findOneAndDelete({
+        prescriptionID: deletedPrescription.prescriptionID,
+      });
+      console.log(`Bill with ${deletedPrescription.prescriptionID} removed`);
+      if (i === selectedItems.length - 1) {
+        res.status(200).json({
+          message: `${i + 1} prescription deleted`,
+        });
+      }
+    }
+  } catch (error) {
+    res.status(404).json({ errorMessage: "Medical checkup not found!" });
   }
 };
 
 export const deletePrescription = async (req, res) => {
-  const { id } = req.params;
+  const { _id } = req.params;
   try {
-    const prescription = await Prescription.findOneAndDelete({ _id: id });
-    res.status(200).json(prescription);
+    const prescription = await Prescription.findOneAndDelete({ _id: _id });
+    await Bill.findOneAndDelete({
+      prescriptionID: prescription.prescriptionID,
+    });
+    console.log(`Bill with ${prescription.prescriptionID} removed`);
+    res.status(200).json({ message: `1 prescription deleted` });
   } catch (error) {
-    res.status(404).json({ message: error.message });
+    res.status(404).json({ errorMessage: "Medical checkup not found!" });
+  }
+};
+
+export const deleteAllPrescriptions = async (req, res) => {
+  try {
+    await Prescription.deleteMany({});
+    await Bill.deleteMany({});
+    res.status(200).json({ message: "All prescriptions deleted!" });
+  } catch (error) {
+    res.status(404).json({ errorMessage: "Failed to perform command" });
   }
 };
 
 export const createPrescription = async (req, res) => {
-  const { customerID, doctorID, diseaseList, medicineList, advice, created } =
-    req.body;
-
-  const newPrescription = new Prescription({
-    customerID,
+  const {
+    prescriptionID,
     doctorID,
+    customerID,
+    prescriptionID,
     diseaseList,
     medicineList,
+    htmlMarkUp,
     advice,
-    created,
-  });
-
+  } = req.body;
+  console.log(req.body);
   try {
+    const newPrescription = new Prescription({
+      prescriptionID,
+      doctorID,
+      customerID,
+      prescriptionID,
+      diseaseList,
+      medicineList,
+      htmlMarkUp,
+      advice,
+    });
     await newPrescription.save();
-    res.status(201).json(newPrescription);
+    res.status(200).json({
+      message: `Prescription ${prescriptionID} created`,
+    });
   } catch (error) {
-    res.status(409).json({ message: error.message });
+    res.status(404).json({ errorMessage: "Failed to create prescription!" });
+  }
+};
+
+export const filterPrescriptionByCategory = (req, res) => {
+  const { value, page, size } = req.query;
+  console.log(`Page: ${page}  Size: ${size}. Value: ${value}`);
+  try {
+    const { limit, offset } = getPagination(page, size);
+    console.log(`Limit: ${limit}  Offset: ${offset}`);
+    const query = { status: value };
+    const options = {
+      sort: { createdAt: "desc" },
+      offset: offset,
+      limit: limit,
+    };
+    Prescription.paginate(query, options)
+      .then((data) => {
+        res.status(200).json({
+          totalItems: data.totalDocs,
+          items: data.docs,
+          totalPages: data.totalPages,
+          currentPage: data.page - 1,
+          nextPage: data.nextPage,
+          prevPage: data.prevPage,
+        });
+      })
+      .catch((error) => {
+        res.status(404).json({ errorMessage: error.message });
+      });
+  } catch (error) {
+    res.status(404).json({ errorMessage: "Failed to get data!" });
+  }
+};
+
+export const searchPrescriptionByName = (req, res) => {
+  const { value, page, size } = req.query;
+  console.log(`Page: ${page}  Size: ${size}. Value: ${value}`);
+  try {
+    const { limit, offset } = getPagination(page, size);
+    console.log(`Limit: ${limit}  Offset: ${offset}`);
+    const query = {
+      fullName: { $regex: value, $options: "i" },
+    };
+    const options = {
+      sort: { prescriptionID: "desc" },
+      offset: offset,
+      limit: limit,
+    };
+    Prescription.paginate(query, options)
+      .then((data) => {
+        res.status(200).json({
+          totalItems: data.totalDocs,
+          items: data.docs,
+          totalPages: data.totalPages,
+          currentPage: data.page - 1,
+          nextPage: data.nextPage,
+          prevPage: data.prevPage,
+        });
+      })
+      .catch((error) => {
+        res.status(404).json({ errorMessage: error.message });
+      });
+  } catch (error) {
+    res.status(404).json({ errorMessage: "Failed to get data!" });
+  }
+};
+
+export const sortByName = (req, res) => {
+  const { value, page, size } = req.query;
+  console.log(`Page: ${page}  Size: ${size}. Value: ${value}`);
+  try {
+    const { limit, offset } = getPagination(page, size);
+    console.log(`Limit: ${limit}  Offset: ${offset}`);
+    const query = {};
+    // value = desc || asc
+    const options = {
+      sort: { name: value },
+      offset: offset,
+      limit: limit,
+    };
+    Prescription.paginate(query, options)
+      .then((data) => {
+        res.status(200).json({
+          totalItems: data.totalDocs,
+          items: data.docs,
+          totalPages: data.totalPages,
+          currentPage: data.page - 1,
+          nextPage: data.nextPage,
+          prevPage: data.prevPage,
+        });
+      })
+      .catch((error) => {
+        res.status(404).json({ errorMessage: error.message });
+      });
+  } catch (error) {
+    res.status(404).json({ errorMessage: "Failed to get data!" });
+  }
+};
+
+export const sortByNumber = (req, res) => {
+  const { value, page, size } = req.query;
+  console.log(`Page: ${page}  Size: ${size}. Value: ${value}`);
+  try {
+    const { limit, offset } = getPagination(page, size);
+    console.log(`Limit: ${limit}  Offset: ${offset}`);
+    const query = {};
+    // value = desc || asc
+    const options = {
+      sort: { priority: value },
+      offset: offset,
+      limit: limit,
+    };
+    Prescription.paginate(query, options)
+      .then((data) => {
+        res.status(200).json({
+          totalItems: data.totalDocs,
+          items: data.docs,
+          totalPages: data.totalPages,
+          currentPage: data.page - 1,
+          nextPage: data.nextPage,
+          prevPage: data.prevPage,
+        });
+      })
+      .catch((error) => {
+        res.status(404).json({ errorMessage: error.message });
+      });
+  } catch (error) {
+    res.status(404).json({ errorMessage: "Failed to get data!" });
   }
 };
 
 export const updatePrescription = async (req, res) => {
-  const { id } = req.params;
-  const { customerID, doctorID, diseaseList, medicineList, advice, created } =
-    req.body;
-  try {
-    const prescription = await Prescription.findOne({ _id: id });
-    const updatedPrescription = await Prescription.findOneAndUpdate(
-      { _id: prescription.id },
-      { customerID, doctorID, diseaseList, medicineList, advice, created },
-      { new: true }
-    );
-    res.status(200).json(updatedPrescription);
-  } catch (error) {
-    res.status(404).json({ message: error.message });
+  const { _id } = req.params;
+
+  if (!req.body) {
+    res.status(400).json({ errorMessage: "Updated data cannot be empty!" });
+  } else {
+    try {
+      const prescription = await Prescription.findOne({ _id: _id });
+      const updatedPrescription = await Prescription.findOneAndUpdate(
+        { _id: prescription._id },
+        req.body,
+        { new: true }
+      );
+      res.status(200).json({ message: `1 prescription updated` });
+    } catch (error) {
+      res.status(404).json({ message: error.message });
+    }
   }
 };
 

@@ -131,11 +131,6 @@ export const navigationAdmin = [
     icon: 'cart',
   },
   {
-    text: 'Modify Theme',
-    path: '/edit_theme',
-    icon: 'palette',
-  },
-  {
     text: 'Statistics',
     path: '/statistics',
     icon: 'chart',

@@ -179,14 +179,6 @@ const routes: Routes = [
     canActivate: [AuthGuardService],
   },
   {
-    path: 'edit_theme',
-    loadChildren: () =>
-      import('./pages/admin/edit-theme/edit-theme.module').then(
-        (m) => m.EditThemeModule
-      ),
-    canActivate: [AuthGuardService],
-  },
-  {
     path: 'edit_schedule',
     loadChildren: () =>
       import('./pages/admin/edit-schedule/edit-schedule.module').then(

@@ -38,17 +38,10 @@ export class StatisticsComponent implements OnInit, OnDestroy {
     this.router.navigate(['doctor'], { relativeTo: this.route });
   }
 
-  toMedicine() {
-    this.router.navigate(['medicine'], { relativeTo: this.route });
-  }
-
-  toTransaction() {
-    this.router.navigate(['transaction'], { relativeTo: this.route });
-  }
-
   navigateToEditTheme() {
     this.router.navigate(['/edit_theme']);
   }
+  
   currentPageListener() {
     return this.customerStore.$currentPage.subscribe((data: any) => {
       this.currentIndexFromServer = data;

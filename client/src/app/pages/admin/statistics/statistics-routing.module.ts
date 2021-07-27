@@ -21,20 +21,6 @@ const routes: Routes = [
             (m) => m.DoctorStatisticsModule
           ),
       },
-      {
-        path: 'medicine',
-        loadChildren: () =>
-          import('./medicine-statistics/medicine-statistics.module').then(
-            (m) => m.MedicineStatisticsModule
-          ),
-      },
-      {
-        path: 'transaction',
-        loadChildren: () =>
-          import('./transaction-statistics/transaction-statistics.module').then(
-            (m) => m.TransactionStatisticsModule
-          ),
-      },
     ],
   },
 ];
