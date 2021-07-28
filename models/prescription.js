@@ -2,7 +2,6 @@ import mongoose from "mongoose";
 import mongoosePaginate from "mongoose-paginate-v2";
 const prescriptionSchema = mongoose.Schema(
   {
-    prescriptionID: { type: String, unique: true },
     customerID: { type: String },
     doctorID: { type: String },
     diseaseList: { type: Array },

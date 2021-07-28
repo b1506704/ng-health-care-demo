@@ -2,10 +2,28 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { EditMedicalCheckupListRoutingModule } from './edit-medical-checkup-list-routing.module';
 import { EditMedicalCheckupListComponent } from './edit-medical-checkup-list.component';
-import { DxDataGridModule } from 'devextreme-angular';
+import {
+  DxAccordionModule,
+  DxBoxModule,
+  DxButtonModule,
+  DxHtmlEditorModule,
+  DxPopupModule,
+  DxSortableModule,
+  DxToolbarModule,
+} from 'devextreme-angular';
 
 @NgModule({
-  imports: [CommonModule, EditMedicalCheckupListRoutingModule, DxDataGridModule],
+  imports: [
+    CommonModule,
+    EditMedicalCheckupListRoutingModule,
+    DxBoxModule,
+    DxSortableModule,
+    DxPopupModule,
+    DxAccordionModule,
+    DxHtmlEditorModule,
+    DxToolbarModule,
+    DxButtonModule
+  ],
   declarations: [EditMedicalCheckupListComponent],
 })
 export class EditMedicalCheckupListModule {}

@@ -1,0 +1,21 @@
+<dx-toolbar [ngStyle]="{ paddingLeft: '25px', paddingRight: '25px' }">
+  <dxi-item [location]="'before'" [text]="'Disease Mananagement'"> </dxi-item>
+  <dxi-item location="after" locateInMenu="auto">
+    <dx-button
+      icon="arrowright"
+      type="outline"
+      text="Medicine Management"
+      hint="Navigate to Edit Medicine"
+      (onClick)="navigateToRoomMonitor()"
+    >
+    </dx-button>
+  </dxi-item>
+</dx-toolbar>
+<dx-box>
+  <dxi-item [ratio]="1">
+
+    </dxi-item>
+  <dxi-item [ratio]="7"> 
+      <!-- <router-outlet></router-outlet> -->
+  </dxi-item>
+</dx-box>

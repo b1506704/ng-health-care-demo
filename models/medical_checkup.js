@@ -2,16 +2,16 @@ import mongoose from "mongoose";
 import mongoosePaginate from "mongoose-paginate-v2";
 const medicalCheckupSchema = mongoose.Schema(
   {
-    doctorID: { type: String, require: true },
-    customerID: { type: String, require: true },
+    doctorID: { type: String },
+    customerID: { type: String },
     prescriptionID: { type: String },
     priority: { type: Number },
-    healthEnsurance: { type: String },
+    healthInsurance: { type: String },
     // doctor's office
     location: { type: String },
     purpose: { type: String },
-    status: { type: String, default: "Pending" },
-    startDate: { type: String },
+    status: { type: String, default: "pending" },
+    startDate: { type: Date },
   },
   { timestamps: true }
 );

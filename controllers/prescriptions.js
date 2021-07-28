@@ -126,7 +126,6 @@ export const deleteAllPrescriptions = async (req, res) => {
 
 export const createPrescription = async (req, res) => {
   const {
-    prescriptionID,
     doctorID,
     customerID,
     diseaseList,
@@ -137,10 +136,8 @@ export const createPrescription = async (req, res) => {
   console.log(req.body);
   try {
     const newPrescription = new Prescription({
-      prescriptionID,
       doctorID,
       customerID,
-      prescriptionID,
       diseaseList,
       medicineList,
       htmlMarkUp,

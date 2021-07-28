@@ -132,7 +132,7 @@ export const createMedicalCheckup = async (req, res) => {
     customerID,
     prescriptionID,
     priority,
-    healthEnsurance,
+    healthInsurance,
     location,
     purpose,
     status,
@@ -146,7 +146,7 @@ export const createMedicalCheckup = async (req, res) => {
       customerID,
       prescriptionID,
       priority,
-      healthEnsurance,
+      healthInsurance,
       location,
       purpose,
       status,
@@ -154,7 +154,6 @@ export const createMedicalCheckup = async (req, res) => {
     });
     await newMedicalCheckup.save();
     const newPrescription = new Prescription({
-      prescriptionID: prescriptionID,
       customerID: customerID,
       doctorID: doctorID,
       diseaseList: [],
@@ -163,9 +162,9 @@ export const createMedicalCheckup = async (req, res) => {
       advice: "",
     });
     await newPrescription.save();
-    console.log(`Prescription ${prescriptionID} created`);
+    console.log(`Prescription created`);
     res.status(200).json({
-      message: `Medical checkup #${priority} created`,
+      message: `Medical checkup created`,
     });
   } catch (error) {
     res.status(404).json({ errorMessage: "Failed to create medicalCheckup!" });
