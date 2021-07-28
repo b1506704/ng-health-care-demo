@@ -9,8 +9,8 @@ import { User } from '../../models/user';
 })
 export class UserHttpService {
   constructor(private http: HttpClient) {}
-  // apiUserUrl = 'https://ng-health-care-demo.herokuapp.com/users';
-  apiUserUrl = 'http://localhost/users';
+  apiUserUrl = 'https://ng-health-care-demo.herokuapp.com/users';
+  // apiUserUrl = 'http://localhost/users';
 
   fetchUser(page: number, size: number): Observable<User> {
     const params = new HttpParams().set('page', page).set('size', size);
