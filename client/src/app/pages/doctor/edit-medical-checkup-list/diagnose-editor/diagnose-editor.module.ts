@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { EditMedicalCheckupListRoutingModule } from './edit-medical-checkup-list-routing.module';
-import { EditMedicalCheckupListComponent } from './edit-medical-checkup-list.component';
+import { DiagnoseEditorRoutingModule } from './diagnose-editor-routing.module';
+import { DiagnoseEditorComponent } from './diagnose-editor.component';
 import {
   DxAccordionModule,
   DxBoxModule,
@@ -18,7 +18,7 @@ import {
 @NgModule({
   imports: [
     CommonModule,
-    EditMedicalCheckupListRoutingModule,
+    DiagnoseEditorRoutingModule,
     DxToolbarModule,
     DxButtonModule,
     DxBoxModule,
@@ -28,6 +28,6 @@ import {
     DxFormModule,
     DxScrollViewModule,
   ],
-  declarations: [EditMedicalCheckupListComponent],
+  declarations: [DiagnoseEditorComponent],
 })
-export class EditMedicalCheckupListModule {}
+export class DiagnoseEditorModule {}

@@ -8,20 +8,30 @@ import { confirm } from 'devextreme/ui/dialog';
 
 interface MedicalCheckupState {
   medicalCheckupList: Array<MedicalCheckup>;
+  pendingCheckupList: Array<MedicalCheckup>;
+  completeCheckupList: Array<MedicalCheckup>;
   exportData: Array<MedicalCheckup>;
   selectedMedicalCheckup: Object;
-  totalPages: number;
-  currentPage: number;
-  totalItems: number;
+  totalCheckupPendingPages: number;
+  totalCheckupCompletePages: number;
+  currentCheckupPendingPage: number;
+  currentCheckupCompletePage: number;
+  totalCheckupPendingItems: number;
+  totalCheckupCompleteItems: number;
   responseMsg: String;
 }
 const initialState: MedicalCheckupState = {
   medicalCheckupList: [],
+  pendingCheckupList: [],
+  completeCheckupList: [],
   selectedMedicalCheckup: {},
   exportData: [],
-  totalPages: 0,
-  currentPage: 0,
-  totalItems: 0,
+  totalCheckupPendingPages: 0,
+  totalCheckupCompletePages: 0,
+  currentCheckupPendingPage: 0,
+  currentCheckupCompletePage: 0,
+  totalCheckupPendingItems: 0,
+  totalCheckupCompleteItems: 0,
   responseMsg: '',
 };
 @Injectable({
@@ -33,7 +43,7 @@ export class MedicalCheckupStore extends StateService<MedicalCheckupState> {
     private store: StoreService
   ) {
     super(initialState);
-    this.initInfiniteData(0, 5);
+    // this.initInfiniteData(0, 5);
   }
 
   fillEmpty(
@@ -59,255 +69,228 @@ export class MedicalCheckupStore extends StateService<MedicalCheckupState> {
     return result;
   }
 
-  initInfiniteData(page: number, size: number) {
-    this.medicalCheckupService
-      .fetchMedicalCheckup(page, size)
+  initPendingInfiniteData(page: number, size: number) {
+    return this.medicalCheckupService
+      .fetchPendingMedicalCheckup(page, size)
       .toPromise()
       .then((data: any) => {
         if (page === 0) {
           this.setState({
-            medicalCheckupList: new Array<MedicalCheckup>(size),
+            pendingCheckupList: new Array<MedicalCheckup>(size),
           });
         } else {
           this.setState({
-            medicalCheckupList: new Array<MedicalCheckup>(page * size),
+            pendingCheckupList: new Array<MedicalCheckup>(page * size),
           });
         }
         console.log('Current flag: infite list');
-        console.log(this.state.medicalCheckupList);
-        this.setState({ totalItems: data.totalItems });
-        this.setState({ totalPages: data.totalPages });
-        this.setState({ currentPage: data.currentPage });
+        console.log(this.state.pendingCheckupList);
+        this.setState({ totalCheckupPendingItems: data.totalItems });
+        this.setState({ totalCheckupPendingPages: data.totalPages });
+        this.setState({ currentCheckupPendingPage: data.currentPage });
       })
       .then(() => {
-        this.loadDataAsync(page, size);
+        this.loadPendingDataAsync(page, size);
       });
   }
 
-  loadInfiniteDataAsync(page: number, size: number) {
+  loadPendingInfiniteDataAsync(page: number, size: number) {
     this.setIsLoading(true);
-    this.medicalCheckupService.fetchMedicalCheckup(page, size).subscribe({
-      next: (data: any) => {
-        this.setState({
-          medicalCheckupList: this.state.medicalCheckupList.concat(data.items),
-        });
-        console.log('Infinite list');
-        console.log(this.state.medicalCheckupList);
-        console.log('Server response');
-        console.log(data);
-        this.setState({ totalItems: data.totalItems });
-        this.setState({ totalPages: data.totalPages });
-        this.setState({ currentPage: data.currentPage });
-        this.setIsLoading(false);
-      },
-      error: (data: any) => {
-        this.setIsLoading(false);
-        this.store.showNotif(data.error.errorMessage, 'error');
-        console.log(data);
-      },
-    });
-  }
-
-  initData(page: number, size: number) {
     this.medicalCheckupService
-      .fetchMedicalCheckup(page, size)
-      .toPromise()
-      .then((data: any) => {
-        this.setState({
-          medicalCheckupList: new Array<MedicalCheckup>(data.totalItems),
-        });
-        console.log('Current flag: pure list');
-        console.log(this.state.medicalCheckupList);
-        this.setState({ totalItems: data.totalItems });
-        this.setState({ totalPages: data.totalPages });
-        this.setState({ currentPage: data.currentPage });
-      })
-      .then(() => {
-        this.loadDataAsync(page, size);
+      .fetchPendingMedicalCheckup(page, size)
+      .subscribe({
+        next: (data: any) => {
+          this.setState({
+            pendingCheckupList: this.state.pendingCheckupList.concat(
+              data.items
+            ),
+          });
+          console.log('Infinite list');
+          console.log(this.state.pendingCheckupList);
+          console.log('Server response');
+          console.log(data);
+          this.setState({ totalCheckupPendingItems: data.totalItems });
+          this.setState({ totalCheckupPendingPages: data.totalPages });
+          this.setState({ currentCheckupPendingPage: data.currentPage });
+          this.setIsLoading(false);
+        },
+        error: (data: any) => {
+          this.setIsLoading(false);
+          this.store.showNotif(data.error.errorMessage, 'error');
+          console.log(data);
+        },
       });
   }
 
-  initFilterByCategoryData(value: string, page: number, size: number) {
-    this.store.showNotif('Filtered Mode On', 'custom');
-    this.medicalCheckupService
-      .filterMedicalCheckupByCategory(value, 0, 5)
-      .toPromise()
-      .then((data: any) => {
-        this.setState({
-          medicalCheckupList: new Array<MedicalCheckup>(data.totalItems),
-        });
-        console.log('Current flag: filtered list');
-        console.log(this.state.medicalCheckupList);
-        this.setState({ totalItems: data.totalItems });
-        this.setState({ totalPages: data.totalPages });
-        this.setState({ currentPage: data.currentPage });
-      })
-      .then(() => {
-        this.filterMedicalCheckupByCategory(value, page, size);
-      });
-  }
-
-  initInfiniteFilterByCategoryData(value: string, page: number, size: number) {
-    this.store.showNotif('Filtered Mode On', 'custom');
-    this.medicalCheckupService
-      .filterMedicalCheckupByCategory(value, page, size)
-      .toPromise()
-      .then((data: any) => {
-        this.setState({
-          medicalCheckupList: new Array<MedicalCheckup>(size),
-        });
-        console.log('Current flag: infinite filtered list');
-        console.log(this.state.medicalCheckupList);
-        this.setState({ totalItems: data.totalItems });
-        this.setState({ totalPages: data.totalPages });
-        this.setState({ currentPage: data.currentPage });
-      })
-      .then(() => {
-        this.filterMedicalCheckupByCategory(value, page, size);
-      });
-  }
-
-  initSearchByNameData(value: string, page: number, size: number) {
+  initPendingInfiniteSearchByNameData(
+    value: string,
+    page: number,
+    size: number
+  ) {
     this.store.showNotif('Searched Mode On', 'custom');
     this.medicalCheckupService
-      .searchMedicalCheckupByName(value, 0, 5)
-      .toPromise()
-      .then((data: any) => {
-        this.setState({
-          medicalCheckupList: new Array<MedicalCheckup>(data.totalItems),
-        });
-        console.log('Current flag: searched list');
-        console.log(this.state.medicalCheckupList);
-        this.setState({ totalItems: data.totalItems });
-        this.setState({ totalPages: data.totalPages });
-        this.setState({ currentPage: data.currentPage });
-      })
-      .then(() => {
-        this.searchMedicalCheckupByName(value, page, size);
-      });
-  }
-
-  initInfiniteSearchByNameData(value: string, page: number, size: number) {
-    this.store.showNotif('Searched Mode On', 'custom');
-    this.medicalCheckupService
-      .searchMedicalCheckupByName(value, page, size)
+      .searchPendingMedicalCheckupByName(value, page, size)
       .toPromise()
       .then((data: any) => {
         if (data.totalItems !== 0) {
           this.setState({
-            medicalCheckupList: new Array<MedicalCheckup>(size),
+            pendingCheckupList: new Array<MedicalCheckup>(size),
           });
         } else {
           this.store.showNotif('No result found!', 'custom');
         }
         console.log('Current flag: infitite searched list');
-        console.log(this.state.medicalCheckupList);
-        this.setState({ totalItems: data.totalItems });
-        this.setState({ totalPages: data.totalPages });
-        this.setState({ currentPage: data.currentPage });
+        console.log(this.state.pendingCheckupList);
+        this.setState({ totalCheckupPendingItems: data.totalItems });
+        this.setState({ totalCheckupPendingPages: data.totalPages });
+        this.setState({ currentCheckupPendingPage: data.currentPage });
       })
       .then(() => {
-        this.searchMedicalCheckupByName(value, page, size);
+        this.searchPendingMedicalCheckupByName(value, page, size);
       });
   }
 
-  initSortByPriceData(value: string, page: number, size: number) {
-    this.store.showNotif('Sort Mode On', 'custom');
+  loadPendingDataAsync(page: number, size: number) {
+    this.setIsLoading(true);
     this.medicalCheckupService
-      .sortMedicalCheckupByPrice(value, 0, 5)
+      .fetchPendingMedicalCheckup(page, size)
+      .subscribe({
+        next: (data: any) => {
+          this.setState({
+            pendingCheckupList: this.fillEmpty(
+              page,
+              size,
+              this.state.medicalCheckupList,
+              data.items
+            ),
+          });
+          console.log('Pure list');
+          console.log(this.state.pendingCheckupList);
+          console.log('Server response');
+          console.log(data);
+          this.setState({ totalCheckupPendingItems: data.totalItems });
+          this.setState({ totalCheckupPendingPages: data.totalPages });
+          this.setState({ currentCheckupPendingPage: data.currentPage });
+          this.setIsLoading(false);
+        },
+        error: (data: any) => {
+          this.setIsLoading(false);
+          this.store.showNotif(data.error.errorMessage, 'error');
+          console.log(data);
+        },
+      });
+  }
+
+  initCompleteInfiniteData(page: number, size: number) {
+    return this.medicalCheckupService
+      .fetchCompleteMedicalCheckup(page, size)
       .toPromise()
       .then((data: any) => {
-        this.setState({
-          medicalCheckupList: new Array<MedicalCheckup>(data.totalItems),
-        });
-        console.log('Current flag: sort list');
-        console.log(this.state.medicalCheckupList);
-        this.setState({ totalItems: data.totalItems });
-        this.setState({ totalPages: data.totalPages });
-        this.setState({ currentPage: data.currentPage });
+        if (page === 0) {
+          this.setState({
+            completeCheckupList: new Array<MedicalCheckup>(size),
+          });
+        } else {
+          this.setState({
+            completeCheckupList: new Array<MedicalCheckup>(page * size),
+          });
+        }
+        console.log('Current flag: infite list');
+        console.log(this.state.completeCheckupList);
+        this.setState({ totalCheckupCompleteItems: data.totalItems });
+        this.setState({ totalCheckupCompletePages: data.totalPages });
+        this.setState({ currentCheckupCompletePage: data.currentPage });
       })
       .then(() => {
-        this.sortMedicalCheckupByPrice(value, page, size);
+        this.loadCompleteDataAsync(page, size);
       });
   }
 
-  initInfiniteSortByPriceData(value: string, page: number, size: number) {
-    this.store.showNotif('Sort Mode On', 'custom');
+  loadCompleteInfiniteDataAsync(page: number, size: number) {
+    this.setIsLoading(true);
     this.medicalCheckupService
-      .sortMedicalCheckupByPrice(value, page, size)
+      .fetchCompleteMedicalCheckup(page, size)
+      .subscribe({
+        next: (data: any) => {
+          this.setState({
+            completeCheckupList: this.state.completeCheckupList.concat(
+              data.items
+            ),
+          });
+          console.log('Infinite list');
+          console.log(this.state.completeCheckupList);
+          console.log('Server response');
+          console.log(data);
+          this.setState({ totalCheckupCompleteItems: data.totalItems });
+          this.setState({ totalCheckupCompletePages: data.totalPages });
+          this.setState({ currentCheckupCompletePage: data.currentPage });
+          this.setIsLoading(false);
+        },
+        error: (data: any) => {
+          this.setIsLoading(false);
+          this.store.showNotif(data.error.errorMessage, 'error');
+          console.log(data);
+        },
+      });
+  }
+
+  initCompleteInfiniteSearchByNameData(
+    value: string,
+    page: number,
+    size: number
+  ) {
+    this.store.showNotif('Searched Mode On', 'custom');
+    this.medicalCheckupService
+      .searchCompleteMedicalCheckupByName(value, page, size)
       .toPromise()
       .then((data: any) => {
-        this.setState({
-          medicalCheckupList: new Array<MedicalCheckup>(size),
-        });
-        console.log('Current flag: sort list');
-        console.log(this.state.medicalCheckupList);
-        this.setState({ totalItems: data.totalItems });
-        this.setState({ totalPages: data.totalPages });
-        this.setState({ currentPage: data.currentPage });
+        if (data.totalItems !== 0) {
+          this.setState({
+            completeCheckupList: new Array<MedicalCheckup>(size),
+          });
+        } else {
+          this.store.showNotif('No result found!', 'custom');
+        }
+        console.log('Current flag: infitite searched list');
+        console.log(this.state.completeCheckupList);
+        this.setState({ totalCheckupCompleteItems: data.totalItems });
+        this.setState({ totalCheckupCompletePages: data.totalPages });
+        this.setState({ currentCheckupCompletePage: data.currentPage });
       })
       .then(() => {
-        this.sortMedicalCheckupByPrice(value, page, size);
+        this.searchCompleteMedicalCheckupByName(value, page, size);
       });
   }
 
-  loadDataAsync(page: number, size: number) {
+  loadCompleteDataAsync(page: number, size: number) {
     this.setIsLoading(true);
-    this.medicalCheckupService.fetchMedicalCheckup(page, size).subscribe({
-      next: (data: any) => {
-        this.setState({
-          medicalCheckupList: this.fillEmpty(
-            page,
-            size,
-            this.state.medicalCheckupList,
-            data.items
-          ),
-        });
-        console.log('Pure list');
-        console.log(this.state.medicalCheckupList);
-        console.log('Server response');
-        console.log(data);
-        this.setState({ totalItems: data.totalItems });
-        this.setState({ totalPages: data.totalPages });
-        this.setState({ currentPage: data.currentPage });
-        this.setIsLoading(false);
-      },
-      error: (data: any) => {
-        this.setIsLoading(false);
-        this.store.showNotif(data.error.errorMessage, 'error');
-        console.log(data);
-      },
-    });
-  }
-
-  refresh(page: number, size: number) {
-    this.setIsLoading(true);
-    this.medicalCheckupService.fetchMedicalCheckup(page, size).subscribe({
-      next: (data: any) => {
-        this.setState({
-          medicalCheckupList: this.fillEmpty(
-            page,
-            size,
-            this.state.medicalCheckupList,
-            data.items
-          ),
-        });
-        this.setState({ totalItems: data.totalItems });
-        this.setState({ totalPages: data.totalPages });
-        this.setState({ currentPage: data.currentPage });
-        console.log('Pure list');
-        console.log(this.state.medicalCheckupList);
-        console.log('Server response');
-        console.log(data);
-        this.store.showNotif('Refresh successfully', 'custom');
-        this.setIsLoading(false);
-      },
-      error: (data: any) => {
-        this.setIsLoading(false);
-        this.store.showNotif(data.error.errorMessage, 'error');
-        console.log(data);
-      },
-    });
+    this.medicalCheckupService
+      .fetchCompleteMedicalCheckup(page, size)
+      .subscribe({
+        next: (data: any) => {
+          this.setState({
+            completeCheckupList: this.fillEmpty(
+              page,
+              size,
+              this.state.completeCheckupList,
+              data.items
+            ),
+          });
+          console.log('Pure list');
+          console.log(this.state.completeCheckupList);
+          console.log('Server response');
+          console.log(data);
+          this.setState({ totalCheckupCompleteItems: data.totalItems });
+          this.setState({ totalCheckupCompletePages: data.totalPages });
+          this.setState({ currentCheckupCompletePage: data.currentPage });
+          this.setIsLoading(false);
+        },
+        error: (data: any) => {
+          this.setIsLoading(false);
+          this.store.showNotif(data.error.errorMessage, 'error');
+          console.log(data);
+        },
+      });
   }
 
   setIsLoading(_isLoading: Boolean) {
@@ -318,15 +301,41 @@ export class MedicalCheckupStore extends StateService<MedicalCheckupState> {
     (state) => state.medicalCheckupList
   );
 
+  $pendingCheckupList: Observable<Array<MedicalCheckup>> = this.select(
+    (state) => state.pendingCheckupList
+  );
+
+  $completeCheckupList: Observable<Array<MedicalCheckup>> = this.select(
+    (state) => state.completeCheckupList
+  );
+
   $exportData: Observable<Array<MedicalCheckup>> = this.select(
     (state) => state.exportData
   );
 
-  $totalPages: Observable<Number> = this.select((state) => state.totalPages);
+  $totalCheckupPendingPages: Observable<Number> = this.select(
+    (state) => state.totalCheckupPendingPages
+  );
 
-  $totalItems: Observable<Number> = this.select((state) => state.totalItems);
+  $totalCheckupCompletePages: Observable<Number> = this.select(
+    (state) => state.totalCheckupCompletePages
+  );
 
-  $currentPage: Observable<Number> = this.select((state) => state.currentPage);
+  $totalCheckupPendingItems: Observable<Number> = this.select(
+    (state) => state.totalCheckupPendingItems
+  );
+
+  $totalCheckupCompleteItems: Observable<Number> = this.select(
+    (state) => state.totalCheckupCompleteItems
+  );
+
+  $currentCheckupPendingPage: Observable<Number> = this.select(
+    (state) => state.currentCheckupPendingPage
+  );
+
+  $currentCheckupCompletePage: Observable<Number> = this.select(
+    (state) => state.currentCheckupCompletePage
+  );
 
   $selectedMedicalCheckup: Observable<Object> = this.select(
     (state) => state.selectedMedicalCheckup
@@ -345,9 +354,11 @@ export class MedicalCheckupStore extends StateService<MedicalCheckupState> {
           .subscribe({
             next: (data: any) => {
               this.setState({ responseMsg: data });
-              this.setTotalItems(this.state.totalItems + 1);
+              this.setTotalPendingItems(
+                this.state.totalCheckupPendingItems + 1
+              );
               console.log(data);
-              this.loadDataAsync(page, size);
+              this.initPendingInfiniteData(page, size);
               this.setIsLoading(false);
               this.store.showNotif(data.message, 'custom');
             },
@@ -376,7 +387,7 @@ export class MedicalCheckupStore extends StateService<MedicalCheckupState> {
             next: (data: any) => {
               this.setState({ responseMsg: data });
               console.log(data);
-              this.loadDataAsync(page, size);
+              this.loadCompleteDataAsync(page, size);
               this.setIsLoading(false);
               this.store.showNotif(data.message, 'custom');
             },
@@ -397,207 +408,46 @@ export class MedicalCheckupStore extends StateService<MedicalCheckupState> {
     return confirm(`<b>Are you sure?</b>`, 'Confirm changes');
   }
 
-  deleteSelectedMedicalCheckups(
-    selectedMedicalCheckups: Array<string>,
-    page: number,
-    size: number
-  ) {
-    this.confirmDialog('').then((confirm: boolean) => {
-      if (confirm) {
-        this.setIsLoading(true);
-        this.medicalCheckupService
-          .deleteSelectedMedicalCheckups(selectedMedicalCheckups)
-          .subscribe({
-            next: (data: any) => {
-              this.setState({ responseMsg: data });
-              console.log(data);
-              this.loadDataAsync(page, size);
-              console.log(this.state.medicalCheckupList);
-              this.setIsLoading(false);
-              this.store.showNotif(data.message, 'custom');
-            },
-            error: (data: any) => {
-              this.setIsLoading(false);
-              this.store.showNotif(data.error.errorMessage, 'error');
-              console.log(data);
-            },
-          });
-      }
-    });
-  }
-
-  deleteAllMedicalCheckups() {
-    this.confirmDialog('Delete all items?').then((confirm: boolean) => {
-      if (confirm) {
-        this.setIsLoading(true);
-        this.medicalCheckupService.deleteAllMedicalCheckups().subscribe({
-          next: (data: any) => {
-            this.setState({ responseMsg: data });
-            this.setState({ medicalCheckupList: [] });
-            this.setState({ totalPages: 0 });
-            this.setState({ currentPage: 0 });
-            this.setState({ totalItems: 0 });
-            console.log(data);
-            this.setIsLoading(false);
-            this.store.showNotif(data.message, 'custom');
-          },
-          error: (data: any) => {
-            this.setIsLoading(false);
-            this.store.showNotif(data.error.errorMessage, 'error');
-            console.log(data);
-          },
-        });
-      }
-    });
-  }
-
-  deleteMedicalCheckup(id: string, page: number, size: number) {
-    this.confirmDialog('').then((confirm: boolean) => {
-      if (confirm) {
-        this.setIsLoading(true);
-        this.medicalCheckupService.deleteMedicalCheckup(id).subscribe({
-          next: (data: any) => {
-            this.setState({ responseMsg: data });
-            this.setTotalItems(this.state.totalItems - 1);
-            console.log(data);
-            this.loadDataAsync(page, size);
-            this.setIsLoading(false);
-            this.store.showNotif(data.message, 'custom');
-          },
-          error: (data: any) => {
-            this.setIsLoading(false);
-            this.store.showNotif(data.error.errorMessage, 'error');
-            console.log(data);
-          },
-        });
-      }
-    });
-  }
-
   selectMedicalCheckup(_medicalCheckup: MedicalCheckup) {
     this.setState({ selectedMedicalCheckup: _medicalCheckup });
   }
 
-  setTotalPages(_totalPages: number) {
-    this.setState({ totalPages: _totalPages });
+  setTotalPendingPages(_totalPages: number) {
+    this.setState({ totalCheckupPendingPages: _totalPages });
   }
 
-  setTotalItems(_totalItems: number) {
-    this.setState({ totalItems: _totalItems });
+  setTotalPendingItems(_totalItems: number) {
+    this.setState({ totalCheckupPendingItems: _totalItems });
   }
 
-  setCurrentPage(_currentPage: number) {
-    this.setState({ currentPage: _currentPage });
+  setCurrentPendingPage(_currentPage: number) {
+    this.setState({ currentCheckupPendingPage: _currentPage });
   }
 
-  filterMedicalCheckupByPrice(
-    criteria: string,
-    value: number,
-    page: number,
-    size: number
-  ) {
+  setTotalCompletePages(_totalPages: number) {
+    this.setState({ totalCheckupCompletePages: _totalPages });
+  }
+
+  setTotalCompleteItems(_totalItems: number) {
+    this.setState({ totalCheckupCompleteItems: _totalItems });
+  }
+
+  setCurrentCompletePage(_currentPage: number) {
+    this.setState({ currentCheckupCompletePage: _currentPage });
+  }
+
+  searchPendingMedicalCheckupByName(value: string, page: number, size: number) {
     this.setIsLoading(true);
     this.medicalCheckupService
-      .filterMedicalCheckupByPrice(criteria, value, page, size)
-      .subscribe({
-        next: (data: any) => {
-          this.setState({ responseMsg: data });
-          this.setState({
-            medicalCheckupList: this.fillEmpty(
-              page,
-              size,
-              this.state.medicalCheckupList,
-              data.items
-            ),
-          });
-          this.setState({ totalItems: data.totalItems });
-          this.setState({ totalPages: data.totalPages });
-          this.setState({ currentPage: data.currentPage });
-          this.setIsLoading(false);
-        },
-        error: (data: any) => {
-          this.setIsLoading(false);
-          this.store.showNotif(data.error.errorMessage, 'error');
-          console.log(data);
-        },
-      });
-  }
-
-  filterMedicalCheckupByCategory(value: string, page: number, size: number) {
-    this.setIsLoading(true);
-    this.medicalCheckupService
-      .filterMedicalCheckupByCategory(value, page, size)
-      .subscribe({
-        next: (data: any) => {
-          this.setState({
-            medicalCheckupList: this.fillEmpty(
-              page,
-              size,
-              this.state.medicalCheckupList,
-              data.items
-            ),
-          });
-          console.log('Filtered list');
-          console.log(this.state.medicalCheckupList);
-          console.log('Server response');
-          console.log(data);
-          this.setState({ totalItems: data.totalItems });
-          this.setState({ totalPages: data.totalPages });
-          this.setState({ currentPage: data.currentPage });
-          this.setIsLoading(false);
-        },
-        error: (data: any) => {
-          this.setIsLoading(false);
-          this.store.showNotif(data.error.errorMessage, 'error');
-          console.log(data);
-        },
-      });
-  }
-
-  filterInfiniteMedicalCheckupByCategory(
-    value: string,
-    page: number,
-    size: number
-  ) {
-    this.setIsLoading(true);
-    this.medicalCheckupService
-      .filterMedicalCheckupByCategory(value, page, size)
-      .subscribe({
-        next: (data: any) => {
-          this.setState({
-            medicalCheckupList: this.state.medicalCheckupList.concat(
-              data.items
-            ),
-          });
-          console.log('Filtered list');
-          console.log(this.state.medicalCheckupList);
-          console.log('Server response');
-          console.log(data);
-          this.setState({ totalItems: data.totalItems });
-          this.setState({ totalPages: data.totalPages });
-          this.setState({ currentPage: data.currentPage });
-          this.setIsLoading(false);
-        },
-        error: (data: any) => {
-          this.setIsLoading(false);
-          this.store.showNotif(data.error.errorMessage, 'error');
-          console.log(data);
-        },
-      });
-  }
-
-  searchMedicalCheckupByName(value: string, page: number, size: number) {
-    this.setIsLoading(true);
-    this.medicalCheckupService
-      .searchMedicalCheckupByName(value, page, size)
+      .searchPendingMedicalCheckupByName(value, page, size)
       .subscribe({
         next: (data: any) => {
           if (data.totalItems !== 0) {
             this.setState({
-              medicalCheckupList: this.fillEmpty(
+              pendingCheckupList: this.fillEmpty(
                 page,
                 size,
-                this.state.medicalCheckupList,
+                this.state.pendingCheckupList,
                 data.items
               ),
             });
@@ -608,9 +458,9 @@ export class MedicalCheckupStore extends StateService<MedicalCheckupState> {
           console.log(this.state.medicalCheckupList);
           console.log('Server response');
           console.log(data);
-          this.setState({ totalItems: data.totalItems });
-          this.setState({ totalPages: data.totalPages });
-          this.setState({ currentPage: data.currentPage });
+          this.setState({ totalCheckupPendingItems: data.totalItems });
+          this.setState({ totalCheckupPendingPages: data.totalPages });
+          this.setState({ currentCheckupPendingPage: data.currentPage });
           this.setIsLoading(false);
         },
         error: (data: any) => {
@@ -621,19 +471,19 @@ export class MedicalCheckupStore extends StateService<MedicalCheckupState> {
       });
   }
 
-  searchInfiniteMedicalCheckupByName(
+  searchPendingInfiniteMedicalCheckupByName(
     value: string,
     page: number,
     size: number
   ) {
     this.setIsLoading(true);
     this.medicalCheckupService
-      .searchMedicalCheckupByName(value, page, size)
+      .searchPendingMedicalCheckupByName(value, page, size)
       .subscribe({
         next: (data: any) => {
           if (data.totalItems !== 0) {
             this.setState({
-              medicalCheckupList: this.state.medicalCheckupList.concat(
+              pendingCheckupList: this.state.pendingCheckupList.concat(
                 data.items
               ),
             });
@@ -641,12 +491,12 @@ export class MedicalCheckupStore extends StateService<MedicalCheckupState> {
             this.store.showNotif('No result found!', 'custome');
           }
           console.log('Infite searched list');
-          console.log(this.state.medicalCheckupList);
+          console.log(this.state.pendingCheckupList);
           console.log('Server response');
           console.log(data);
-          this.setState({ totalItems: data.totalItems });
-          this.setState({ totalPages: data.totalPages });
-          this.setState({ currentPage: data.currentPage });
+          this.setState({ totalCheckupPendingItems: data.totalItems });
+          this.setState({ totalCheckupPendingPages: data.totalPages });
+          this.setState({ currentCheckupPendingPage: data.currentPage });
           this.setIsLoading(false);
         },
         error: (data: any) => {
@@ -657,28 +507,35 @@ export class MedicalCheckupStore extends StateService<MedicalCheckupState> {
       });
   }
 
-  sortMedicalCheckupByName(value: string, page: number, size: number) {
+  searchCompleteMedicalCheckupByName(
+    value: string,
+    page: number,
+    size: number
+  ) {
     this.setIsLoading(true);
     this.medicalCheckupService
-      .sortMedicalCheckupByName(value, page, size)
+      .searchCompleteMedicalCheckupByName(value, page, size)
       .subscribe({
         next: (data: any) => {
-          this.setState({ responseMsg: data });
-          this.setState({
-            medicalCheckupList: this.fillEmpty(
-              page,
-              size,
-              this.state.medicalCheckupList,
-              data.items
-            ),
-          });
-          this.setState({ totalItems: data.totalItems });
-          this.setState({ totalPages: data.totalPages });
-          this.setState({ currentPage: data.currentPage });
-          console.log('Sorted list');
+          if (data.totalItems !== 0) {
+            this.setState({
+              completeCheckupList: this.fillEmpty(
+                page,
+                size,
+                this.state.completeCheckupList,
+                data.items
+              ),
+            });
+          } else {
+            this.store.showNotif('No result found!', 'custom');
+          }
+          console.log('Searched list');
           console.log(this.state.medicalCheckupList);
           console.log('Server response');
           console.log(data);
+          this.setState({ totalCheckupCompleteItems: data.totalItems });
+          this.setState({ totalCheckupCompletePages: data.totalPages });
+          this.setState({ currentCheckupCompletePage: data.currentPage });
           this.setIsLoading(false);
         },
         error: (data: any) => {
@@ -689,56 +546,32 @@ export class MedicalCheckupStore extends StateService<MedicalCheckupState> {
       });
   }
 
-  sortMedicalCheckupByPrice(value: string, page: number, size: number) {
+  searchCompleteInfiniteMedicalCheckupByName(
+    value: string,
+    page: number,
+    size: number
+  ) {
     this.setIsLoading(true);
     this.medicalCheckupService
-      .sortMedicalCheckupByPrice(value, page, size)
+      .searchCompleteMedicalCheckupByName(value, page, size)
       .subscribe({
         next: (data: any) => {
-          this.setState({ responseMsg: data });
-          this.setState({
-            medicalCheckupList: this.fillEmpty(
-              page,
-              size,
-              this.state.medicalCheckupList,
-              data.items
-            ),
-          });
-          this.setState({ totalItems: data.totalItems });
-          this.setState({ totalPages: data.totalPages });
-          this.setState({ currentPage: data.currentPage });
-          console.log('Sorted list');
-          console.log(this.state.medicalCheckupList);
+          if (data.totalItems !== 0) {
+            this.setState({
+              completeCheckupList: this.state.completeCheckupList.concat(
+                data.items
+              ),
+            });
+          } else {
+            this.store.showNotif('No result found!', 'custome');
+          }
+          console.log('Infite searched list');
+          console.log(this.state.completeCheckupList);
           console.log('Server response');
           console.log(data);
-          this.setIsLoading(false);
-        },
-        error: (data: any) => {
-          this.setIsLoading(false);
-          this.store.showNotif(data.error.errorMessage, 'error');
-          console.log(data);
-        },
-      });
-  }
-
-  sortInfiniteMedicalCheckupByPrice(value: string, page: number, size: number) {
-    this.setIsLoading(true);
-    this.medicalCheckupService
-      .sortMedicalCheckupByPrice(value, page, size)
-      .subscribe({
-        next: (data: any) => {
-          this.setState({
-            medicalCheckupList: this.state.medicalCheckupList.concat(
-              data.items
-            ),
-          });
-          console.log('Infite sorted list');
-          console.log(this.state.medicalCheckupList);
-          console.log('Server response');
-          console.log(data);
-          this.setState({ totalItems: data.totalItems });
-          this.setState({ totalPages: data.totalPages });
-          this.setState({ currentPage: data.currentPage });
+          this.setState({ totalCheckupCompleteItems: data.totalItems });
+          this.setState({ totalCheckupCompletePages: data.totalPages });
+          this.setState({ currentCheckupCompletePage: data.currentPage });
           this.setIsLoading(false);
         },
         error: (data: any) => {

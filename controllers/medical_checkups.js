@@ -5,7 +5,7 @@ import getPagination from "../middleware/getPagination.js";
 import Prescription from "../models/prescription.js";
 const router = express.Router();
 
-export const getMedicalCheckups = (req, res) => {
+export const getPendingMedicalCheckups = (req, res) => {
   const { page, size } = req.query;
   console.log(`Page: ${page}  Size: ${size}`);
   try {
@@ -16,7 +16,37 @@ export const getMedicalCheckups = (req, res) => {
       offset: offset,
       limit: limit,
     };
-    MedicalCheckup.paginate({}, options)
+    MedicalCheckup.paginate({status: 'pending'}, options)
+      .then((data) => {
+        res.status(200).json({
+          totalItems: data.totalDocs,
+          items: data.docs,
+          totalPages: data.totalPages,
+          currentPage: data.page - 1,
+          nextPage: data.nextPage,
+          prevPage: data.prevPage,
+        });
+      })
+      .catch((error) => {
+        res.status(404).json({ errorMessage: error.message });
+      });
+  } catch (error) {
+    res.status(404).json({ errorMessage: "Failed to get data!" });
+  }
+};
+
+export const getCompleteMedicalCheckups = (req, res) => {
+  const { page, size } = req.query;
+  console.log(`Page: ${page}  Size: ${size}`);
+  try {
+    const { limit, offset } = getPagination(page, size);
+    console.log(`Limit: ${limit}  Offset: ${offset}`);
+    const options = {
+      sort: { createdAt: "desc" },
+      offset: offset,
+      limit: limit,
+    };
+    MedicalCheckup.paginate({status: 'complete'}, options)
       .then((data) => {
         res.status(200).json({
           totalItems: data.totalDocs,
@@ -62,11 +92,11 @@ export const getMedicalCheckup = async (req, res) => {
   }
 };
 
-export const getMedicalCheckupByPrescriptionID = async (req, res) => {
-  const { prescriptionID } = req.query;
+export const getMedicalCheckupByCustomerID = async (req, res) => {
+  const { customerID } = req.query;
   try {
     const medicalCheckup = await MedicalCheckup.findOne({
-      prescriptionID: prescriptionID,
+      customerID: customerID,
     });
     if (medicalCheckup) {
       res.status(200).json(medicalCheckup);
@@ -130,6 +160,7 @@ export const createMedicalCheckup = async (req, res) => {
   const {
     doctorID,
     customerID,
+    customerName,
     prescriptionID,
     priority,
     healthInsurance,
@@ -144,6 +175,7 @@ export const createMedicalCheckup = async (req, res) => {
     const newMedicalCheckup = new MedicalCheckup({
       doctorID,
       customerID,
+      customerName,
       prescriptionID,
       priority,
       healthInsurance,
@@ -202,17 +234,64 @@ export const filterMedicalCheckupByCategory = (req, res) => {
   }
 };
 
-export const searchMedicalCheckupByName = (req, res) => {
+export const searchPendingMedicalCheckupByName = (req, res) => {
   const { value, page, size } = req.query;
   console.log(`Page: ${page}  Size: ${size}. Value: ${value}`);
   try {
     const { limit, offset } = getPagination(page, size);
     console.log(`Limit: ${limit}  Offset: ${offset}`);
     const query = {
-      fullName: { $regex: value, $options: "i" },
+      $and: [
+        {
+          status: 'pending'
+        },
+        {
+          purpose: { $regex: value, $options: "i" }
+        }
+      ]
     };
     const options = {
-      sort: { prescriptionID: "desc" },
+      sort: { createdAt: "desc" },
+      offset: offset,
+      limit: limit,
+    };
+    MedicalCheckup.paginate(query, options)
+      .then((data) => {
+        res.status(200).json({
+          totalItems: data.totalDocs,
+          items: data.docs,
+          totalPages: data.totalPages,
+          currentPage: data.page - 1,
+          nextPage: data.nextPage,
+          prevPage: data.prevPage,
+        });
+      })
+      .catch((error) => {
+        res.status(404).json({ errorMessage: error.message });
+      });
+  } catch (error) {
+    res.status(404).json({ errorMessage: "Failed to get data!" });
+  }
+};
+
+export const searchCompleteMedicalCheckupByName = (req, res) => {
+  const { value, page, size } = req.query;
+  console.log(`Page: ${page}  Size: ${size}. Value: ${value}`);
+  try {
+    const { limit, offset } = getPagination(page, size);
+    console.log(`Limit: ${limit}  Offset: ${offset}`);
+    const query = {
+      $and: [
+        {
+          status: 'complete'
+        },
+        {
+          purpose: { $regex: value, $options: "i" }
+        }
+      ]
+    };
+    const options = {
+      sort: { createdAt: "desc" },
       offset: offset,
       limit: limit,
     };

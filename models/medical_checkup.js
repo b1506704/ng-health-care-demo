@@ -4,6 +4,7 @@ const medicalCheckupSchema = mongoose.Schema(
   {
     doctorID: { type: String },
     customerID: { type: String },
+    customerName: { type: String },
     prescriptionID: { type: String },
     priority: { type: Number },
     healthInsurance: { type: String },

@@ -11,17 +11,17 @@ export class MedicalCheckupHttpService {
   apiMedicalCheckupUrl = 'https://ng-health-care-demo.herokuapp.com/medicalCheckups';
   // apiMedicalCheckupUrl = 'http://localhost/medicalCheckups';
 
-  fetchMedicalCheckup(page: number, size: number): Observable<MedicalCheckup> {
+  fetchPendingMedicalCheckup(page: number, size: number): Observable<MedicalCheckup> {
     const params = new HttpParams().set('page', page).set('size', size);
     console.log(params.toString());
-    return this.http.get<MedicalCheckup>(this.apiMedicalCheckupUrl, {
+    return this.http.get<MedicalCheckup>(this.apiMedicalCheckupUrl + "/pending", {
       params: params,
       reportProgress: true,
       observe: 'body',
     });
   }
 
-  searchMedicalCheckupByName(
+  searchPendingMedicalCheckupByName(
     value: string,
     page: number,
     size: number
@@ -32,7 +32,7 @@ export class MedicalCheckupHttpService {
       .set('size', size);
     console.log(params.toString());
     return this.http.post<MedicalCheckup>(
-      this.apiMedicalCheckupUrl + '/searchByName',
+      this.apiMedicalCheckupUrl + '/pending/searchByName',
       {},
       {
         params: params,
@@ -42,30 +42,17 @@ export class MedicalCheckupHttpService {
     );
   }
 
-  filterMedicalCheckupByPrice(
-    criteria: string,
-    value: number,
-    page: number,
-    size: number
-  ): Observable<MedicalCheckup> {
-    const params = new HttpParams()
-      .set('criteria', criteria)
-      .set('value', value)
-      .set('page', page)
-      .set('size', size);
+  fetchCompleteMedicalCheckup(page: number, size: number): Observable<MedicalCheckup> {
+    const params = new HttpParams().set('page', page).set('size', size);
     console.log(params.toString());
-    return this.http.post<MedicalCheckup>(
-      this.apiMedicalCheckupUrl,
-      {},
-      {
-        params: params,
-        reportProgress: true,
-        observe: 'body',
-      }
-    );
+    return this.http.get<MedicalCheckup>(this.apiMedicalCheckupUrl + "/complete", {
+      params: params,
+      reportProgress: true,
+      observe: 'body',
+    });
   }
 
-  filterMedicalCheckupByCategory(
+  searchCompleteMedicalCheckupByName(
     value: string,
     page: number,
     size: number
@@ -76,91 +63,7 @@ export class MedicalCheckupHttpService {
       .set('size', size);
     console.log(params.toString());
     return this.http.post<MedicalCheckup>(
-      this.apiMedicalCheckupUrl + '/filterByCategory',
-      {},
-      {
-        params: params,
-        reportProgress: true,
-        observe: 'body',
-      }
-    );
-  }
-
-  filterMedicalCheckupByJob(
-    value: string,
-    page: number,
-    size: number
-  ): Observable<MedicalCheckup> {
-    const params = new HttpParams()
-      .set('value', value)
-      .set('page', page)
-      .set('size', size);
-    console.log(params.toString());
-    return this.http.post<MedicalCheckup>(
-      this.apiMedicalCheckupUrl + '/filterByJob',
-      {},
-      {
-        params: params,
-        reportProgress: true,
-        observe: 'body',
-      }
-    );
-  }
-
-  filterMedicalCheckupByGender(
-    value: string,
-    page: number,
-    size: number
-  ): Observable<MedicalCheckup> {
-    const params = new HttpParams()
-      .set('value', value)
-      .set('page', page)
-      .set('size', size);
-    console.log(params.toString());
-    return this.http.post<MedicalCheckup>(
-      this.apiMedicalCheckupUrl + '/filterByGender',
-      {},
-      {
-        params: params,
-        reportProgress: true,
-        observe: 'body',
-      }
-    );
-  }
-
-  sortMedicalCheckupByName(
-    value: string,
-    page: number,
-    size: number
-  ): Observable<MedicalCheckup> {
-    const params = new HttpParams()
-      .set('value', value)
-      .set('page', page)
-      .set('size', size);
-    console.log(params.toString());
-    return this.http.post<MedicalCheckup>(
-      this.apiMedicalCheckupUrl + '/sortByName',
-      {},
-      {
-        params: params,
-        reportProgress: true,
-        observe: 'body',
-      }
-    );
-  }
-
-  sortMedicalCheckupByPrice(
-    value: string,
-    page: number,
-    size: number
-  ): Observable<MedicalCheckup> {
-    const params = new HttpParams()
-      .set('value', value)
-      .set('page', page)
-      .set('size', size);
-    console.log(params.toString());
-    return this.http.post<MedicalCheckup>(
-      this.apiMedicalCheckupUrl + '/sortByPrice',
+      this.apiMedicalCheckupUrl + '/complete/searchByName',
       {},
       {
         params: params,
@@ -219,11 +122,11 @@ export class MedicalCheckupHttpService {
     });
   }
 
-  getMedicalCheckupByUserName(userName: string): Observable<MedicalCheckup> {
-    const params = new HttpParams().set('userName', userName);
+  getMedicalCheckupByCustomerID(customerID: string): Observable<MedicalCheckup> {
+    const params = new HttpParams().set('customerID', customerID);
     console.log(params.toString());
     return this.http.post<MedicalCheckup>(
-      this.apiMedicalCheckupUrl + '/byUserName',
+      this.apiMedicalCheckupUrl + '/byCustomerID',
       {},
       {
         params: params,

@@ -68,7 +68,7 @@
                 class="card-priority"
                 [ngClass]="'priority-' + item?.priority"
               ></div>
-              <div class="card-subject">{{ item?.customerName }}</div>
+              <div class="card-subject">{{ item?.purpose }}</div>
               <div class="card-assignee">
                 {{ item?.startDate | date: "fullDate" }}
               </div>
@@ -133,7 +133,7 @@
                 class="card-priority"
                 [ngClass]="'priority-' + item?.priority"
               ></div>
-              <div class="card-subject">{{ item?.customerName }}</div>
+              <div class="card-subject">{{ item?.purpose }}</div>
               <div class="card-assignee">
                 {{ item?.startDate | date: "fullDate" }}
               </div>

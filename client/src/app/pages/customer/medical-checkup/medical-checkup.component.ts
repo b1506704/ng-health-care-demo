@@ -1,6 +1,6 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
-import { DxFormComponent, DxScrollViewComponent } from 'devextreme-angular';
+import { DxFormComponent } from 'devextreme-angular';
 import { Customer } from 'src/app/shared/models/customer';
 import { MedicalCheckup } from 'src/app/shared/models/medical-checkup';
 import { CustomerStore } from 'src/app/shared/services/customer/customer-store.service';
@@ -12,10 +12,8 @@ import { StoreService } from 'src/app/shared/services/store.service';
   templateUrl: './medical-checkup.component.html',
   styleUrls: ['./medical-checkup.component.scss'],
 })
-export class MedicalCheckupComponent implements OnInit {
+export class MedicalCheckupComponent implements OnInit, OnDestroy {
   @ViewChild(DxFormComponent, { static: false }) form: DxFormComponent;
-  @ViewChild(DxScrollViewComponent, { static: false })
-  scrollView: DxScrollViewComponent;
   constructor(
     private router: Router,
     private medicalCheckupStore: MedicalCheckupStore,
@@ -23,28 +21,46 @@ export class MedicalCheckupComponent implements OnInit {
     private customerStore: CustomerStore
   ) {}
   pageSize: number = 10;
-  updateContentTimer: any;
-  currentIndexFromServer: number;
-  isSearchingByName: boolean;
-  timeout: any;
-  currentSearchByNameValue: string;
-  searchBoxOptions: any = {
+  updatePendingContentTimer: any;
+  updateCompleteContentTimer: any;
+  currentCheckupPendingPage: number;
+  currentCheckupCompletePage: number;
+  isSearchingPendingByName: boolean;
+  isSearchingCompleteByName: boolean;
+  pendingTimeout: any;
+  completeTimeout: any;
+  currentSearchPendingByNameValue: string;
+  currentSearchCompleteByNameValue: string;
+  searchPendingBoxOptions: any = {
     valueChangeEvent: 'keyup',
     showClearButton: true,
-    onKeyUp: this.onSearchKeyupHandler.bind(this),
-    onValueChanged: this.onSearchValueChanged.bind(this),
+    onKeyUp: this.onPendingSearchKeyupHandler.bind(this),
+    onValueChanged: this.onPendingSearchValueChanged.bind(this),
     mode: 'search',
-    placeholder: 'Search with name',
+    placeholder: 'Search with purpose',
   };
-  refreshButtonOptions: any = {
+  refreshPendingButtonOptions: any = {
     type: 'normal',
     icon: 'refresh',
     hint: 'Fetch data from server',
-    onClick: this.onRefresh.bind(this),
+    onClick: this.onPendingRefresh.bind(this),
+  };
+  searchCompleteBoxOptions: any = {
+    valueChangeEvent: 'keyup',
+    showClearButton: true,
+    onKeyUp: this.onCompleteSearchKeyupHandler.bind(this),
+    onValueChanged: this.onCompleteSearchValueChanged.bind(this),
+    mode: 'search',
+    placeholder: 'Search with purpose',
+  };
+  refreshCompleteButtonOptions: any = {
+    type: 'normal',
+    icon: 'refresh',
+    hint: 'Fetch data from server',
+    onClick: this.onCompleteRefresh.bind(this),
   };
   pendingList: Array<MedicalCheckup>;
   completeList: Array<MedicalCheckup>;
-  checkUpData: Array<MedicalCheckup>;
   colCountByScreen: Object;
   isCheckUpPopupVisible: boolean = false;
   checkUpDetail: MedicalCheckup;
@@ -72,18 +88,21 @@ export class MedicalCheckupComponent implements OnInit {
     },
   };
 
-  updateContent = (args: any, eventName: any) => {
-    const editorMode = this.checkEditorMode();
-    const currentIndex = this.currentIndexFromServer;
-    if (this.updateContentTimer) clearTimeout(this.updateContentTimer);
-    this.updateContentTimer = setTimeout(() => {
-      if (this.checkUpData.length) {
+  // -- Pending Checkup Functions --
+
+  updatePendingContent = (args: any, eventName: any) => {
+    const editorMode = this.checkPendingEditorMode();
+    const currentIndex = this.currentCheckupPendingPage;
+    if (this.updatePendingContentTimer)
+      clearTimeout(this.updatePendingContentTimer);
+    this.updatePendingContentTimer = setTimeout(() => {
+      if (this.pendingList.length) {
         switch (editorMode) {
           case 'NORMAL':
-            this.paginatePureData(currentIndex + 1);
+            this.paginatePendingPureData(currentIndex + 1);
             break;
           case 'SEARCH':
-            this.paginateSearchData(currentIndex + 1);
+            this.paginatePendingSearchData(currentIndex + 1);
             break;
           default:
             break;
@@ -93,60 +112,143 @@ export class MedicalCheckupComponent implements OnInit {
     }, 500);
   };
 
-  updateTopContent = (e: any) => {
-    this.updateContent(e, 'PullDown');
+  updatePendingTopContent = (e: any) => {
+    this.updatePendingContent(e, 'PullDown');
   };
 
-  updateBottomContent = (e: any) => {
-    this.updateContent(e, 'ReachBottom');
+  updatePendingBottomContent = (e: any) => {
+    this.updatePendingContent(e, 'ReachBottom');
   };
 
-  onSearchKeyupHandler(e: any) {
-    clearTimeout(this.timeout);
-    this.timeout = setTimeout(() => {
-      this.isSearchingByName = true;
-      console.log(this.currentSearchByNameValue);
-      if (this.currentSearchByNameValue !== '') {
-        this.medicalCheckupStore.initInfiniteSearchByNameData(
-          this.currentSearchByNameValue,
+  onPendingSearchKeyupHandler(e: any) {
+    clearTimeout(this.pendingTimeout);
+    this.pendingTimeout = setTimeout(() => {
+      this.isSearchingPendingByName = true;
+      console.log(this.currentSearchPendingByNameValue);
+      if (this.currentSearchPendingByNameValue !== '') {
+        this.medicalCheckupStore.initPendingInfiniteSearchByNameData(
+          this.currentSearchPendingByNameValue,
           0,
           this.pageSize
         );
       } else {
         //return to pure editor mode
         this.store.showNotif('SEARCH MODE OFF', 'custom');
-        this.onRefresh();
+        this.onPendingRefresh();
       }
     }, 1250);
   }
 
-  checkEditorMode() {
-    if (this.isSearchingByName === true) {
+  checkPendingEditorMode() {
+    if (this.isSearchingPendingByName === true) {
       return 'SEARCH';
     } else {
       return 'NORMAL';
     }
   }
 
-  paginatePureData(index: number) {
-    this.medicalCheckupStore.loadInfiniteDataAsync(index, this.pageSize);
+  paginatePendingPureData(index: number) {
+    this.medicalCheckupStore.loadPendingInfiniteDataAsync(index, this.pageSize);
   }
 
-  paginateSearchData(index: number) {
-    this.medicalCheckupStore.searchInfiniteMedicalCheckupByName(
-      this.currentSearchByNameValue,
+  paginatePendingSearchData(index: number) {
+    this.medicalCheckupStore.searchPendingInfiniteMedicalCheckupByName(
+      this.currentSearchPendingByNameValue,
       index,
       this.pageSize
     );
   }
 
-  onSearchValueChanged(e: any) {
-    this.currentSearchByNameValue = e.value;
+  onPendingSearchValueChanged(e: any) {
+    this.currentSearchPendingByNameValue = e.value;
   }
 
-  onRefresh() {
-    this.isSearchingByName = false;
-    this.medicalCheckupStore.initInfiniteData(0, this.pageSize);
+  onPendingRefresh() {
+    this.isSearchingPendingByName = false;
+    this.medicalCheckupStore.initPendingInfiniteData(0, this.pageSize);
+  }
+
+  // -- Complete Checkup Functions --
+
+  updateCompleteContent = (args: any, eventName: any) => {
+    const editorMode = this.checkCompleteEditorMode();
+    const currentIndex = this.currentCheckupCompletePage;
+    if (this.updateCompleteContentTimer)
+      clearTimeout(this.updateCompleteContentTimer);
+    this.updateCompleteContentTimer = setTimeout(() => {
+      if (this.completeList.length) {
+        switch (editorMode) {
+          case 'NORMAL':
+            this.paginateCompletePureData(currentIndex + 1);
+            break;
+          case 'SEARCH':
+            this.paginateCompleteSearchData(currentIndex + 1);
+            break;
+          default:
+            break;
+        }
+      }
+      args.component.release();
+    }, 500);
+  };
+
+  updateCompleteTopContent = (e: any) => {
+    this.updateCompleteContent(e, 'PullDown');
+  };
+
+  updateCompleteBottomContent = (e: any) => {
+    this.updateCompleteContent(e, 'ReachBottom');
+  };
+
+  onCompleteSearchKeyupHandler(e: any) {
+    clearTimeout(this.completeTimeout);
+    this.completeTimeout = setTimeout(() => {
+      this.isSearchingCompleteByName = true;
+      console.log(this.currentSearchCompleteByNameValue);
+      if (this.currentSearchCompleteByNameValue !== '') {
+        this.medicalCheckupStore.initCompleteInfiniteSearchByNameData(
+          this.currentSearchCompleteByNameValue,
+          0,
+          this.pageSize
+        );
+      } else {
+        //return to pure editor mode
+        this.store.showNotif('SEARCH MODE OFF', 'custom');
+        this.onCompleteRefresh();
+      }
+    }, 1250);
+  }
+
+  checkCompleteEditorMode() {
+    if (this.isSearchingCompleteByName === true) {
+      return 'SEARCH';
+    } else {
+      return 'NORMAL';
+    }
+  }
+
+  paginateCompletePureData(index: number) {
+    this.medicalCheckupStore.loadCompleteInfiniteDataAsync(
+      index,
+      this.pageSize
+    );
+  }
+
+  paginateCompleteSearchData(index: number) {
+    this.medicalCheckupStore.searchCompleteInfiniteMedicalCheckupByName(
+      this.currentSearchCompleteByNameValue,
+      index,
+      this.pageSize
+    );
+  }
+
+  onCompleteSearchValueChanged(e: any) {
+    this.currentSearchCompleteByNameValue = e.value;
+  }
+
+  onCompleteRefresh() {
+    this.isSearchingCompleteByName = false;
+    this.medicalCheckupStore.initCompleteInfiniteData(0, this.pageSize);
   }
 
   resetValues() {
@@ -167,7 +269,11 @@ export class MedicalCheckupComponent implements OnInit {
   onSignupSubmit = (e: any) => {
     console.log(this.checkUpDetail);
     e.preventDefault();
-    this.medicalCheckupStore.uploadMedicalCheckup(this.checkUpDetail, 0, 5);
+    this.medicalCheckupStore.uploadMedicalCheckup(
+      this.checkUpDetail,
+      0,
+      this.pageSize
+    );
     this.isCheckUpPopupVisible = false;
     this.resetValues();
   };
@@ -216,32 +322,36 @@ export class MedicalCheckupComponent implements OnInit {
     });
   }
 
-  medicalCheckupDataListener() {
-    return this.medicalCheckupStore.$medicalCheckupList.subscribe(
+  pendingCheckupDataListener() {
+    return this.medicalCheckupStore.$pendingCheckupList.subscribe(
       (data: Array<MedicalCheckup>) => {
-        this.checkUpData = data;
-        setTimeout(() => {
-          this.pendingList = this.checkUpData.filter(
-            (e) => e.status === 'pending'
-          );
-        }, 150);
-        setTimeout(() => {
-          this.completeList = this.checkUpData.filter(
-            (e) => e.status === 'complete'
-          );
-        }, 150);
+        this.pendingList = data;
       }
     );
   }
 
-  currentPageListener() {
-    return this.medicalCheckupStore.$currentPage.subscribe((data: any) => {
-      this.currentIndexFromServer = data;
-    });
+  completeCheckupDataListener() {
+    return this.medicalCheckupStore.$completeCheckupList.subscribe(
+      (data: Array<MedicalCheckup>) => {
+        this.completeList = data;
+      }
+    );
   }
 
-  scrollTop() {
-    this.scrollView.instance.scrollTo({ top: 0, left: 0 });
+  currentCheckupPendingPageListener() {
+    return this.medicalCheckupStore.$currentCheckupPendingPage.subscribe(
+      (data: any) => {
+        this.currentCheckupPendingPage = data;
+      }
+    );
+  }
+
+  currentCheckupCompletePageListener() {
+    return this.medicalCheckupStore.$currentCheckupCompletePage.subscribe(
+      (data: any) => {
+        this.currentCheckupCompletePage = data;
+      }
+    );
   }
 
   navigateToHealthCondition() {
@@ -249,11 +359,21 @@ export class MedicalCheckupComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.medicalCheckupStore.initInfiniteData(0, this.pageSize);
+    this.currentCheckupPendingPageListener();
+    this.currentCheckupCompletePageListener();
+    this.medicalCheckupStore
+      .initPendingInfiniteData(0, this.pageSize)
+      .then(() => {
+        this.pendingCheckupDataListener();
+      });
+    this.medicalCheckupStore
+      .initCompleteInfiniteData(0, this.pageSize)
+      .then(() => {
+        this.completeCheckupDataListener();
+      });
     this.getPatientID();
-    this.medicalCheckupDataListener();
-    this.currentPageListener();
   }
+
   screen(width: any) {
     return width < 720 ? 'sm' : 'md';
   }
@@ -264,6 +384,9 @@ export class MedicalCheckupComponent implements OnInit {
       sm: 2,
     };
     this.getPatientID().unsubscribe();
-    this.medicalCheckupDataListener().unsubscribe();
+    this.pendingCheckupDataListener().unsubscribe();
+    this.currentCheckupPendingPageListener().unsubscribe();
+    this.currentCheckupCompletePageListener().unsubscribe();
+    this.completeCheckupDataListener().unsubscribe();
   }
 }

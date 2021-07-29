@@ -1,17 +1,3 @@
-<dx-toolbar [ngStyle]="{ paddingLeft: '25px', paddingRight: '25px' }">
-  <dxi-item [location]="'before'" [text]="'Medical Checkups Management'">
-  </dxi-item>
-  <dxi-item location="after" locateInMenu="auto">
-    <dx-button
-      icon="arrowright"
-      type="outline"
-      text="Health Condition"
-      hint="Navigate to Room Monitor"
-      (onClick)="navigateToRoomMonitor()"
-    >
-    </dx-button>
-  </dxi-item>
-</dx-toolbar>
 <dx-box>
   <dxi-item [ratio]="2">
     <p
@@ -68,7 +54,7 @@
                 class="card-priority"
                 [ngClass]="'priority-' + item?.priority"
               ></div>
-              <div class="card-subject">{{ item?.customerName }}</div>
+              <div class="card-subject">{{ item?.purpose }}</div>
               <div class="card-assignee">
                 {{ item?.startDate | date: "fullDate" }}
               </div>
@@ -133,7 +119,7 @@
                 class="card-priority"
                 [ngClass]="'priority-' + item?.priority"
               ></div>
-              <div class="card-subject">{{ item?.customerName }}</div>
+              <div class="card-subject">{{ item?.purpose }}</div>
               <div class="card-assignee">
                 {{ item?.startDate | date: "fullDate" }}
               </div>
@@ -144,12 +130,12 @@
     </div>
   </dxi-item>
   <dxi-item [ratio]="7">
-    <router-outlet></router-outlet>
+    
   </dxi-item>
 </dx-box>
 <dx-speed-dial-action
   icon="like"
-  label="Request Checkup"
+  label="Reset Value"
   [index]="1"
   (onClick)="resetValues()"
 >

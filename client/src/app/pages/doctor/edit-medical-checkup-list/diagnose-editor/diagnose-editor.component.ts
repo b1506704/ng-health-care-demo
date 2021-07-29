@@ -1,6 +1,5 @@
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { DxFormComponent } from 'devextreme-angular';
 import { Customer } from 'src/app/shared/models/customer';
 import { Doctor } from 'src/app/shared/models/doctor';
 import { MedicalCheckup } from 'src/app/shared/models/medical-checkup';
@@ -10,11 +9,11 @@ import { MedicalCheckupStore } from 'src/app/shared/services/medical-checkup/med
 import { StoreService } from 'src/app/shared/services/store.service';
 
 @Component({
-  selector: 'app-edit-medical-checkup-list',
-  templateUrl: './edit-medical-checkup-list.component.html',
-  styleUrls: ['./edit-medical-checkup-list.component.scss'],
+  selector: 'app-diagnose-editor',
+  templateUrl: './diagnose-editor.component.html',
+  styleUrls: ['./diagnose-editor.component.scss'],
 })
-export class EditMedicalCheckupListComponent implements OnInit, OnDestroy {
+export class DiagnoseEditorComponent implements OnInit, OnDestroy {
   constructor(
     private router: Router,
     private medicalCheckupStore: MedicalCheckupStore,
