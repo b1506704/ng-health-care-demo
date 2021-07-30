@@ -79,6 +79,55 @@ export class DiseaseStore extends StateService<DiseaseState> {
       });
   }
 
+  initInfiniteData(page: number, size: number) {
+    return this.diseaseService
+      .fetchDisease(page, size)
+      .toPromise()
+      .then((data: any) => {
+        if (page === 0) {
+          this.setState({
+            diseaseList: new Array<Disease>(size),
+          });
+        } else {
+          this.setState({
+            diseaseList: new Array<Disease>(page * size),
+          });
+        }
+        console.log('Current flag: infite list');
+        console.log(this.state.diseaseList);
+        this.setState({ totalItems: data.totalItems });
+        this.setState({ totalPages: data.totalPages });
+        this.setState({ currentPage: data.currentPage });
+      })
+      .then(() => {
+        this.loadDataAsync(page, size);
+      });
+  }
+
+  loadInfiniteDataAsync(page: number, size: number) {
+    this.setIsLoading(true);
+    this.diseaseService.fetchDisease(page, size).subscribe({
+      next: (data: any) => {
+        this.setState({
+          diseaseList: this.state.diseaseList.concat(data.items),
+        });
+        console.log('Infinite list');
+        console.log(this.state.diseaseList);
+        console.log('Server response');
+        console.log(data);
+        this.setState({ totalItems: data.totalItems });
+        this.setState({ totalPages: data.totalPages });
+        this.setState({ currentPage: data.currentPage });
+        this.setIsLoading(false);
+      },
+      error: (data: any) => {
+        this.setIsLoading(false);
+        this.store.showNotif(data.error.errorMessage, 'error');
+        console.log(data);
+      },
+    });
+  }
+
   initFilterByCategoryData(value: string, page: number, size: number) {
     this.store.showNotif('Filtered Mode On', 'custom');
     this.diseaseService
@@ -99,6 +148,27 @@ export class DiseaseStore extends StateService<DiseaseState> {
       });
   }
 
+  initInfiniteFilterByCategoryData(value: string, page: number, size: number) {
+    this.store.showNotif('Filtered Mode On', 'custom');
+    this.diseaseService
+      .filterDiseaseByCategory(value, page, size)
+      .toPromise()
+      .then((data: any) => {
+        this.setState({
+          diseaseList: new Array<Disease>(size),
+        });
+        console.log('Current flag: infinite filtered list');
+        console.log(this.state.diseaseList);
+        this.setState({ totalItems: data.totalItems });
+        this.setState({ totalPages: data.totalPages });
+        this.setState({ currentPage: data.currentPage });
+      })
+      .then(() => {
+        this.filterDiseaseByCategory(value, page, size);
+      });
+  }
+
+
   initSearchByNameData(value: string, page: number, size: number) {
     this.store.showNotif('Searched Mode On', 'custom');
     this.diseaseService
@@ -109,6 +179,30 @@ export class DiseaseStore extends StateService<DiseaseState> {
           diseaseList: new Array<Disease>(data.totalItems),
         });
         console.log('Current flag: searched list');
+        console.log(this.state.diseaseList);
+        this.setState({ totalItems: data.totalItems });
+        this.setState({ totalPages: data.totalPages });
+        this.setState({ currentPage: data.currentPage });
+      })
+      .then(() => {
+        this.searchDiseaseByName(value, page, size);
+      });
+  }
+
+  initInfiniteSearchByNameData(value: string, page: number, size: number) {
+    this.store.showNotif('Searched Mode On', 'custom');
+    this.diseaseService
+      .searchDiseaseByName(value, page, size)
+      .toPromise()
+      .then((data: any) => {
+        if (data.totalItems !== 0) {
+          this.setState({
+            diseaseList: new Array<Disease>(size),
+          });
+        } else {
+          this.store.showNotif('No result found!', 'custom');
+        }
+        console.log('Current flag: infitite searched list');
         console.log(this.state.diseaseList);
         this.setState({ totalItems: data.totalItems });
         this.setState({ totalPages: data.totalPages });
@@ -159,6 +253,25 @@ export class DiseaseStore extends StateService<DiseaseState> {
       });
   }
 
+  initInfiniteSortByPriceData(value: string, page: number, size: number) {
+    this.store.showNotif('Sort Mode On', 'custom');
+    this.diseaseService
+      .sortDiseaseByPrice(value, page, size)
+      .toPromise()
+      .then((data: any) => {
+        this.setState({
+          diseaseList: new Array<Disease>(size),
+        });
+        console.log('Current flag: sort list');
+        console.log(this.state.diseaseList);
+        this.setState({ totalItems: data.totalItems });
+        this.setState({ totalPages: data.totalPages });
+        this.setState({ currentPage: data.currentPage });
+      })
+      .then(() => {
+        this.sortDiseaseByPrice(value, page, size);
+      });
+  }
 
   loadDataAsync(page: number, size: number) {
     this.setIsLoading(true);
@@ -457,6 +570,30 @@ export class DiseaseStore extends StateService<DiseaseState> {
     });
   }
 
+  filterInfiniteDiseaseByCategory(value: string, page: number, size: number) {
+    this.setIsLoading(true);
+    this.diseaseService.filterDiseaseByCategory(value, page, size).subscribe({
+      next: (data: any) => {
+        this.setState({
+          diseaseList: this.state.diseaseList.concat(data.items),
+        });
+        console.log('Filtered list');
+        console.log(this.state.diseaseList);
+        console.log('Server response');
+        console.log(data);
+        this.setState({ totalItems: data.totalItems });
+        this.setState({ totalPages: data.totalPages });
+        this.setState({ currentPage: data.currentPage });
+        this.setIsLoading(false);
+      },
+      error: (data: any) => {
+        this.setIsLoading(false);
+        this.store.showNotif(data.error.errorMessage, 'error');
+        console.log(data);
+      },
+    });
+  }
+
   searchDiseaseByName(value: string, page: number, size: number) {
     this.setIsLoading(true);
     this.diseaseService.searchDiseaseByName(value, page, size).subscribe({
@@ -485,6 +622,35 @@ export class DiseaseStore extends StateService<DiseaseState> {
       },
     });
   }
+
+  searchInfiniteDiseaseByName(value: string, page: number, size: number) {
+    this.setIsLoading(true);
+    this.diseaseService.searchDiseaseByName(value, page, size).subscribe({
+      next: (data: any) => {
+        if (data.totalItems !== 0) {
+          this.setState({
+            diseaseList: this.state.diseaseList.concat(data.items),
+          });
+        } else {
+          this.store.showNotif('No result found!', 'custome');
+        }
+        console.log('Infite searched list');
+        console.log(this.state.diseaseList);
+        console.log('Server response');
+        console.log(data);
+        this.setState({ totalItems: data.totalItems });
+        this.setState({ totalPages: data.totalPages });
+        this.setState({ currentPage: data.currentPage });
+        this.setIsLoading(false);
+      },
+      error: (data: any) => {
+        this.setIsLoading(false);
+        this.store.showNotif(data.error.errorMessage, 'error');
+        console.log(data);
+      },
+    });
+  }
+
 
   sortDiseaseByName(value: string, page: number, size: number) {
     this.setIsLoading(true);
@@ -545,6 +711,31 @@ export class DiseaseStore extends StateService<DiseaseState> {
       },
     });
   }
+
+  sortInfiniteDiseaseByPrice(value: string, page: number, size: number) {
+    this.setIsLoading(true);
+    this.diseaseService.sortDiseaseByPrice(value, page, size).subscribe({
+      next: (data: any) => {
+        this.setState({
+          diseaseList: this.state.diseaseList.concat(data.items),
+        });
+        console.log('Infite sorted list');
+        console.log(this.state.diseaseList);
+        console.log('Server response');
+        console.log(data);
+        this.setState({ totalItems: data.totalItems });
+        this.setState({ totalPages: data.totalPages });
+        this.setState({ currentPage: data.currentPage });
+        this.setIsLoading(false);
+      },
+      error: (data: any) => {
+        this.setIsLoading(false);
+        this.store.showNotif(data.error.errorMessage, 'error');
+        console.log(data);
+      },
+    });
+  }
+
 
   setExportData(array: Array<Disease>) {
     this.setState({ diseaseList: array });

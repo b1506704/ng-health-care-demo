@@ -62,11 +62,11 @@ export const getPrescription = async (req, res) => {
   }
 };
 
-export const getPrescriptionByBillID = async (req, res) => {
-  const { billID } = req.query;
+export const getPrescriptionByCustomerID = async (req, res) => {
+  const { customerID } = req.query;
   try {
     const prescription = await Prescription.findOne({
-      billID,
+      customerID: customerID,
     });
     if (prescription) {
       res.status(200).json(prescription);
@@ -127,7 +127,9 @@ export const deleteAllPrescriptions = async (req, res) => {
 export const createPrescription = async (req, res) => {
   const {
     doctorID,
+    doctorName,
     customerID,
+    customerName,
     diseaseList,
     medicineList,
     htmlMarkUp,
@@ -137,7 +139,9 @@ export const createPrescription = async (req, res) => {
   try {
     const newPrescription = new Prescription({
       doctorID,
+      doctorName,
       customerID,
+      customerName,
       diseaseList,
       medicineList,
       htmlMarkUp,
@@ -145,7 +149,7 @@ export const createPrescription = async (req, res) => {
     });
     await newPrescription.save();
     res.status(200).json({
-      message: `Prescription ${prescriptionID} created`,
+      message: `Prescription of ${customerName} created`,
     });
   } catch (error) {
     res.status(404).json({ errorMessage: "Failed to create prescription!" });

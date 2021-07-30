@@ -155,11 +155,11 @@
 >
 </dx-speed-dial-action>
 <dx-popup
-  [width]="'80%'"
-  [height]="'80%'"
+  [width]="'95%'"
+  [height]="'95%'"
   [showTitle]="true"
   [shading]="true"
-  [title]="'Illness Dianose'"
+  [title]="'Illness Diagnose'"
   [dragEnabled]="true"
   [closeOnOutsideClick]="false"
   [showCloseButton]="true"
@@ -167,5 +167,12 @@
   [position]="'center'"
   [classList]="['popup']"
 >
-  <div *dxTemplate="let data of 'content'"></div>
+  <div *dxTemplate="let data of 'content'">
+    <ng-container *ngIf="checkUpDetail">
+      <app-diagnose-editor
+        [doctorData]="doctorData"
+        [checkUpDetail]="checkUpDetail"
+      ></app-diagnose-editor>
+    </ng-container>
+  </div>
 </dx-popup>

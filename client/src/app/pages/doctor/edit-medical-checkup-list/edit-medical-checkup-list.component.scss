@@ -32,7 +32,7 @@
   font-family: hero;
   font-size: 25px;
   animation-name: randomColor;
-  animation-duration: 1s;
+  animation-duration: 0.25s;
   animation-direction: alternate;
   animation-iteration-count: infinite;
 }
@@ -57,6 +57,7 @@
   width: 100%;
   padding: 10px 20px;
   margin: 10px;
+  user-select: none;
   cursor: pointer;
 }
 
@@ -101,8 +102,6 @@
 ::ng-deep .dx-sortable {
   display: block;
 }
-
-
 
 @keyframes randomColor {
   from {

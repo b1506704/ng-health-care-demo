@@ -1,10 +1,13 @@
+import { Disease } from "./disease";
+import { Medicine } from "./medicine";
+
 export interface Prescription {
-  _id: String;
-  prescriptionID: String;
   customerID: String;
+  customerName: String;
   doctorID: String;
-  diseaseList: Array<Object>;
-  medicineList: Array<Object>;
+  doctorName: String;
+  diseaseList: Array<Disease>;
+  medicineList: Array<Medicine>;
   htmlMarkUp: String;
   advice: String;
 }

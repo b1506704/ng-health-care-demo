@@ -61,7 +61,7 @@ export class MedicineStore extends StateService<MedicineState> {
   }
 
   initInfiniteData(page: number, size: number) {
-    this.medicineService
+    return this.medicineService
       .fetchMedicine(page, size)
       .toPromise()
       .then((data: any) => {

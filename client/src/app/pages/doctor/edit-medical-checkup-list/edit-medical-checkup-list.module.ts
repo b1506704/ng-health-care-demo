@@ -14,6 +14,7 @@ import {
   DxSpeedDialActionModule,
   DxToolbarModule,
 } from 'devextreme-angular';
+import { DiagnoseEditorComponent } from './diagnose-editor/diagnose-editor.component';
 
 @NgModule({
   imports: [
@@ -28,6 +29,6 @@ import {
     DxFormModule,
     DxScrollViewModule,
   ],
-  declarations: [EditMedicalCheckupListComponent],
+  declarations: [EditMedicalCheckupListComponent, DiagnoseEditorComponent],
 })
 export class EditMedicalCheckupListModule {}

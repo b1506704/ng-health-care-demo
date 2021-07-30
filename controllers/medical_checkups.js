@@ -115,12 +115,6 @@ export const deleteSelectedMedicalCheckups = async (req, res) => {
       const deletedMedicalCheckup = await MedicalCheckup.findOneAndDelete({
         _id: selectedItems[i],
       });
-      await Prescription.findOneAndDelete({
-        prescriptionID: deletedMedicalCheckup.prescriptionID,
-      });
-      console.log(
-        `Prescription ${deletedMedicalCheckup.prescriptionID} removed`
-      );
       if (i === selectedItems.length - 1) {
         res.status(200).json({
           message: `${i + 1} medical checkup deleted`,
@@ -136,10 +130,6 @@ export const deleteMedicalCheckup = async (req, res) => {
   const { _id } = req.params;
   try {
     const medicalCheckup = await MedicalCheckup.findOneAndDelete({ _id: _id });
-    await Prescription.findOneAndDelete({
-      prescriptionID: medicalCheckup.prescriptionID,
-    });
-    console.log(`Prescription ${medicalCheckup.prescriptionID} removed`);
     res.status(200).json({ message: `1 medical checkup deleted` });
   } catch (error) {
     res.status(404).json({ errorMessage: "Medical checkup not found!" });
@@ -149,7 +139,6 @@ export const deleteMedicalCheckup = async (req, res) => {
 export const deleteAllMedicalCheckups = async (req, res) => {
   try {
     await MedicalCheckup.deleteMany({});
-    await Prescription.deleteMany({});
     res.status(200).json({ message: "All medical checkups deleted!" });
   } catch (error) {
     res.status(404).json({ errorMessage: "Failed to perform command" });
@@ -161,7 +150,6 @@ export const createMedicalCheckup = async (req, res) => {
     doctorID,
     customerID,
     customerName,
-    prescriptionID,
     priority,
     healthInsurance,
     location,
@@ -176,7 +164,6 @@ export const createMedicalCheckup = async (req, res) => {
       doctorID,
       customerID,
       customerName,
-      prescriptionID,
       priority,
       healthInsurance,
       location,
@@ -185,16 +172,6 @@ export const createMedicalCheckup = async (req, res) => {
       startDate,
     });
     await newMedicalCheckup.save();
-    const newPrescription = new Prescription({
-      customerID: customerID,
-      doctorID: doctorID,
-      diseaseList: [],
-      medicineList: [],
-      htmlMarkUp: "",
-      advice: "",
-    });
-    await newPrescription.save();
-    console.log(`Prescription created`);
     res.status(200).json({
       message: `Medical checkup created`,
     });

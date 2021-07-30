@@ -1,12 +1,13 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
-import { Customer } from 'src/app/shared/models/customer';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Disease } from 'src/app/shared/models/disease';
 import { Doctor } from 'src/app/shared/models/doctor';
 import { MedicalCheckup } from 'src/app/shared/models/medical-checkup';
-import { CustomerStore } from 'src/app/shared/services/customer/customer-store.service';
-import { DoctorStore } from 'src/app/shared/services/doctor/doctor-store.service';
-import { MedicalCheckupStore } from 'src/app/shared/services/medical-checkup/medical-checkup-store.service';
+import { Medicine } from 'src/app/shared/models/medicine';
+import { DiseaseStore } from 'src/app/shared/services/disease/disease-store.service';
+import { MedicineStore } from 'src/app/shared/services/medicine/medicine-store.service';
+import { PrescriptionStore } from 'src/app/shared/services/prescription/prescription-store.service';
 import { StoreService } from 'src/app/shared/services/store.service';
+import predefineMarkupTemplate from 'src/app/utils/predefineMarkupTemplate';
 
 @Component({
   selector: 'app-diagnose-editor',
@@ -15,68 +16,60 @@ import { StoreService } from 'src/app/shared/services/store.service';
 })
 export class DiagnoseEditorComponent implements OnInit, OnDestroy {
   constructor(
-    private router: Router,
-    private medicalCheckupStore: MedicalCheckupStore,
     private store: StoreService,
-    private customerStore: CustomerStore,
-    private doctorStore: DoctorStore
+    private medicineStore: MedicineStore,
+    private diseaseStore: DiseaseStore,
+    private prescriptionStore: PrescriptionStore
   ) {}
-  isPendingDragging: boolean = false;
-  isCompleteDragging: boolean = false;
-  pageSize: number = 10;
-  updatePendingContentTimer: any;
-  updateCompleteContentTimer: any;
-  currentCheckupPendingPage: number;
-  currentCheckupCompletePage: number;
-  isSearchingPendingByName: boolean;
-  isSearchingCompleteByName: boolean;
-  pendingTimeout: any;
-  completeTimeout: any;
-  currentSearchPendingByNameValue: string;
-  currentSearchCompleteByNameValue: string;
-  searchPendingBoxOptions: any = {
+  @Input() doctorData: Doctor;
+  @Input() checkUpDetail: MedicalCheckup;
+  isMedicineDragging: boolean = false;
+  isDiseaseDragging: boolean = false;
+  pageSize: number = 20;
+  updateMedicineContentTimer: any;
+  updateDiseaseContentTimer: any;
+  currentCheckupMedicinePage: number;
+  currentCheckupDiseasePage: number;
+  isSearchingMedicineByName: boolean;
+  isSearchingDiseaseByName: boolean;
+  medicineTimeout: any;
+  diseaseTimeout: any;
+  currentSearchMedicineByNameValue: string;
+  currentSearchDiseaseByNameValue: string;
+  searchMedicineBoxOptions: any = {
     valueChangeEvent: 'keyup',
     showClearButton: true,
-    onKeyUp: this.onPendingSearchKeyupHandler.bind(this),
-    onValueChanged: this.onPendingSearchValueChanged.bind(this),
+    onKeyUp: this.onMedicineSearchKeyupHandler.bind(this),
+    onValueChanged: this.onMedicineSearchValueChanged.bind(this),
     mode: 'search',
-    placeholder: 'Search with purpose',
+    placeholder: ' ',
   };
-  refreshPendingButtonOptions: any = {
+  refreshMedicineButtonOptions: any = {
     type: 'normal',
     icon: 'refresh',
     hint: 'Fetch data from server',
-    onClick: this.onPendingRefresh.bind(this),
+    onClick: this.onMedicineRefresh.bind(this),
   };
-  searchCompleteBoxOptions: any = {
+  searchDiseaseBoxOptions: any = {
     valueChangeEvent: 'keyup',
     showClearButton: true,
-    onKeyUp: this.onCompleteSearchKeyupHandler.bind(this),
-    onValueChanged: this.onCompleteSearchValueChanged.bind(this),
+    onKeyUp: this.onDiseaseSearchKeyupHandler.bind(this),
+    onValueChanged: this.onDiseaseSearchValueChanged.bind(this),
     mode: 'search',
-    placeholder: 'Search with purpose',
+    placeholder: ' ',
   };
-  refreshCompleteButtonOptions: any = {
+  refreshDiseaseButtonOptions: any = {
     type: 'normal',
     icon: 'refresh',
     hint: 'Fetch data from server',
-    onClick: this.onCompleteRefresh.bind(this),
+    onClick: this.onDiseaseRefresh.bind(this),
   };
-  pendingList: Array<MedicalCheckup>;
-  completeList: Array<MedicalCheckup>;
-  colCountByScreen: Object;
+  sortableHeight: any = '40vh';
+  medicineList: Array<Medicine>;
+  diseaseList: Array<Disease>;
+  diagnoseMedicineList: Array<Medicine> = [];
+  diagnoseDiseaseList: Array<Disease> = [];
   isDiagnosePopupVisible: boolean = false;
-  checkUpDetail: MedicalCheckup;
-  customerData: Customer;
-  doctorData: Doctor;
-  location: Object = {
-    items: ['T1', 'T2', 'T3'],
-    value: 'T1',
-  };
-  healthInsurance: Object = {
-    items: ['YES', 'NO'],
-    value: 'NO',
-  };
   submitButtonOptions: any = {
     text: 'Submit',
     type: 'normal',
@@ -91,21 +84,21 @@ export class DiagnoseEditorComponent implements OnInit, OnDestroy {
     },
   };
 
-  // -- Pending Checkup Functions --
+  // -- Medicine Checkup Functions --
 
-  updatePendingContent = (args: any, eventName: any) => {
-    const editorMode = this.checkPendingEditorMode();
-    const currentIndex = this.currentCheckupPendingPage;
-    if (this.updatePendingContentTimer)
-      clearTimeout(this.updatePendingContentTimer);
-    this.updatePendingContentTimer = setTimeout(() => {
-      if (this.pendingList.length) {
+  updateMedicineContent = (args: any, eventName: any) => {
+    const editorMode = this.checkMedicineEditorMode();
+    const currentIndex = this.currentCheckupMedicinePage;
+    if (this.updateMedicineContentTimer)
+      clearTimeout(this.updateMedicineContentTimer);
+    this.updateMedicineContentTimer = setTimeout(() => {
+      if (this.medicineList.length) {
         switch (editorMode) {
           case 'NORMAL':
-            this.paginatePendingPureData(currentIndex + 1);
+            this.paginateMedicinePureData(currentIndex + 1);
             break;
           case 'SEARCH':
-            this.paginatePendingSearchData(currentIndex + 1);
+            this.paginateMedicineSearchData(currentIndex + 1);
             break;
           default:
             break;
@@ -115,77 +108,77 @@ export class DiagnoseEditorComponent implements OnInit, OnDestroy {
     }, 500);
   };
 
-  updatePendingTopContent = (e: any) => {
-    this.updatePendingContent(e, 'PullDown');
+  updateMedicineTopContent = (e: any) => {
+    this.updateMedicineContent(e, 'PullDown');
   };
 
-  updatePendingBottomContent = (e: any) => {
-    this.updatePendingContent(e, 'ReachBottom');
+  updateMedicineBottomContent = (e: any) => {
+    this.updateMedicineContent(e, 'ReachBottom');
   };
 
-  onPendingSearchKeyupHandler(e: any) {
-    clearTimeout(this.pendingTimeout);
-    this.pendingTimeout = setTimeout(() => {
-      this.isSearchingPendingByName = true;
-      console.log(this.currentSearchPendingByNameValue);
-      if (this.currentSearchPendingByNameValue !== '') {
-        this.medicalCheckupStore.initPendingInfiniteSearchByNameData(
-          this.currentSearchPendingByNameValue,
+  onMedicineSearchKeyupHandler(e: any) {
+    clearTimeout(this.medicineTimeout);
+    this.medicineTimeout = setTimeout(() => {
+      this.isSearchingMedicineByName = true;
+      console.log(this.currentSearchMedicineByNameValue);
+      if (this.currentSearchMedicineByNameValue !== '') {
+        this.medicineStore.initInfiniteSearchByNameData(
+          this.currentSearchMedicineByNameValue,
           0,
           this.pageSize
         );
       } else {
         //return to pure editor mode
         this.store.showNotif('SEARCH MODE OFF', 'custom');
-        this.onPendingRefresh();
+        this.onMedicineRefresh();
       }
     }, 1250);
   }
 
-  checkPendingEditorMode() {
-    if (this.isSearchingPendingByName === true) {
+  checkMedicineEditorMode() {
+    if (this.isSearchingMedicineByName === true) {
       return 'SEARCH';
     } else {
       return 'NORMAL';
     }
   }
 
-  paginatePendingPureData(index: number) {
-    this.medicalCheckupStore.loadPendingInfiniteDataAsync(index, this.pageSize);
+  paginateMedicinePureData(index: number) {
+    this.medicineStore.loadInfiniteDataAsync(index, this.pageSize);
   }
 
-  paginatePendingSearchData(index: number) {
-    this.medicalCheckupStore.searchPendingInfiniteMedicalCheckupByName(
-      this.currentSearchPendingByNameValue,
+  paginateMedicineSearchData(index: number) {
+    this.medicineStore.searchInfiniteMedicineByName(
+      this.currentSearchMedicineByNameValue,
       index,
       this.pageSize
     );
   }
 
-  onPendingSearchValueChanged(e: any) {
-    this.currentSearchPendingByNameValue = e.value;
+  onMedicineSearchValueChanged(e: any) {
+    this.currentSearchMedicineByNameValue = e.value;
   }
 
-  onPendingRefresh() {
-    this.isSearchingPendingByName = false;
-    this.medicalCheckupStore.initPendingInfiniteData(0, this.pageSize);
+  onMedicineRefresh() {
+    this.isSearchingMedicineByName = false;
+    this.medicineStore.initInfiniteData(0, this.pageSize);
   }
 
-  // -- Complete Checkup Functions --
+  // -- Disease Checkup Functions --
 
-  updateCompleteContent = (args: any, eventName: any) => {
-    const editorMode = this.checkCompleteEditorMode();
-    const currentIndex = this.currentCheckupCompletePage;
-    if (this.updateCompleteContentTimer)
-      clearTimeout(this.updateCompleteContentTimer);
-    this.updateCompleteContentTimer = setTimeout(() => {
-      if (this.completeList.length) {
+  updateDiseaseContent = (args: any, eventName: any) => {
+    const editorMode = this.checkDiseaseEditorMode();
+    const currentIndex = this.currentCheckupDiseasePage;
+    if (this.updateDiseaseContentTimer)
+      clearTimeout(this.updateDiseaseContentTimer);
+    this.updateDiseaseContentTimer = setTimeout(() => {
+      if (this.diseaseList.length) {
         switch (editorMode) {
           case 'NORMAL':
-            this.paginateCompletePureData(currentIndex + 1);
+            this.paginateDiseasePureData(currentIndex + 1);
             break;
           case 'SEARCH':
-            this.paginateCompleteSearchData(currentIndex + 1);
+            this.paginateDiseaseSearchData(currentIndex + 1);
             break;
           default:
             break;
@@ -195,202 +188,180 @@ export class DiagnoseEditorComponent implements OnInit, OnDestroy {
     }, 500);
   };
 
-  updateCompleteTopContent = (e: any) => {
-    this.updateCompleteContent(e, 'PullDown');
+  updateDiseaseTopContent = (e: any) => {
+    this.updateDiseaseContent(e, 'PullDown');
   };
 
-  updateCompleteBottomContent = (e: any) => {
-    this.updateCompleteContent(e, 'ReachBottom');
+  updateDiseaseBottomContent = (e: any) => {
+    this.updateDiseaseContent(e, 'ReachBottom');
   };
 
-  onCompleteSearchKeyupHandler(e: any) {
-    clearTimeout(this.completeTimeout);
-    this.completeTimeout = setTimeout(() => {
-      this.isSearchingCompleteByName = true;
-      console.log(this.currentSearchCompleteByNameValue);
-      if (this.currentSearchCompleteByNameValue !== '') {
-        this.medicalCheckupStore.initCompleteInfiniteSearchByNameData(
-          this.currentSearchCompleteByNameValue,
+  onDiseaseSearchKeyupHandler(e: any) {
+    clearTimeout(this.diseaseTimeout);
+    this.diseaseTimeout = setTimeout(() => {
+      this.isSearchingDiseaseByName = true;
+      console.log(this.currentSearchDiseaseByNameValue);
+      if (this.currentSearchDiseaseByNameValue !== '') {
+        this.diseaseStore.initInfiniteSearchByNameData(
+          this.currentSearchDiseaseByNameValue,
           0,
           this.pageSize
         );
       } else {
         //return to pure editor mode
         this.store.showNotif('SEARCH MODE OFF', 'custom');
-        this.onCompleteRefresh();
+        this.onDiseaseRefresh();
       }
     }, 1250);
   }
 
-  checkCompleteEditorMode() {
-    if (this.isSearchingCompleteByName === true) {
+  checkDiseaseEditorMode() {
+    if (this.isSearchingDiseaseByName === true) {
       return 'SEARCH';
     } else {
       return 'NORMAL';
     }
   }
 
-  paginateCompletePureData(index: number) {
-    this.medicalCheckupStore.loadCompleteInfiniteDataAsync(
+  paginateDiseasePureData(index: number) {
+    this.diseaseStore.loadInfiniteDataAsync(index, this.pageSize);
+  }
+
+  paginateDiseaseSearchData(index: number) {
+    this.diseaseStore.searchInfiniteDiseaseByName(
+      this.currentSearchDiseaseByNameValue,
       index,
       this.pageSize
     );
   }
 
-  paginateCompleteSearchData(index: number) {
-    this.medicalCheckupStore.searchCompleteInfiniteMedicalCheckupByName(
-      this.currentSearchCompleteByNameValue,
-      index,
-      this.pageSize
-    );
+  onDiseaseSearchValueChanged(e: any) {
+    this.currentSearchDiseaseByNameValue = e.value;
   }
 
-  onCompleteSearchValueChanged(e: any) {
-    this.currentSearchCompleteByNameValue = e.value;
-  }
-
-  onCompleteRefresh() {
-    this.isSearchingCompleteByName = false;
-    this.medicalCheckupStore.initCompleteInfiniteData(0, this.pageSize);
+  onDiseaseRefresh() {
+    this.isSearchingDiseaseByName = false;
+    this.diseaseStore.initInfiniteData(0, this.pageSize);
   }
 
   //handle position change => change priority
-  onTaskDragPendingStart(e: any) {
+  onTaskDragMedicineStart(e: any) {
     e.itemData = e.fromData[e.fromIndex];
-    this.isPendingDragging = true;
+    this.isMedicineDragging = true;
     this.store.setIsLoading(true);
   }
 
-  onTaskPendingDrop(e: any) {
+  onTaskDiagnoseMedicineDrop(e: any) {
     e.fromData.splice(e.fromIndex, 1);
     e.toData.splice(e.toIndex, 0, e.itemData);
-    this.isPendingDragging = false;
+    this.isMedicineDragging = false;
+    this.store.setIsLoading(false);
+    console.log('DIAGNOSE MEDICINE LIST');
+    console.log(this.diagnoseMedicineList);
+  }
+
+  onDragMedicineEnd(e: any) {
+    this.isMedicineDragging = false;
     this.store.setIsLoading(false);
   }
 
-  onDragPendingEnd(e: any) {
-    this.isPendingDragging = false;
-    this.store.setIsLoading(false);
-  }
-
-  onTaskPendingReorder(e: any) {
-    e.fromData.splice(e.fromIndex, 1);
-    e.toData.splice(e.toIndex, 0, e.itemData);
-    this.isPendingDragging = false;
-    this.store.setIsLoading(false);
-  }
-
-  onTaskDragCompleteStart(e: any) {
+  onTaskDragDiseaseStart(e: any) {
     e.itemData = e.fromData[e.fromIndex];
-    this.isCompleteDragging = true;
+    this.isDiseaseDragging = true;
     this.store.setIsLoading(true);
   }
 
-  onTaskCompleteDrop(e: any) {
+  onDragDiseaseEnd(e: any) {
+    this.isDiseaseDragging = false;
+    this.store.setIsLoading(false);
+  }
+
+  onTaskDiagnoseDiseaseDrop(e: any) {
     e.fromData.splice(e.fromIndex, 1);
     e.toData.splice(e.toIndex, 0, e.itemData);
-    this.isCompleteDragging = false;
+    this.isDiseaseDragging = false;
     this.store.setIsLoading(false);
     this.isDiagnosePopupVisible = true;
-  }
-
-  onTaskCompleteReorder(e: any) {
-    e.fromData.splice(e.fromIndex, 1);
-    e.toData.splice(e.toIndex, 0, e.itemData);
-    this.isCompleteDragging = false;
-    this.store.setIsLoading(false);
-  }
-
-  onDragCompleteEnd(e: any) {
-    this.isCompleteDragging = false;
-    this.store.setIsLoading(false);
+    console.log('DIAGNOSE DISEASE LIST');
+    console.log(this.diagnoseDiseaseList);
   }
 
   resetValues() {
-    //
+    this.diagnoseDiseaseList = [];
+    this.diagnoseMedicineList = [];
+    this.onDiseaseRefresh();
+    this.onMedicineRefresh();
   }
 
-  getDoctorID() {
-    return this.store.$currentUser.subscribe((data: any) => {
-      if (data) {
-        console.log('LOGGED IN USER:');
-        console.log(data);
-        this.doctorStore.getDoctorByUserName(data.userName).then(() => {
-          this.doctorStore.$doctorInstance.subscribe((data: any) => {
-            this.doctorData = data;
-            console.log('CURRENT DOCTOR:');
-            console.log(data);
-          });
-        });
+  generateMarkupTemplate() {
+    const input = {
+      customerName: this.checkUpDetail.customerName,
+      doctorName: this.doctorData.fullName,
+      diseaseList: this.diagnoseDiseaseList,
+      medicineList: this.diagnoseMedicineList,
+      advice: ''
+    };
+    return predefineMarkupTemplate(input);
+  }
+
+  submitDiagnose() {
+    const diagnose = {
+      customerID: this.checkUpDetail.customerID,
+      customerName: this.checkUpDetail.customerName,
+      doctorID: this.doctorData._id,
+      doctorName: this.doctorData.fullName,
+      diseaseList: this.diagnoseDiseaseList,
+      medicineList: this.diagnoseMedicineList,
+      htmlMarkUp: this.generateMarkupTemplate(),
+      advice: ''
+    };
+    this.prescriptionStore.uploadPrescription(diagnose, 0 ,5);
+    this.resetValues();
+  }
+
+  medicineCheckupDataListener() {
+    return this.medicineStore.$medicineList.subscribe(
+      (data: Array<Medicine>) => {
+        this.medicineList = data;
       }
+    );
+  }
+
+  diseaseCheckupDataListener() {
+    return this.diseaseStore.$diseaseList.subscribe((data: Array<Disease>) => {
+      this.diseaseList = data;
     });
   }
 
-  pendingCheckupDataListener() {
-    return this.medicalCheckupStore.$pendingCheckupList.subscribe(
-      (data: Array<MedicalCheckup>) => {
-        this.pendingList = data;
-      }
-    );
+  currentCheckupMedicinePageListener() {
+    return this.medicineStore.$currentPage.subscribe((data: any) => {
+      this.currentCheckupMedicinePage = data;
+    });
   }
 
-  completeCheckupDataListener() {
-    return this.medicalCheckupStore.$completeCheckupList.subscribe(
-      (data: Array<MedicalCheckup>) => {
-        this.completeList = data;
-      }
-    );
-  }
-
-  currentCheckupPendingPageListener() {
-    return this.medicalCheckupStore.$currentCheckupPendingPage.subscribe(
-      (data: any) => {
-        this.currentCheckupPendingPage = data;
-      }
-    );
-  }
-
-  currentCheckupCompletePageListener() {
-    return this.medicalCheckupStore.$currentCheckupCompletePage.subscribe(
-      (data: any) => {
-        this.currentCheckupCompletePage = data;
-      }
-    );
-  }
-
-  navigateToRoomMonitor() {
-    this.router.navigate(['/room_monitor']);
+  currentCheckupDiseasePageListener() {
+    return this.diseaseStore.$currentPage.subscribe((data: any) => {
+      this.currentCheckupDiseasePage = data;
+    });
   }
 
   ngOnInit(): void {
-    this.currentCheckupPendingPageListener();
-    this.currentCheckupCompletePageListener();
-    this.medicalCheckupStore
-      .initPendingInfiniteData(0, this.pageSize)
-      .then(() => {
-        this.pendingCheckupDataListener();
-      });
-    this.medicalCheckupStore
-      .initCompleteInfiniteData(0, this.pageSize)
-      .then(() => {
-        this.completeCheckupDataListener();
-      });
-    this.getDoctorID();
-  }
-
-  screen(width: any) {
-    return width < 720 ? 'sm' : 'md';
+    this.currentCheckupMedicinePageListener();
+    this.currentCheckupDiseasePageListener();
+    this.medicineStore.initInfiniteData(0, this.pageSize).then(() => {
+      this.medicineCheckupDataListener();
+    });
+    this.diseaseStore.initInfiniteData(0, this.pageSize).then(() => {
+      this.diseaseCheckupDataListener();
+    });
+    console.log('CURRENT DIAGNOSE CHECKUP DETAIL');
+    console.log(this.checkUpDetail);
   }
 
   ngOnDestroy(): void {
-    this.colCountByScreen = {
-      md: 4,
-      sm: 2,
-    };
-    this.getDoctorID().unsubscribe();
-    this.pendingCheckupDataListener().unsubscribe();
-    this.currentCheckupPendingPageListener().unsubscribe();
-    this.currentCheckupCompletePageListener().unsubscribe();
-    this.completeCheckupDataListener().unsubscribe();
+    this.medicineCheckupDataListener().unsubscribe();
+    this.currentCheckupMedicinePageListener().unsubscribe();
+    this.currentCheckupDiseasePageListener().unsubscribe();
+    this.diseaseCheckupDataListener().unsubscribe();
   }
 }

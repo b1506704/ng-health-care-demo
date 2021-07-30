@@ -1,7 +1,5 @@
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { DxFormComponent } from 'devextreme-angular';
-import { Customer } from 'src/app/shared/models/customer';
 import { Doctor } from 'src/app/shared/models/doctor';
 import { MedicalCheckup } from 'src/app/shared/models/medical-checkup';
 import { CustomerStore } from 'src/app/shared/services/customer/customer-store.service';
@@ -41,7 +39,7 @@ export class EditMedicalCheckupListComponent implements OnInit, OnDestroy {
     onKeyUp: this.onPendingSearchKeyupHandler.bind(this),
     onValueChanged: this.onPendingSearchValueChanged.bind(this),
     mode: 'search',
-    placeholder: 'Search with purpose',
+    placeholder: ' ',
   };
   refreshPendingButtonOptions: any = {
     type: 'normal',
@@ -55,7 +53,7 @@ export class EditMedicalCheckupListComponent implements OnInit, OnDestroy {
     onKeyUp: this.onCompleteSearchKeyupHandler.bind(this),
     onValueChanged: this.onCompleteSearchValueChanged.bind(this),
     mode: 'search',
-    placeholder: 'Search with purpose',
+    placeholder: ' ',
   };
   refreshCompleteButtonOptions: any = {
     type: 'normal',
@@ -68,16 +66,7 @@ export class EditMedicalCheckupListComponent implements OnInit, OnDestroy {
   colCountByScreen: Object;
   isDiagnosePopupVisible: boolean = false;
   checkUpDetail: MedicalCheckup;
-  customerData: Customer;
   doctorData: Doctor;
-  location: Object = {
-    items: ['T1', 'T2', 'T3'],
-    value: 'T1',
-  };
-  healthInsurance: Object = {
-    items: ['YES', 'NO'],
-    value: 'NO',
-  };
   submitButtonOptions: any = {
     text: 'Submit',
     type: 'normal',
@@ -290,6 +279,9 @@ export class EditMedicalCheckupListComponent implements OnInit, OnDestroy {
   onTaskCompleteDrop(e: any) {
     e.fromData.splice(e.fromIndex, 1);
     e.toData.splice(e.toIndex, 0, e.itemData);
+    console.log('CURRENT ON CHECK CUSTOMER');
+    console.log(e.itemData);
+    this.checkUpDetail = e.itemData;
     this.isCompleteDragging = false;
     this.store.setIsLoading(false);
     this.isDiagnosePopupVisible = true;

@@ -2,6 +2,7 @@ import express from "express";
 
 import {
   getPrescriptions,
+  getPrescriptionByCustomerID,
   createPrescription,
   deletePrescription,
   updatePrescription,
@@ -13,14 +14,13 @@ import {
   sortByName,
   sortByNumber,
   fetchAll,
-  getPrescriptionByBillID,
 } from "../controllers/prescriptions.js";
 
 const router = express.Router();
 
 router.get("/", getPrescriptions);
 router.get("/:_id", getPrescription);
-router.post("/byBillID", getPrescriptionByBillID);
+router.post("/byCustomerID", getPrescriptionByCustomerID);
 router.post("/deleteAll", deleteAllPrescriptions);
 router.post("/", createPrescription);
 router.delete("/:_id", deletePrescription);
