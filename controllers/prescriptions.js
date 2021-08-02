@@ -1,8 +1,8 @@
 import express from "express";
-
 import Prescription from "../models/prescription.js";
 import getPagination from "../middleware/getPagination.js";
 import Bill from "../models/bill.js";
+import MedicalCheckup from "../models/medical_checkup.js";
 const router = express.Router();
 
 export const getPrescriptions = (req, res) => {
@@ -78,6 +78,22 @@ export const getPrescriptionByCustomerID = async (req, res) => {
   }
 };
 
+export const getPrescriptionByMedicalCheckupID = async (req, res) => {
+  const { medicalCheckupID } = req.query;
+  try {
+    const prescription = await Prescription.findOne({
+      medicalCheckupID: medicalCheckupID,
+    });
+    if (prescription) {
+      res.status(200).json(prescription);
+    } else {
+      res.status(404).json({ errorMessage: "Requested data does not exist!" });
+    }
+  } catch (error) {
+    res.status(404).json({ errorMessage: "Failed to get data!" });
+  }
+};
+
 export const deleteSelectedPrescriptions = async (req, res) => {
   const selectedItems = req.body;
   try {
@@ -126,6 +142,7 @@ export const deleteAllPrescriptions = async (req, res) => {
 
 export const createPrescription = async (req, res) => {
   const {
+    medicalCheckupID,
     doctorID,
     doctorName,
     customerID,
@@ -138,6 +155,7 @@ export const createPrescription = async (req, res) => {
   console.log(req.body);
   try {
     const newPrescription = new Prescription({
+      medicalCheckupID,
       doctorID,
       doctorName,
       customerID,
@@ -148,6 +166,17 @@ export const createPrescription = async (req, res) => {
       advice,
     });
     await newPrescription.save();
+    await MedicalCheckup.findOneAndUpdate(
+      {
+        _id: medicalCheckupID,
+      },
+      {
+        status: "complete",
+        priority: 1,
+        doctorID: doctorID,
+      }
+    );
+    console.log(`Update checkup ${medicalCheckupID}`);
     res.status(200).json({
       message: `Prescription of ${customerName} created`,
     });

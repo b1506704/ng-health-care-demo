@@ -6,11 +6,13 @@ import { StateService } from '../state.service';
 import { StoreService } from '../store.service';
 import { PrescriptionHttpService } from './prescription-http.service';
 import { confirm } from 'devextreme/ui/dialog';
+import { MedicalCheckupStore } from '../medical-checkup/medical-checkup-store.service';
 
 interface PrescriptionState {
   prescriptionList: Array<Prescription>;
   exportData: Array<Prescription>;
   selectedPrescription: Object;
+  prescriptionInstance: Prescription;
   totalPages: number;
   currentPage: number;
   totalItems: number;
@@ -19,6 +21,7 @@ interface PrescriptionState {
 const initialState: PrescriptionState = {
   prescriptionList: [],
   selectedPrescription: {},
+  prescriptionInstance: undefined,
   exportData: [],
   totalPages: 0,
   currentPage: 0,
@@ -31,7 +34,8 @@ const initialState: PrescriptionState = {
 export class PrescriptionStore extends StateService<PrescriptionState> {
   constructor(
     private prescriptionService: PrescriptionHttpService,
-    private store: StoreService
+    private store: StoreService,
+    private medicalCheckupService: MedicalCheckupStore
   ) {
     super(initialState);
     this.initData(0, 5);
@@ -333,6 +337,8 @@ export class PrescriptionStore extends StateService<PrescriptionState> {
     (state) => state.selectedPrescription
   );
 
+  $prescriptionInstance: Observable<Prescription> = this.select((state) => state.prescriptionInstance);
+
   uploadPrescription(prescription: Prescription, page: number, size: number) {
     this.confirmDialog('').then((confirm: boolean) => {
       if (confirm) {
@@ -343,6 +349,11 @@ export class PrescriptionStore extends StateService<PrescriptionState> {
             this.setTotalItems(this.state.totalItems + 1);
             console.log(data);
             this.loadDataAsync(page, size);
+            this.medicalCheckupService
+              .initCompleteInfiniteData(page, size)
+              .then(() => {
+                this.medicalCheckupService.setIsPrescriptionDone(true);
+              });
             this.setIsLoading(false);
             this.store.showNotif(data.message, 'custom');
           },
@@ -356,24 +367,32 @@ export class PrescriptionStore extends StateService<PrescriptionState> {
     });
   }
 
-  updatePrescription(prescription: Prescription, key: string, page: number, size: number) {
+  updatePrescription(
+    prescription: Prescription,
+    key: string,
+    page: number,
+    size: number
+  ) {
     this.confirmDialog('').then((confirm: boolean) => {
       if (confirm) {
         this.setIsLoading(true);
-        this.prescriptionService.updatePrescription(prescription, key).subscribe({
-          next: (data: any) => {
-            this.setState({ responseMsg: data });
-            console.log(data);
-            this.loadDataAsync(page, size);
-            this.setIsLoading(false);
-            this.store.showNotif(data.message, 'custom');
-          },
-          error: (data: any) => {
-            this.setIsLoading(false);
-            this.store.showNotif(data.error.errorMessage, 'error');
-            console.log(data);
-          },
-        });
+        this.prescriptionService
+          .updatePrescription(prescription, key)
+          .subscribe({
+            next: (data: any) => {
+              this.setState({ responseMsg: data });
+              console.log(data);
+              this.loadDataAsync(page, size);
+              this.medicalCheckupService.initCompleteInfiniteData(page, size);
+              this.setIsLoading(false);
+              this.store.showNotif(data.message, 'custom');
+            },
+            error: (data: any) => {
+              this.setIsLoading(false);
+              this.store.showNotif(data.error.errorMessage, 'error');
+              console.log(data);
+            },
+          });
       }
     });
   }
@@ -513,62 +532,10 @@ export class PrescriptionStore extends StateService<PrescriptionState> {
 
   filterPrescriptionByCategory(value: string, page: number, size: number) {
     this.setIsLoading(true);
-    this.prescriptionService.filterPrescriptionByCategory(value, page, size).subscribe({
-      next: (data: any) => {
-        this.setState({
-          prescriptionList: this.fillEmpty(
-            page,
-            size,
-            this.state.prescriptionList,
-            data.items
-          ),
-        });
-        console.log('Filtered list');
-        console.log(this.state.prescriptionList);
-        console.log('Server response');
-        console.log(data);
-        this.setState({ totalItems: data.totalItems });
-        this.setState({ totalPages: data.totalPages });
-        this.setState({ currentPage: data.currentPage });
-        this.setIsLoading(false);
-      },
-      error: (data: any) => {
-        this.setIsLoading(false);
-        this.store.showNotif(data.error.errorMessage, 'error');
-        console.log(data);
-      },
-    });
-  }
-
-  filterInfinitePrescriptionByCategory(value: string, page: number, size: number) {
-    this.setIsLoading(true);
-    this.prescriptionService.filterPrescriptionByCategory(value, page, size).subscribe({
-      next: (data: any) => {
-        this.setState({
-          prescriptionList: this.state.prescriptionList.concat(data.items),
-        });
-        console.log('Filtered list');
-        console.log(this.state.prescriptionList);
-        console.log('Server response');
-        console.log(data);
-        this.setState({ totalItems: data.totalItems });
-        this.setState({ totalPages: data.totalPages });
-        this.setState({ currentPage: data.currentPage });
-        this.setIsLoading(false);
-      },
-      error: (data: any) => {
-        this.setIsLoading(false);
-        this.store.showNotif(data.error.errorMessage, 'error');
-        console.log(data);
-      },
-    });
-  }
-
-  searchPrescriptionByName(value: string, page: number, size: number) {
-    this.setIsLoading(true);
-    this.prescriptionService.searchPrescriptionByName(value, page, size).subscribe({
-      next: (data: any) => {
-        if (data.totalItems !== 0) {
+    this.prescriptionService
+      .filterPrescriptionByCategory(value, page, size)
+      .subscribe({
+        next: (data: any) => {
           this.setState({
             prescriptionList: this.fillEmpty(
               page,
@@ -577,136 +544,230 @@ export class PrescriptionStore extends StateService<PrescriptionState> {
               data.items
             ),
           });
-        } else {
-          this.store.showNotif('No result found!', 'custom');
-        }
-        console.log('Searched list');
-        console.log(this.state.prescriptionList);
-        console.log('Server response');
-        console.log(data);
-        this.setState({ totalItems: data.totalItems });
-        this.setState({ totalPages: data.totalPages });
-        this.setState({ currentPage: data.currentPage });
-        this.setIsLoading(false);
-      },
-      error: (data: any) => {
-        this.setIsLoading(false);
-        this.store.showNotif(data.error.errorMessage, 'error');
-        console.log(data);
-      },
-    });
+          console.log('Filtered list');
+          console.log(this.state.prescriptionList);
+          console.log('Server response');
+          console.log(data);
+          this.setState({ totalItems: data.totalItems });
+          this.setState({ totalPages: data.totalPages });
+          this.setState({ currentPage: data.currentPage });
+          this.setIsLoading(false);
+        },
+        error: (data: any) => {
+          this.setIsLoading(false);
+          this.store.showNotif(data.error.errorMessage, 'error');
+          console.log(data);
+        },
+      });
+  }
+
+  filterInfinitePrescriptionByCategory(
+    value: string,
+    page: number,
+    size: number
+  ) {
+    this.setIsLoading(true);
+    this.prescriptionService
+      .filterPrescriptionByCategory(value, page, size)
+      .subscribe({
+        next: (data: any) => {
+          this.setState({
+            prescriptionList: this.state.prescriptionList.concat(data.items),
+          });
+          console.log('Filtered list');
+          console.log(this.state.prescriptionList);
+          console.log('Server response');
+          console.log(data);
+          this.setState({ totalItems: data.totalItems });
+          this.setState({ totalPages: data.totalPages });
+          this.setState({ currentPage: data.currentPage });
+          this.setIsLoading(false);
+        },
+        error: (data: any) => {
+          this.setIsLoading(false);
+          this.store.showNotif(data.error.errorMessage, 'error');
+          console.log(data);
+        },
+      });
+  }
+
+  searchPrescriptionByName(value: string, page: number, size: number) {
+    this.setIsLoading(true);
+    this.prescriptionService
+      .searchPrescriptionByName(value, page, size)
+      .subscribe({
+        next: (data: any) => {
+          if (data.totalItems !== 0) {
+            this.setState({
+              prescriptionList: this.fillEmpty(
+                page,
+                size,
+                this.state.prescriptionList,
+                data.items
+              ),
+            });
+          } else {
+            this.store.showNotif('No result found!', 'custom');
+          }
+          console.log('Searched list');
+          console.log(this.state.prescriptionList);
+          console.log('Server response');
+          console.log(data);
+          this.setState({ totalItems: data.totalItems });
+          this.setState({ totalPages: data.totalPages });
+          this.setState({ currentPage: data.currentPage });
+          this.setIsLoading(false);
+        },
+        error: (data: any) => {
+          this.setIsLoading(false);
+          this.store.showNotif(data.error.errorMessage, 'error');
+          console.log(data);
+        },
+      });
   }
 
   searchInfinitePrescriptionByName(value: string, page: number, size: number) {
     this.setIsLoading(true);
-    this.prescriptionService.searchPrescriptionByName(value, page, size).subscribe({
-      next: (data: any) => {
-        if (data.totalItems !== 0) {
-          this.setState({
-            prescriptionList: this.state.prescriptionList.concat(data.items),
-          });
-        } else {
-          this.store.showNotif('No result found!', 'custome');
-        }
-        console.log('Infite searched list');
-        console.log(this.state.prescriptionList);
-        console.log('Server response');
-        console.log(data);
-        this.setState({ totalItems: data.totalItems });
-        this.setState({ totalPages: data.totalPages });
-        this.setState({ currentPage: data.currentPage });
-        this.setIsLoading(false);
-      },
-      error: (data: any) => {
-        this.setIsLoading(false);
-        this.store.showNotif(data.error.errorMessage, 'error');
-        console.log(data);
-      },
-    });
+    this.prescriptionService
+      .searchPrescriptionByName(value, page, size)
+      .subscribe({
+        next: (data: any) => {
+          if (data.totalItems !== 0) {
+            this.setState({
+              prescriptionList: this.state.prescriptionList.concat(data.items),
+            });
+          } else {
+            this.store.showNotif('No result found!', 'custome');
+          }
+          console.log('Infite searched list');
+          console.log(this.state.prescriptionList);
+          console.log('Server response');
+          console.log(data);
+          this.setState({ totalItems: data.totalItems });
+          this.setState({ totalPages: data.totalPages });
+          this.setState({ currentPage: data.currentPage });
+          this.setIsLoading(false);
+        },
+        error: (data: any) => {
+          this.setIsLoading(false);
+          this.store.showNotif(data.error.errorMessage, 'error');
+          console.log(data);
+        },
+      });
   }
 
   sortPrescriptionByName(value: string, page: number, size: number) {
     this.setIsLoading(true);
-    this.prescriptionService.sortPrescriptionByName(value, page, size).subscribe({
-      next: (data: any) => {
-        this.setState({ responseMsg: data });
-        this.setState({
-          prescriptionList: this.fillEmpty(
-            page,
-            size,
-            this.state.prescriptionList,
-            data.items
-          ),
-        });
-        this.setState({ totalItems: data.totalItems });
-        this.setState({ totalPages: data.totalPages });
-        this.setState({ currentPage: data.currentPage });
-        console.log('Sorted list');
-        console.log(this.state.prescriptionList);
-        console.log('Server response');
-        console.log(data);
-        this.setIsLoading(false);
-      },
-      error: (data: any) => {
-        this.setIsLoading(false);
-        this.store.showNotif(data.error.errorMessage, 'error');
-        console.log(data);
-      },
-    });
+    this.prescriptionService
+      .sortPrescriptionByName(value, page, size)
+      .subscribe({
+        next: (data: any) => {
+          this.setState({ responseMsg: data });
+          this.setState({
+            prescriptionList: this.fillEmpty(
+              page,
+              size,
+              this.state.prescriptionList,
+              data.items
+            ),
+          });
+          this.setState({ totalItems: data.totalItems });
+          this.setState({ totalPages: data.totalPages });
+          this.setState({ currentPage: data.currentPage });
+          console.log('Sorted list');
+          console.log(this.state.prescriptionList);
+          console.log('Server response');
+          console.log(data);
+          this.setIsLoading(false);
+        },
+        error: (data: any) => {
+          this.setIsLoading(false);
+          this.store.showNotif(data.error.errorMessage, 'error');
+          console.log(data);
+        },
+      });
   }
 
   sortPrescriptionByPrice(value: string, page: number, size: number) {
     this.setIsLoading(true);
-    this.prescriptionService.sortPrescriptionByPrice(value, page, size).subscribe({
-      next: (data: any) => {
-        this.setState({ responseMsg: data });
-        this.setState({
-          prescriptionList: this.fillEmpty(
-            page,
-            size,
-            this.state.prescriptionList,
-            data.items
-          ),
-        });
-        this.setState({ totalItems: data.totalItems });
-        this.setState({ totalPages: data.totalPages });
-        this.setState({ currentPage: data.currentPage });
-        console.log('Sorted list');
-        console.log(this.state.prescriptionList);
-        console.log('Server response');
-        console.log(data);
-        this.setIsLoading(false);
-      },
-      error: (data: any) => {
-        this.setIsLoading(false);
-        this.store.showNotif(data.error.errorMessage, 'error');
-        console.log(data);
-      },
-    });
+    this.prescriptionService
+      .sortPrescriptionByPrice(value, page, size)
+      .subscribe({
+        next: (data: any) => {
+          this.setState({ responseMsg: data });
+          this.setState({
+            prescriptionList: this.fillEmpty(
+              page,
+              size,
+              this.state.prescriptionList,
+              data.items
+            ),
+          });
+          this.setState({ totalItems: data.totalItems });
+          this.setState({ totalPages: data.totalPages });
+          this.setState({ currentPage: data.currentPage });
+          console.log('Sorted list');
+          console.log(this.state.prescriptionList);
+          console.log('Server response');
+          console.log(data);
+          this.setIsLoading(false);
+        },
+        error: (data: any) => {
+          this.setIsLoading(false);
+          this.store.showNotif(data.error.errorMessage, 'error');
+          console.log(data);
+        },
+      });
   }
 
   sortInfinitePrescriptionByPrice(value: string, page: number, size: number) {
     this.setIsLoading(true);
-    this.prescriptionService.sortPrescriptionByPrice(value, page, size).subscribe({
-      next: (data: any) => {
-        this.setState({
-          prescriptionList: this.state.prescriptionList.concat(data.items),
-        });
-        console.log('Infite sorted list');
-        console.log(this.state.prescriptionList);
-        console.log('Server response');
+    this.prescriptionService
+      .sortPrescriptionByPrice(value, page, size)
+      .subscribe({
+        next: (data: any) => {
+          this.setState({
+            prescriptionList: this.state.prescriptionList.concat(data.items),
+          });
+          console.log('Infite sorted list');
+          console.log(this.state.prescriptionList);
+          console.log('Server response');
+          console.log(data);
+          this.setState({ totalItems: data.totalItems });
+          this.setState({ totalPages: data.totalPages });
+          this.setState({ currentPage: data.currentPage });
+          this.setIsLoading(false);
+        },
+        error: (data: any) => {
+          this.setIsLoading(false);
+          this.store.showNotif(data.error.errorMessage, 'error');
+          console.log(data);
+        },
+      });
+  }
+
+  getPrescription(id: string) {
+    this.setIsLoading(true);
+    return this.prescriptionService
+      .getPrescription(id)
+      .toPromise()
+      .then((data: any) => {
+        this.setState({ prescriptionInstance: data });
         console.log(data);
-        this.setState({ totalItems: data.totalItems });
-        this.setState({ totalPages: data.totalPages });
-        this.setState({ currentPage: data.currentPage });
         this.setIsLoading(false);
-      },
-      error: (data: any) => {
-        this.setIsLoading(false);
-        this.store.showNotif(data.error.errorMessage, 'error');
+      });
+  }
+
+  getPrescriptionByMedicalCheckupID(id: string) {
+    this.setIsLoading(true);
+    return this.prescriptionService
+      .getPrescriptionByMedicalCheckupID(id)
+      .toPromise()
+      .then((data: any) => {
+        this.setState({ prescriptionInstance: data });
         console.log(data);
-      },
-    });
+        this.setIsLoading(false);
+      });
   }
 
   setExportData(array: Array<Prescription>) {

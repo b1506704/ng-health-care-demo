@@ -314,7 +314,7 @@ export const generateRandomMedicine = async (req, res) => {
       const newMedicine = new Medicine({
         name: "Favipiravir" + randomNumber,
         price: randomNumber,
-        brand: brandList()[random(0, brandList().length - 1)]._id,
+        brand: brandList()[random(0, brandList().length - 1)].name,
         effect: "Effect to cure illness #" + randomNumber,
       });
       await newMedicine.save();

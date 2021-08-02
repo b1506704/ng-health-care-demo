@@ -63,9 +63,9 @@ export class EditMedicalCheckupListComponent implements OnInit, OnDestroy {
   };
   pendingList: Array<MedicalCheckup>;
   completeList: Array<MedicalCheckup>;
-  colCountByScreen: Object;
+  selectedPrescription: any;
   isDiagnosePopupVisible: boolean = false;
-  checkUpDetail: MedicalCheckup;
+  checkUpDetail: any;
   doctorData: Doctor;
   submitButtonOptions: any = {
     text: 'Submit',
@@ -80,6 +80,11 @@ export class EditMedicalCheckupListComponent implements OnInit, OnDestroy {
       this.resetValues();
     },
   };
+
+  selectPrescription(prescription: any) {
+    this.selectedPrescription = prescription;
+    console.log(prescription);
+  }
 
   // -- Pending Checkup Functions --
 
@@ -285,6 +290,7 @@ export class EditMedicalCheckupListComponent implements OnInit, OnDestroy {
     this.isCompleteDragging = false;
     this.store.setIsLoading(false);
     this.isDiagnosePopupVisible = true;
+    this.prescriptionDoneListener();
   }
 
   onTaskCompleteReorder(e: any) {
@@ -351,6 +357,17 @@ export class EditMedicalCheckupListComponent implements OnInit, OnDestroy {
     );
   }
 
+  prescriptionDoneListener() {
+    return this.medicalCheckupStore.$isPrescriptionDone.subscribe(
+      (data: boolean) => {
+        this.isDiagnosePopupVisible = !data;
+        setTimeout(() => {
+          this.selectPrescription(this.completeList[0]);
+        }, 1000);
+      }
+    );
+  }
+
   navigateToRoomMonitor() {
     this.router.navigate(['/room_monitor']);
   }
@@ -358,6 +375,7 @@ export class EditMedicalCheckupListComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.currentCheckupPendingPageListener();
     this.currentCheckupCompletePageListener();
+
     this.medicalCheckupStore
       .initPendingInfiniteData(0, this.pageSize)
       .then(() => {
@@ -371,16 +389,9 @@ export class EditMedicalCheckupListComponent implements OnInit, OnDestroy {
     this.getDoctorID();
   }
 
-  screen(width: any) {
-    return width < 720 ? 'sm' : 'md';
-  }
-
   ngOnDestroy(): void {
-    this.colCountByScreen = {
-      md: 4,
-      sm: 2,
-    };
     this.getDoctorID().unsubscribe();
+    this.prescriptionDoneListener().unsubscribe();
     this.pendingCheckupDataListener().unsubscribe();
     this.currentCheckupPendingPageListener().unsubscribe();
     this.currentCheckupCompletePageListener().unsubscribe();

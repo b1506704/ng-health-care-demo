@@ -163,6 +163,20 @@ export class PrescriptionHttpService {
     });
   }
 
+  getPrescriptionByMedicalCheckupID(medicalCheckupID: string): Observable<Prescription> {
+    const params = new HttpParams().set('medicalCheckupID', medicalCheckupID);
+    console.log(params.toString());
+    return this.http.post<Prescription>(
+      this.apiPrescriptionUrl + '/byMedicalCheckupID',
+      {},
+      {
+        params: params,
+        reportProgress: true,
+        observe: 'body',
+      }
+    );
+  }
+
   deleteSelectedPrescriptions(
     selectedItems: Array<String>
   ): Observable<Array<String>> {

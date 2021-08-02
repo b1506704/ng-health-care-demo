@@ -3,6 +3,7 @@ import express from "express";
 import {
   getPrescriptions,
   getPrescriptionByCustomerID,
+  getPrescriptionByMedicalCheckupID,
   createPrescription,
   deletePrescription,
   updatePrescription,
@@ -21,6 +22,7 @@ const router = express.Router();
 router.get("/", getPrescriptions);
 router.get("/:_id", getPrescription);
 router.post("/byCustomerID", getPrescriptionByCustomerID);
+router.post("/byMedicalCheckupID", getPrescriptionByMedicalCheckupID);
 router.post("/deleteAll", deleteAllPrescriptions);
 router.post("/", createPrescription);
 router.delete("/:_id", deletePrescription);

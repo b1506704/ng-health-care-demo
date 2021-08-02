@@ -8,6 +8,7 @@ import { MedicineStore } from 'src/app/shared/services/medicine/medicine-store.s
 import { PrescriptionStore } from 'src/app/shared/services/prescription/prescription-store.service';
 import { StoreService } from 'src/app/shared/services/store.service';
 import predefineMarkupTemplate from 'src/app/utils/predefineMarkupTemplate';
+import { confirm } from 'devextreme/ui/dialog';
 
 @Component({
   selector: 'app-diagnose-editor',
@@ -22,7 +23,7 @@ export class DiagnoseEditorComponent implements OnInit, OnDestroy {
     private prescriptionStore: PrescriptionStore
   ) {}
   @Input() doctorData: Doctor;
-  @Input() checkUpDetail: MedicalCheckup;
+  @Input() checkUpDetail: any;
   isMedicineDragging: boolean = false;
   isDiseaseDragging: boolean = false;
   pageSize: number = 20;
@@ -64,12 +65,61 @@ export class DiagnoseEditorComponent implements OnInit, OnDestroy {
     hint: 'Fetch data from server',
     onClick: this.onDiseaseRefresh.bind(this),
   };
+  shiftDiagnoseMedicineButtonOptions: any = {
+    type: 'normal',
+    icon: 'hidepanel',
+    hint: 'Remove first item',
+    onClick: this.onDiagnoseMedicineShift.bind(this),
+  };
+  deleteAllDiagnoseMedicineButtonOptions: any = {
+    type: 'danger',
+    icon: 'trash',
+    hint: 'Delete all',
+    onClick: this.onDiagnoseMedicineDeleteAll.bind(this),
+  };
+  shiftDiagnoseDiseaseButtonOptions: any = {
+    type: 'normal',
+    icon: 'hidepanel',
+    hint: 'Remove first item',
+    onClick: this.onDiagnoseDiseaseShift.bind(this),
+  };
+  deleteAllDiagnoseDiseaseButtonOptions: any = {
+    type: 'danger',
+    icon: 'trash',
+    hint: 'Delete all',
+    onClick: this.onDiagnoseDiseaseDeleteAll.bind(this),
+  };
   sortableHeight: any = '40vh';
+  degree: Object = {
+    items: ['1', '2', '3', '4'],
+    value: '1',
+  };
   medicineList: Array<Medicine>;
   diseaseList: Array<Disease>;
   diagnoseMedicineList: Array<Medicine> = [];
   diagnoseDiseaseList: Array<Disease> = [];
+  addedMedicine: Medicine;
+  addedMedicineIndex: number;
+  addedDisease: Disease;
+  addedDiseaseIndex: number;
+  currentMedicine: any = {
+    _id: '',
+    name: '',
+    price: 0,
+    quantity: 0,
+    brand: '',
+    effect: '',
+    advice: '',
+  };
+  currentDisease: any = {
+    _id: '',
+    name: '',
+    description: '',
+    degree: '',
+  };
   isDiagnosePopupVisible: boolean = false;
+  isMedicinePopupVisible: boolean = false;
+  isDiseasePopupVisible: boolean = false;
   submitButtonOptions: any = {
     text: 'Submit',
     type: 'normal',
@@ -83,6 +133,189 @@ export class DiagnoseEditorComponent implements OnInit, OnDestroy {
       this.resetValues();
     },
   };
+  submitMedicineButtonOptions: any = {
+    text: 'Save',
+    icon: 'save',
+    type: 'normal',
+    useSubmitBehavior: true,
+  };
+  resetMedicineButtonOptions: any = {
+    text: 'Reset',
+    icon: 'refresh',
+    type: 'normal',
+    useSubmitBehavior: false,
+    onClick: () => {
+      this.resetMedicineValues();
+    },
+  };
+  submitDiseaseButtonOptions: any = {
+    text: 'Save',
+    icon: 'save',
+    type: 'normal',
+    useSubmitBehavior: true,
+  };
+  resetDiseaseButtonOptions: any = {
+    text: 'Reset',
+    icon: 'refresh',
+    type: 'normal',
+    useSubmitBehavior: false,
+    onClick: () => {
+      this.resetDiseaseValues();
+    },
+  };
+
+  onDiagnoseMedicineShift() {
+    confirm('<b>Are you sure?</b>', 'Delete Medicine').then(
+      (confirm: boolean) => {
+        if (confirm) {
+          this.diagnoseMedicineList.shift();
+          this.store.showNotif('Remove first item', 'custom');
+        }
+      }
+    );
+  }
+
+  onDiagnoseMedicineDeleteAll() {
+    confirm('<b>Are you sure?</b>', 'Delete Medicine').then(
+      (confirm: boolean) => {
+        if (confirm) {
+          this.diagnoseMedicineList = [];
+          this.store.showNotif('Remove all item', 'custom');
+        }
+      }
+    );
+  }
+
+  editMedicine(item: any) {
+    this.addedMedicineIndex = this.diagnoseMedicineList.indexOf(item);
+    this.currentMedicine = item;
+    this.isMedicinePopupVisible = true;
+  }
+
+  deleteMedicine(item: any) {
+    confirm('<b>Are you sure?</b>', 'Delete Medicine').then(
+      (confirm: boolean) => {
+        if (confirm) {
+          this.diagnoseMedicineList = this.diagnoseMedicineList.filter(
+            (e) => e._id !== item._id
+          );
+          this.store.showNotif(`Remove ${item.name}`, 'custom');
+        }
+      }
+    );
+  }
+
+  onDiagnoseDiseaseShift() {
+    confirm('<b>Are you sure?</b>', 'Delete Disease').then(
+      (confirm: boolean) => {
+        if (confirm) {
+          this.diagnoseDiseaseList.shift();
+          this.store.showNotif('Remove first item', 'custom');
+        }
+      }
+    );
+  }
+
+  onDiagnoseDiseaseDeleteAll() {
+    confirm('<b>Are you sure?</b>', 'Delete Disease').then(
+      (confirm: boolean) => {
+        if (confirm) {
+          this.diagnoseDiseaseList = [];
+          this.store.showNotif('Remove all item', 'custom');
+        }
+      }
+    );
+  }
+
+  editDisease(item: any) {
+    this.addedDiseaseIndex = this.diagnoseDiseaseList.indexOf(item);
+    this.currentDisease = item;
+    this.isDiseasePopupVisible = true;
+  }
+
+  deleteDisease(item: any) {
+    confirm('<b>Are you sure?</b>', 'Delete Disease').then(
+      (confirm: boolean) => {
+        if (confirm) {
+          this.diagnoseDiseaseList = this.diagnoseDiseaseList.filter(
+            (e) => e._id !== item._id
+          );
+          this.store.showNotif(`Remove ${item.name}`, 'custom');
+        }
+      }
+    );
+  }
+
+  onMedicineSubmit(e: any) {
+    e.preventDefault();
+    this.currentMedicine.totalCost =
+      this.currentMedicine.quantity * this.currentMedicine.price;
+    if (this.currentMedicine.quantity >= 1) {
+      this.diagnoseMedicineList[this.addedMedicineIndex] = this.currentMedicine;
+      this.store.showNotif(
+        `Added ${this.currentMedicine.quantity} item(s) of ${this.currentMedicine.name}`,
+        'custom'
+      );
+      console.log('SAVED MEDICINE');
+      console.log(this.diagnoseMedicineList[this.addedMedicineIndex]);
+      this.isMedicinePopupVisible = false;
+    } else {
+      this.store.showNotif('Please check pill quantity', 'custom');
+    }
+  }
+
+  resetMedicineValues() {
+    this.currentMedicine = {
+      _id: this.addedMedicine._id,
+      name: this.addedMedicine.name,
+      price: this.addedMedicine.price,
+      quantity: 0,
+      totalCost: 0,
+      brand: this.addedMedicine.brand,
+      effect: this.addedMedicine.effect,
+      advice: '',
+    };
+  }
+  // init data for medicine popup
+  setCurrentMedicine() {
+    this.currentMedicine = {
+      _id: this.addedMedicine._id,
+      name: this.addedMedicine.name,
+      price: this.addedMedicine.price,
+      quantity: 1,
+      totalCost: this.addedMedicine.price,
+      brand: this.addedMedicine.brand,
+      effect: this.addedMedicine.effect,
+      advice: 'No further notice',
+    };
+  }
+
+  onDiseaseSubmit(e: any) {
+    e.preventDefault();
+    this.diagnoseDiseaseList[this.addedDiseaseIndex] = this.currentDisease;
+    this.store.showNotif(`Added ${this.currentDisease.name}`, 'custom');
+    console.log('SAVED DISEASE');
+    console.log(this.diagnoseDiseaseList[this.addedDiseaseIndex]);
+    this.isDiseasePopupVisible = false;
+  }
+
+  resetDiseaseValues() {
+    this.currentDisease = {
+      _id: this.addedDisease._id,
+      name: this.addedDisease.name,
+      description: this.addedDisease.description,
+      degree: '1',
+    };
+  }
+  // init data for disease popup
+  setCurrentDisease() {
+    this.currentDisease = {
+      _id: this.addedDisease._id,
+      name: this.addedDisease.name,
+      description: this.addedDisease.description,
+      degree: '1',
+    };
+  }
 
   // -- Medicine Checkup Functions --
 
@@ -252,10 +485,14 @@ export class DiagnoseEditorComponent implements OnInit, OnDestroy {
   }
 
   onTaskDiagnoseMedicineDrop(e: any) {
+    this.addedMedicine = e.itemData;
+    this.addedMedicineIndex = e.toIndex;
+    this.setCurrentMedicine();
     e.fromData.splice(e.fromIndex, 1);
     e.toData.splice(e.toIndex, 0, e.itemData);
     this.isMedicineDragging = false;
     this.store.setIsLoading(false);
+    this.isMedicinePopupVisible = true;
     console.log('DIAGNOSE MEDICINE LIST');
     console.log(this.diagnoseMedicineList);
   }
@@ -277,11 +514,14 @@ export class DiagnoseEditorComponent implements OnInit, OnDestroy {
   }
 
   onTaskDiagnoseDiseaseDrop(e: any) {
+    this.addedDisease = e.itemData;
+    this.addedDiseaseIndex = e.toIndex;
+    this.setCurrentDisease();
     e.fromData.splice(e.fromIndex, 1);
     e.toData.splice(e.toIndex, 0, e.itemData);
     this.isDiseaseDragging = false;
     this.store.setIsLoading(false);
-    this.isDiagnosePopupVisible = true;
+    this.isDiseasePopupVisible = true;
     console.log('DIAGNOSE DISEASE LIST');
     console.log(this.diagnoseDiseaseList);
   }
@@ -299,13 +539,14 @@ export class DiagnoseEditorComponent implements OnInit, OnDestroy {
       doctorName: this.doctorData.fullName,
       diseaseList: this.diagnoseDiseaseList,
       medicineList: this.diagnoseMedicineList,
-      advice: ''
+      advice: '',
     };
     return predefineMarkupTemplate(input);
   }
 
   submitDiagnose() {
     const diagnose = {
+      medicalCheckupID: this.checkUpDetail._id,
       customerID: this.checkUpDetail.customerID,
       customerName: this.checkUpDetail.customerName,
       doctorID: this.doctorData._id,
@@ -313,9 +554,9 @@ export class DiagnoseEditorComponent implements OnInit, OnDestroy {
       diseaseList: this.diagnoseDiseaseList,
       medicineList: this.diagnoseMedicineList,
       htmlMarkUp: this.generateMarkupTemplate(),
-      advice: ''
+      advice: '',
     };
-    this.prescriptionStore.uploadPrescription(diagnose, 0 ,5);
+    this.prescriptionStore.uploadPrescription(diagnose, 0, this.pageSize);
     this.resetValues();
   }
 

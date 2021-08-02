@@ -42,7 +42,7 @@ export const getCompleteMedicalCheckups = (req, res) => {
     const { limit, offset } = getPagination(page, size);
     console.log(`Limit: ${limit}  Offset: ${offset}`);
     const options = {
-      sort: { createdAt: "desc" },
+      sort: { updatedAt: "desc" },
       offset: offset,
       limit: limit,
     };

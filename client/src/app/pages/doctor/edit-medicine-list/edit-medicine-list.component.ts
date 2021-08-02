@@ -141,7 +141,7 @@ export class EditMedicineListComponent implements OnInit, OnDestroy {
         widget: 'dxSelectBox',
         options: {
           items: this.brandList,
-          valueExpr: '_id',
+          valueExpr: 'name',
           // searchExpr: 'name',
           displayExpr: 'name',
           placeholder: 'Filter with brand',
@@ -231,7 +231,7 @@ export class EditMedicineListComponent implements OnInit, OnDestroy {
     this.isSortingByPrice = false;
     this.currentCategoryFilterValue = e.value;
     console.log(e.value);
-    if (e.value !== '-1') {
+    if (e.value !== '(NONE)') {
       this.medicineStore.initFilterByCategoryData(
         e.value,
         this.dataGrid.instance.pageIndex(),

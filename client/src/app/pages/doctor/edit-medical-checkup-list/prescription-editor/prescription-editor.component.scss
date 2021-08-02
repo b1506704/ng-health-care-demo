@@ -1,114 +1,61 @@
-@import "../../../../dx-styles.scss";
-::ng-deep #form-container {
-  margin: 10px;
-}
-::ng-deep .buttonGroup {
-  margin-top: 20px;
-}
-::ng-deep .signupForm {
-  background-color: transparent;
-  box-shadow: $box-shadow;
-  padding-left: 15px;
-  padding-right: 15px;
-}
-::ng-deep .long-title h3 {
-  font-family: "Segoe UI Light", "Helvetica Neue Light", "Segoe UI",
-    "Helvetica Neue", "Trebuchet MS", Verdana;
-  font-weight: 200;
-  font-size: 28px;
-  text-align: center;
-  margin-bottom: 20px;
-}
-
-#kanban {
-  white-space: nowrap;
-}
-
-.sortable-header-animation {
+::ng-deep #container {
   display: flex;
-  justify-content: center;
-  align-items: center;
-  font-weight: bold;
-  font-family: hero;
-  font-size: 25px;
-  animation-name: randomColor;
-  animation-duration: 1s;
-  animation-direction: alternate;
-  animation-iteration-count: infinite;
-}
-
-.sortable-header {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-weight: bold;
-  font-family: hero;
-  font-size: 25px;
-}
-
-.sortable-cards {
-  min-height: 380px;
-}
-
-.card {
-  position: relative;
-  background-color: white;
-  box-sizing: border-box;
-  width: 100%;
-  padding: 10px 20px;
-  margin: 10px;
-  cursor: pointer;
-}
-
-.card-subject {
+  justify-content: flex-end;
   padding-bottom: 10px;
 }
-
-.card-assignee {
+::ng-deep .dx-tabs .dx-tabs-wrapper .dx-item.dx-tab {
+  width: auto;
+  padding-left: 20px;
+}
+::ng-deep .dx-tab-content .dx-icon.dx-icon-close {
+  display: inline-block;
   opacity: 0.6;
+  margin-right: 0;
+  margin-left: 7px;
+  font-size: 18px;
+}
+::ng-deep .dx-sortable-dragging .dx-tab {
+  box-sizing: border-box;
+  text-align: center;
+}
+::ng-deep .prescriptionInfo .prescriptionPhoto {
+  height: 100px;
+  float: left;
+  padding: 10px 20px 10px 20px;
+}
+::ng-deep .caption {
+  padding: 0px 0px 10px 30px;
+  font-size: 14px;
+  font-weight: bold;
+}
+::ng-deep .task-list {
+  padding: 0px 20px;
+}
+::ng-deep .task-list .dx-state-disabled {
+  opacity: 1;
+}
+::ng-deep .task-list .dx-state-disabled .dx-list-item {
+  opacity: 1;
+}
+::ng-deep .prescriptionInfo .prescriptionNotes {
+  min-height: 100px;
+  padding: 20px;
+  text-align: justify;
+  white-space: normal;
+}
+::ng-deep .dx-theme-generic .dx-tabs-wrapper .dx-item.dx-tab {
+  padding-left: 14px;
+  padding-right: 9px;
+  line-height: 1.618;
+}
+::ng-deep .dx-theme-generic .dx-icon.dx-icon-close {
+  font-size: 15px;
+}
+::ng-deep .dx-theme-material .dx-tab-content span {
+  vertical-align: middle;
+  line-height: initial;
+}
+::ng-deep .dx-theme-material .prescriptionNotes {
+  margin: 0;
 }
 
-.card-priority {
-  position: absolute;
-  top: 10px;
-  bottom: 10px;
-  left: 5px;
-  width: 5px;
-  border-radius: 2px;
-  background: #86c285;
-}
-
-.priority-0 {
-  background: #feffff;
-}
-
-.priority-1 {
-  background: #a9caf7;
-}
-
-.priority-2 {
-  background: #5859a3;
-}
-
-.priority-3 {
-  background: #f3252f;
-}
-
-.priority-4 {
-  background: #000000;
-}
-
-::ng-deep .dx-sortable {
-  display: block;
-}
-
-
-
-@keyframes randomColor {
-  from {
-    color: rgb(255, 255, 255);
-  }
-  to {
-    color: rgb(250, 102, 102);
-  }
-}

@@ -357,6 +357,10 @@ export class MedicalCheckupComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.colCountByScreen = {
+      md: 4,
+      sm: 2,
+    };
     this.currentCheckupPendingPageListener();
     this.currentCheckupCompletePageListener();
     this.medicalCheckupStore
@@ -377,10 +381,6 @@ export class MedicalCheckupComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.colCountByScreen = {
-      md: 4,
-      sm: 2,
-    };
     this.getPatientID().unsubscribe();
     this.pendingCheckupDataListener().unsubscribe();
     this.currentCheckupPendingPageListener().unsubscribe();

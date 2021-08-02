@@ -13,7 +13,7 @@
   </dxi-item>
 </dx-toolbar>
 <dx-box>
-  <dxi-item [ratio]="2">
+  <dxi-item [ratio]="2" [classList]="['box-shadow']">
     <p
       [ngClass]="{
         'sortable-header-animation': isPendingDragging === true,
@@ -22,19 +22,17 @@
     >
       Pending
     </p>
-    <dx-toolbar>
+    <dx-toolbar [classList]="['kanban-toolbar']">
       <dxi-item
         widget="dxTextBox"
         [options]="searchPendingBoxOptions"
         location="center"
-        locateInMenu="auto"
       >
       </dxi-item>
       <dxi-item
         widget="dxButton"
         [options]="refreshPendingButtonOptions"
         location="center"
-        locateInMenu="auto"
       >
       </dxi-item>
     </dx-toolbar>
@@ -78,82 +76,98 @@
       </dx-scroll-view>
     </div>
   </dxi-item>
-  <dxi-item [ratio]="2">
-    <p
-      [ngClass]="{
-        'sortable-header-animation': isCompleteDragging === true,
-        'sortable-header': isCompleteDragging === false
-      }"
-    >
-      Complete
-    </p>
-    <dx-toolbar>
-      <dxi-item
-        widget="dxTextBox"
-        [options]="searchCompleteBoxOptions"
-        location="center"
-        locateInMenu="auto"
+  <dxi-item [ratio]="2" [classList]="['box-shadow']">
+    <div class="box-container">
+      <p
+        [ngClass]="{
+          'sortable-header-animation': isCompleteDragging === true,
+          'sortable-header': isCompleteDragging === false
+        }"
       >
-      </dxi-item>
-      <dxi-item
-        widget="dxButton"
-        [options]="refreshCompleteButtonOptions"
-        location="center"
-        locateInMenu="auto"
-      >
-      </dxi-item>
-    </dx-toolbar>
-    <div id="kanban">
-      <dx-scroll-view
-        [direction]="'vertical'"
-        [pulledDownText]="'...Fetching'"
-        [showScrollbar]="true"
-        [reachBottomText]="'Loading...'"
-        [scrollByContent]="true"
-        [scrollByThumb]="true"
-        [height]="'45vh'"
-        (onPullDown)="updateCompleteTopContent($event)"
-        (onReachBottom)="updateCompleteBottomContent($event)"
-      >
-        <dx-sortable
-          class="sortable-cards"
-          group="cardsGroup"
-          (onDragStart)="onTaskDragCompleteStart($event)"
-          (onDragEnd)="onDragCompleteEnd($event)"
-          (onReorder)="onTaskCompleteReorder($event)"
-          (onAdd)="onTaskCompleteDrop($event)"
-          [data]="completeList"
+        Complete
+      </p>
+      <dx-toolbar [classList]="['kanban-toolbar']">
+        <dxi-item
+          widget="dxTextBox"
+          [options]="searchCompleteBoxOptions"
+          location="center"
         >
-          <div
-            class="card dx-card dx-theme-text-color dx-theme-background-color"
-            *ngFor="let item of completeList"
+        </dxi-item>
+        <dxi-item
+          widget="dxButton"
+          [options]="refreshCompleteButtonOptions"
+          location="center"
+        >
+        </dxi-item>
+      </dx-toolbar>
+      <div id="kanban">
+        <dx-scroll-view
+          [direction]="'vertical'"
+          [pulledDownText]="'...Fetching'"
+          [showScrollbar]="true"
+          [reachBottomText]="'Loading...'"
+          [scrollByContent]="true"
+          [scrollByThumb]="true"
+          [height]="'45vh'"
+          (onPullDown)="updateCompleteTopContent($event)"
+          (onReachBottom)="updateCompleteBottomContent($event)"
+        >
+          <dx-sortable
+            class="sortable-cards"
+            group="cardsGroup"
+            (onDragStart)="onTaskDragCompleteStart($event)"
+            (onDragEnd)="onDragCompleteEnd($event)"
+            (onReorder)="onTaskCompleteReorder($event)"
+            (onAdd)="onTaskCompleteDrop($event)"
+            [data]="completeList"
           >
-            <ng-container *ngIf="item">
-              <div
-                class="card-priority"
-                [ngClass]="'priority-' + item?.priority"
-              ></div>
-              <div class="card-subject">{{ item?.customerName }}</div>
-              <div class="card-assignee">
-                {{ item?.startDate | date: "fullDate" }}
-              </div>
-            </ng-container>
-          </div>
-        </dx-sortable>
-      </dx-scroll-view>
+            <div
+              class="card dx-card dx-theme-text-color dx-theme-background-color"
+              *ngFor="let item of completeList"
+            >
+              <ng-container *ngIf="item">
+                <div
+                  class="card-priority"
+                  [ngClass]="'priority-' + item?.priority"
+                ></div>
+                <div class="card-subject">{{ item?.customerName }}</div>
+                <div class="card-assignee">
+                  {{ item?.startDate | date: "fullDate" }}
+                </div>
+                <dx-toolbar >
+                  <dxi-item location="center">
+                    <dx-button
+                      icon="edit"
+                      type="normal"
+                      text="Edit"
+                      hint="Edit prescription report"
+                      (onClick)="selectPrescription(item)"
+                    >
+                    </dx-button>
+                  </dxi-item>
+                </dx-toolbar>
+              </ng-container>
+            </div>
+          </dx-sortable>
+        </dx-scroll-view>
+      </div>
     </div>
   </dxi-item>
-  <dxi-item [ratio]="7">
-    <router-outlet></router-outlet>
+  <dxi-item [ratio]="8" [classList]="['box-shadow']">
+    <div class="box-container">
+      <app-prescription-editor
+        [selectedPrescription]="selectedPrescription"
+      ></app-prescription-editor>
+    </div>
   </dxi-item>
 </dx-box>
-<dx-speed-dial-action
+<!-- <dx-speed-dial-action
   icon="like"
   label="Request Checkup"
   [index]="1"
   (onClick)="resetValues()"
 >
-</dx-speed-dial-action>
+</dx-speed-dial-action> -->
 <dx-popup
   [width]="'95%'"
   [height]="'95%'"

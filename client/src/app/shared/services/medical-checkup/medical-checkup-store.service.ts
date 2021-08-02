@@ -10,6 +10,7 @@ interface MedicalCheckupState {
   medicalCheckupList: Array<MedicalCheckup>;
   pendingCheckupList: Array<MedicalCheckup>;
   completeCheckupList: Array<MedicalCheckup>;
+  isPrescriptionDone: boolean;
   exportData: Array<MedicalCheckup>;
   selectedMedicalCheckup: Object;
   totalCheckupPendingPages: number;
@@ -32,6 +33,7 @@ const initialState: MedicalCheckupState = {
   currentCheckupCompletePage: 0,
   totalCheckupPendingItems: 0,
   totalCheckupCompleteItems: 0,
+  isPrescriptionDone: false,
   responseMsg: '',
 };
 @Injectable({
@@ -341,6 +343,10 @@ export class MedicalCheckupStore extends StateService<MedicalCheckupState> {
     (state) => state.selectedMedicalCheckup
   );
 
+  $isPrescriptionDone: Observable<boolean> = this.select(
+    (state) => state.isPrescriptionDone
+  );
+
   uploadMedicalCheckup(
     medicalCheckup: MedicalCheckup,
     page: number,
@@ -580,6 +586,10 @@ export class MedicalCheckupStore extends StateService<MedicalCheckupState> {
           console.log(data);
         },
       });
+  }
+
+  setIsPrescriptionDone(isDone: boolean) {
+    this.setState({ isPrescriptionDone: isDone });
   }
 
   setExportData(array: Array<MedicalCheckup>) {

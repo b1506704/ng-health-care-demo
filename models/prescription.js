@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import mongoosePaginate from "mongoose-paginate-v2";
 const prescriptionSchema = mongoose.Schema(
   {
+    medicalCheckupID: { type: String},
     customerID: { type: String },
     customerName: { type: String },
     doctorID: { type: String },

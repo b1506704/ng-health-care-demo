@@ -9,12 +9,12 @@
     user-select: none;
   "
 >
-  <span> Patient Name: {{ checkUpDetail.customerName }} </span>
-  <span> Symptons: {{ checkUpDetail.purpose }}</span>
-  <span> Doctor Name: {{ doctorData.fullName }}</span>
+  <span> Patient: {{ checkUpDetail.customerName }} </span>
+  <span> Symptoms: {{ checkUpDetail.purpose }}</span>
+  <span> Doctor: {{ doctorData.fullName }}</span>
 </div>
 <dx-box>
-  <dxi-item [ratio]="2" [classList]="['kanban-list']">
+  <dxi-item [ratio]="2" [classList]="['box-shadow']">
     <p
       [ngClass]="{
         'sortable-header-animation': isMedicineDragging === true,
@@ -78,7 +78,7 @@
       </dx-scroll-view>
     </div>
   </dxi-item>
-  <dxi-item [ratio]="2" [classList]="['kanban-list']">
+  <dxi-item [ratio]="2" [classList]="['box-shadow']">
     <p
       [ngClass]="{
         'sortable-header-animation': isMedicineDragging === true,
@@ -87,7 +87,21 @@
     >
       Diagnose Medicine
     </p>
-    <dx-toolbar [classList]="['kanban-toolbar']"> </dx-toolbar>
+
+    <dx-toolbar [classList]="['kanban-toolbar']">
+      <dxi-item
+        widget="dxButton"
+        [options]="shiftDiagnoseMedicineButtonOptions"
+        location="center"
+      >
+      </dxi-item>
+      <dxi-item
+        widget="dxButton"
+        [options]="deleteAllDiagnoseMedicineButtonOptions"
+        location="center"
+      >
+      </dxi-item>
+    </dx-toolbar>
     <div id="kanban">
       <dx-scroll-view
         [direction]="'vertical'"
@@ -115,37 +129,65 @@
               <div class="card-assignee">
                 {{ item?.effect }}
               </div>
+              <div class="card-assignee">{{ item?.quantity }} pills</div>
+              <div class="card-assignee">{{ item?.price }} $/1 pill</div>
+              <div class="card-assignee">{{ item?.totalCost }} $</div>
+              <div class="card-assignee">
+                {{ item?.advice }}
+              </div>
+              <dx-toolbar>
+                <dxi-item location="after">
+                  <dx-button
+                    icon="edit"
+                    type="normal"
+                    text="Edit"
+                    hint="Edit medicine"
+                    (onClick)="editMedicine(item)"
+                  >
+                  </dx-button>
+                </dxi-item>
+                <dxi-item location="before">
+                  <dx-button
+                    icon="trash"
+                    type="normal"
+                    text="Delete"
+                    hint="Remove medicine"
+                    (onClick)="deleteMedicine(item)"
+                  >
+                  </dx-button>
+                </dxi-item>
+              </dx-toolbar>
             </ng-container>
           </div>
         </dx-sortable>
       </dx-scroll-view>
     </div>
   </dxi-item>
-  <dxi-item [ratio]="2" [classList]="['kanban-list']">
+  <dxi-item [ratio]="2" [classList]="['box-shadow']">
     <p
-    [ngClass]="{
-      'sortable-header-animation': isDiseaseDragging === true,
-      'sortable-header': isDiseaseDragging === false
-    }"
+      [ngClass]="{
+        'sortable-header-animation': isDiseaseDragging === true,
+        'sortable-header': isDiseaseDragging === false
+      }"
     >
-    Disease
-  </p>
-  <dx-toolbar [classList]="['kanban-toolbar']">
-    <dxi-item
-      widget="dxTextBox"
-      [options]="searchDiseaseBoxOptions"
-      location="center"
-      locateInMenu="auto"
-    >
-    </dxi-item>
-    <dxi-item
-      widget="dxButton"
-      [options]="refreshDiseaseButtonOptions"
-      location="center"
-      locateInMenu="auto"
-    >
-    </dxi-item>
-  </dx-toolbar>
+      Disease
+    </p>
+    <dx-toolbar [classList]="['kanban-toolbar']">
+      <dxi-item
+        widget="dxTextBox"
+        [options]="searchDiseaseBoxOptions"
+        location="center"
+        locateInMenu="auto"
+      >
+      </dxi-item>
+      <dxi-item
+        widget="dxButton"
+        [options]="refreshDiseaseButtonOptions"
+        location="center"
+        locateInMenu="auto"
+      >
+      </dxi-item>
+    </dx-toolbar>
     <div id="kanban">
       <dx-scroll-view
         [direction]="'vertical'"
@@ -185,7 +227,7 @@
       </dx-scroll-view>
     </div>
   </dxi-item>
-  <dxi-item [ratio]="2" [classList]="['kanban-list']">
+  <dxi-item [ratio]="2" [classList]="['box-shadow']">
     <p
       [ngClass]="{
         'sortable-header-animation': isDiseaseDragging === true,
@@ -194,7 +236,20 @@
     >
       Diagnose Disease
     </p>
-    <dx-toolbar [classList]="['kanban-toolbar']"> </dx-toolbar>
+    <dx-toolbar [classList]="['kanban-toolbar']">
+      <dxi-item
+        widget="dxButton"
+        [options]="shiftDiagnoseDiseaseButtonOptions"
+        location="center"
+      >
+      </dxi-item>
+      <dxi-item
+        widget="dxButton"
+        [options]="deleteAllDiagnoseDiseaseButtonOptions"
+        location="center"
+      >
+      </dxi-item>
+    </dx-toolbar>
     <div id="kanban">
       <dx-scroll-view
         [direction]="'vertical'"
@@ -220,8 +275,33 @@
               ></div>
               <div class="card-subject">{{ item?.name }}</div>
               <div class="card-assignee">
+                {{ item?.degree }} degree of severity
+              </div>
+              <div class="card-assignee">
                 {{ item?.description }}
               </div>
+              <dx-toolbar>
+                <dxi-item location="after">
+                  <dx-button
+                    icon="edit"
+                    type="normal"
+                    text="Edit"
+                    hint="Edit disease"
+                    (onClick)="editDisease(item)"
+                  >
+                  </dx-button>
+                </dxi-item>
+                <dxi-item location="before">
+                  <dx-button
+                    icon="trash"
+                    type="normal"
+                    text="Delete"
+                    hint="Remove disease"
+                    (onClick)="deleteDisease(item)"
+                  >
+                  </dx-button>
+                </dxi-item>
+              </dx-toolbar>
             </ng-container>
           </div>
         </dx-sortable>
@@ -251,3 +331,187 @@
     </dx-button>
   </dxi-item>
 </dx-toolbar>
+<dx-popup
+  [width]="'50%'"
+  [height]="'95%'"
+  [showTitle]="true"
+  [shading]="true"
+  [title]="'Medicine Detail'"
+  [dragEnabled]="true"
+  [closeOnOutsideClick]="false"
+  [showCloseButton]="true"
+  [(visible)]="isMedicinePopupVisible"
+  [position]="'center'"
+  [classList]="['popup']"
+>
+  <div *dxTemplate="let data of 'content'">
+    <dx-scroll-view
+      width="100%"
+      height="100%"
+      [bounceEnabled]="true"
+      [scrollByContent]="true"
+      [scrollByThumb]="true"
+    >
+      <ng-container *ngIf="addedMedicine">
+        <form
+          id="form-container"
+          (submit)="onMedicineSubmit($event)"
+          [classList]="['medicineForm']"
+        >
+          <dx-form
+            id="form"
+            [formData]="currentMedicine"
+            [showValidationSummary]="true"
+            validationGroup="medicineData"
+          >
+            <dxi-item
+              dataField="name"
+              [label]="{ text: 'Name' }"
+              editorType="dxTextBox"
+              [editorOptions]="{ disabled: true }"
+            >
+            </dxi-item>
+            <dxi-item
+              dataField="advice"
+              [label]="{ text: 'Advice' }"
+              editorType="dxTextBox"
+            >
+            </dxi-item>
+            <dxi-item
+              dataField="quantity"
+              [label]="{ text: 'Quantity' }"
+              editorType="dxNumberBox"
+            >
+              <dxi-validation-rule
+                type="required"
+                message="Quantity is required"
+              >
+              </dxi-validation-rule>
+              <dxi-validation-rule
+                type="range"
+                message="No less than 1 pill!"
+                [min]="1"
+              >
+              </dxi-validation-rule>
+            </dxi-item>
+            <dxi-item
+              dataField="brand"
+              [label]="{ text: 'Brand' }"
+              editorType="dxTextBox"
+              [editorOptions]="{ disabled: true }"
+            >
+            </dxi-item>
+            <dxi-item
+              dataField="effect"
+              [label]="{ text: 'Effect' }"
+              editorType="dxTextBox"
+              [editorOptions]="{ disabled: true }"
+            >
+            </dxi-item>
+            <dxi-item
+              itemType="group"
+              [colCount]="2"
+              [cssClass]="'buttonGroup'"
+            >
+              <dxi-item
+                itemType="button"
+                horizontalAlignment="center"
+                [buttonOptions]="submitMedicineButtonOptions"
+              >
+              </dxi-item>
+              <dxi-item
+                itemType="button"
+                horizontalAlignment="center"
+                [buttonOptions]="resetMedicineButtonOptions"
+              >
+              </dxi-item>
+            </dxi-item>
+          </dx-form>
+        </form>
+      </ng-container>
+    </dx-scroll-view>
+  </div>
+</dx-popup>
+<dx-popup
+  [width]="'50%'"
+  [height]="'70%'"
+  [showTitle]="true"
+  [shading]="true"
+  [title]="'Disease Detail'"
+  [dragEnabled]="true"
+  [closeOnOutsideClick]="false"
+  [showCloseButton]="true"
+  [(visible)]="isDiseasePopupVisible"
+  [position]="'center'"
+  [classList]="['popup']"
+>
+  <div *dxTemplate="let data of 'content'">
+    <dx-scroll-view
+      width="100%"
+      height="100%"
+      [bounceEnabled]="true"
+      [scrollByContent]="true"
+      [scrollByThumb]="true"
+    >
+      <ng-container *ngIf="addedDisease">
+        <form
+          id="form-container"
+          (submit)="onDiseaseSubmit($event)"
+          [classList]="['medicineForm']"
+        >
+          <dx-form
+            id="form"
+            [formData]="currentDisease"
+            [showValidationSummary]="true"
+            validationGroup="diseaseData"
+          >
+            <dxi-item
+              dataField="name"
+              [label]="{ text: 'Name' }"
+              editorType="dxTextBox"
+              [editorOptions]="{ disabled: true }"
+            >
+            </dxi-item>
+            <dxi-item
+              dataField="degree"
+              [label]="{ text: 'Severity' }"
+              editorType="dxSelectBox"
+              [editorOptions]="degree"
+            >
+              <dxi-validation-rule
+                type="required"
+                message="Severity is required"
+              >
+              </dxi-validation-rule>
+            </dxi-item>
+            <dxi-item
+              dataField="description"
+              [label]="{ text: 'Description' }"
+              editorType="dxTextBox"
+              [editorOptions]="{ disabled: true }"
+            >
+            </dxi-item>
+            <dxi-item
+              itemType="group"
+              [colCount]="2"
+              [cssClass]="'buttonGroup'"
+            >
+              <dxi-item
+                itemType="button"
+                horizontalAlignment="center"
+                [buttonOptions]="submitDiseaseButtonOptions"
+              >
+              </dxi-item>
+              <dxi-item
+                itemType="button"
+                horizontalAlignment="center"
+                [buttonOptions]="resetDiseaseButtonOptions"
+              >
+              </dxi-item>
+            </dxi-item>
+          </dx-form>
+        </form>
+      </ng-container>
+    </dx-scroll-view>
+  </div>
+</dx-popup>

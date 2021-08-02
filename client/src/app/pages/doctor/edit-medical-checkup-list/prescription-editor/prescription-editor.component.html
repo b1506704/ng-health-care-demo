@@ -1,171 +1,102 @@
-<dx-toolbar [ngStyle]="{ paddingLeft: '25px', paddingRight: '25px' }">
-  <dxi-item [location]="'before'" [text]="'Medical Checkups Management'">
-  </dxi-item>
-  <dxi-item location="after" locateInMenu="auto">
-    <dx-button
-      icon="arrowright"
-      type="outline"
-      text="Health Condition"
-      hint="Navigate to Room Monitor"
-      (onClick)="navigateToRoomMonitor()"
-    >
-    </dx-button>
-  </dxi-item>
-</dx-toolbar>
-<dx-box>
-  <dxi-item [ratio]="2">
-    <p
-      [ngClass]="{
-        'sortable-header-animation': isPendingDragging === true,
-        'sortable-header': isPendingDragging === false
-      }"
-    >
-      Pending
-    </p>
-    <dx-toolbar>
-      <dxi-item
-        widget="dxTextBox"
-        [options]="searchPendingBoxOptions"
-        location="center"
-        locateInMenu="auto"
-      >
-      </dxi-item>
-      <dxi-item
-        widget="dxButton"
-        [options]="refreshPendingButtonOptions"
-        location="center"
-        locateInMenu="auto"
-      >
-      </dxi-item>
-    </dx-toolbar>
-    <div id="kanban">
-      <dx-scroll-view
-        [direction]="'vertical'"
-        [pulledDownText]="'...Fetching'"
-        [showScrollbar]="true"
-        [reachBottomText]="'Loading...'"
-        [scrollByContent]="true"
-        [height]="'45vh'"
-        (onPullDown)="updatePendingTopContent($event)"
-        (onReachBottom)="updatePendingBottomContent($event)"
-        [scrollByThumb]="true"
-      >
-        <dx-sortable
-          class="sortable-cards"
-          group="cardsGroup"
-          (onDragStart)="onTaskDragPendingStart($event)"
-          (onDragEnd)="onDragPendingEnd($event)"
-          (onReorder)="onTaskPendingReorder($event)"
-          (onAdd)="onTaskPendingDrop($event)"
-          [data]="pendingList"
-        >
-          <div
-            class="card dx-card dx-theme-text-color dx-theme-background-color"
-            *ngFor="let item of pendingList"
-          >
-            <ng-container *ngIf="item">
-              <div
-                class="card-priority"
-                [ngClass]="'priority-' + item?.priority"
-              ></div>
-              <div class="card-subject">{{ item?.purpose }}</div>
-              <div class="card-assignee">
-                {{ item?.startDate | date: "fullDate" }}
-              </div>
-            </ng-container>
-          </div>
-        </dx-sortable>
-      </dx-scroll-view>
-    </div>
-  </dxi-item>
-  <dxi-item [ratio]="2">
-    <p
-      [ngClass]="{
-        'sortable-header-animation': isCompleteDragging === true,
-        'sortable-header': isCompleteDragging === false
-      }"
-    >
-      Complete
-    </p>
-    <dx-toolbar>
-      <dxi-item
-        widget="dxTextBox"
-        [options]="searchCompleteBoxOptions"
-        location="center"
-        locateInMenu="auto"
-      >
-      </dxi-item>
-      <dxi-item
-        widget="dxButton"
-        [options]="refreshCompleteButtonOptions"
-        location="center"
-        locateInMenu="auto"
-      >
-      </dxi-item>
-    </dx-toolbar>
-    <div id="kanban">
-      <dx-scroll-view
-        [direction]="'vertical'"
-        [pulledDownText]="'...Fetching'"
-        [showScrollbar]="true"
-        [reachBottomText]="'Loading...'"
-        [scrollByContent]="true"
-        [scrollByThumb]="true"
-        [height]="'45vh'"
-        (onPullDown)="updateCompleteTopContent($event)"
-        (onReachBottom)="updateCompleteBottomContent($event)"
-      >
-        <dx-sortable
-          class="sortable-cards"
-          group="cardsGroup"
-          (onDragStart)="onTaskDragCompleteStart($event)"
-          (onDragEnd)="onDragCompleteEnd($event)"
-          (onReorder)="onTaskCompleteReorder($event)"
-          (onAdd)="onTaskCompleteDrop($event)"
-          [data]="completeList"
-        >
-          <div
-            class="card dx-card dx-theme-text-color dx-theme-background-color"
-            *ngFor="let item of completeList"
-          >
-            <ng-container *ngIf="item">
-              <div
-                class="card-priority"
-                [ngClass]="'priority-' + item?.priority"
-              ></div>
-              <div class="card-subject">{{ item?.purpose }}</div>
-              <div class="card-assignee">
-                {{ item?.startDate | date: "fullDate" }}
-              </div>
-            </ng-container>
-          </div>
-        </dx-sortable>
-      </dx-scroll-view>
-    </div>
-  </dxi-item>
-  <dxi-item [ratio]="7">
-    <router-outlet></router-outlet>
-  </dxi-item>
-</dx-box>
-<dx-speed-dial-action
-  icon="like"
-  label="Request Checkup"
-  [index]="1"
-  (onClick)="resetValues()"
+<dx-sortable
+  filter=".dx-tab"
+  [data]="currentTabList"
+  itemOrientation="horizontal"
+  dragDirection="horizontal"
+  (onDragStart)="onTabDragStart($event)"
+  (onReorder)="onTabDrop($event)"
 >
-</dx-speed-dial-action>
-<dx-popup
-  [width]="'80%'"
-  [height]="'80%'"
-  [showTitle]="true"
-  [shading]="true"
-  [title]="'Illness Dianose'"
-  [dragEnabled]="true"
-  [closeOnOutsideClick]="false"
-  [showCloseButton]="true"
-  [(visible)]="isDiagnosePopupVisible"
-  [position]="'center'"
-  [classList]="['popup']"
->
-  <div *dxTemplate="let data of 'content'"></div>
-</dx-popup>
+  <dx-tab-panel
+    [dataSource]="currentTabList"
+    [height]="'70vh'"
+    [noDataText]="'No pending prescription'"
+    itemTitleTemplate="title"
+    itemTemplate="item"
+    [deferRendering]="false"
+    [showNavButtons]="true"
+    [repaintChangesOnly]="true"
+    [selectedIndex]="selectedIndex"
+  >
+    <div *dxTemplate="let content of 'title'">
+      <span>{{ content?.customerName }}</span
+      ><i
+        *ngIf="showCloseButton()"
+        class="dx-icon dx-icon-close"
+        (click)="closeButtonHandler(content)"
+      ></i>
+    </div>
+    <div *dxTemplate="let prescription of 'item'">
+      <dx-html-editor [height]="'100%'">
+        <dxo-toolbar [multiline]="false">
+          <dxi-item name="undo"></dxi-item>
+          <dxi-item name="redo"></dxi-item>
+          <dxi-item name="separator"></dxi-item>
+          <dxi-item
+            name="size"
+            [acceptedValues]="[
+              '8pt',
+              '10pt',
+              '12pt',
+              '14pt',
+              '18pt',
+              '24pt',
+              '36pt'
+            ]"
+          ></dxi-item>
+          <dxi-item
+            name="font"
+            [acceptedValues]="[
+              'hero',
+              'Courier New',
+              'Georgia',
+              'Impact',
+              'Lucida Console',
+              'Tahoma',
+              'Times New Roman',
+              'Verdana'
+            ]"
+          ></dxi-item>
+          <dxi-item name="separator"></dxi-item>
+          <dxi-item name="bold"></dxi-item>
+          <dxi-item name="italic"></dxi-item>
+          <dxi-item name="strike"></dxi-item>
+          <dxi-item name="underline"></dxi-item>
+          <dxi-item name="separator"></dxi-item>
+          <dxi-item name="alignLeft"></dxi-item>
+          <dxi-item name="alignCenter"></dxi-item>
+          <dxi-item name="alignRight"></dxi-item>
+          <dxi-item name="alignJustify"></dxi-item>
+          <dxi-item name="separator"></dxi-item>
+          <dxi-item name="orderedList"></dxi-item>
+          <dxi-item name="bulletList"></dxi-item>
+          <dxi-item name="separator"></dxi-item>
+          <dxi-item
+            name="header"
+            [acceptedValues]="[false, 1, 2, 3, 4, 5]"
+          ></dxi-item>
+          <dxi-item name="separator"></dxi-item>
+          <dxi-item name="color"></dxi-item>
+          <dxi-item name="background"></dxi-item>
+          <dxi-item name="separator"></dxi-item>
+          <dxi-item name="link"></dxi-item>
+          <dxi-item name="image"></dxi-item>
+          <dxi-item name="separator"></dxi-item>
+          <dxi-item name="clear"></dxi-item>
+          <dxi-item name="codeBlock"></dxi-item>
+          <dxi-item name="blockquote"></dxi-item>
+          <dxi-item name="separator"></dxi-item>
+          <dxi-item name="insertTable"></dxi-item>
+          <dxi-item name="deleteTable"></dxi-item>
+          <dxi-item name="insertRowAbove"></dxi-item>
+          <dxi-item name="insertRowBelow"></dxi-item>
+          <dxi-item name="deleteRow"></dxi-item>
+          <dxi-item name="insertColumnLeft"></dxi-item>
+          <dxi-item name="insertColumnRight"></dxi-item>
+          <dxi-item name="deleteColumn"></dxi-item>
+        </dxo-toolbar>
+        <dxo-media-resizing [enabled]="true"> </dxo-media-resizing>
+        <div [innerHTML]="prescription?.htmlMarkUp"></div>
+      </dx-html-editor>
+    </div>
+  </dx-tab-panel>
+</dx-sortable>
