@@ -61,7 +61,6 @@ export class MedicalCheckupComponent implements OnInit, OnDestroy {
   };
   pendingList: Array<MedicalCheckup>;
   completeList: Array<MedicalCheckup>;
-  colCountByScreen: Object;
   isCheckUpPopupVisible: boolean = false;
   checkUpDetail: MedicalCheckup;
   customerData: Customer;
@@ -357,10 +356,6 @@ export class MedicalCheckupComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.colCountByScreen = {
-      md: 4,
-      sm: 2,
-    };
     this.currentCheckupPendingPageListener();
     this.currentCheckupCompletePageListener();
     this.medicalCheckupStore
@@ -374,10 +369,6 @@ export class MedicalCheckupComponent implements OnInit, OnDestroy {
         this.completeCheckupDataListener();
       });
     this.getPatientID();
-  }
-
-  screen(width: any) {
-    return width < 720 ? 'sm' : 'md';
   }
 
   ngOnDestroy(): void {
