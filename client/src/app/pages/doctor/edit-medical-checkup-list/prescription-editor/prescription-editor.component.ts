@@ -1,4 +1,10 @@
 import { Component, Input, OnChanges, OnDestroy, OnInit } from '@angular/core';
+import jsPDF from 'jspdf';
+import pdfMake from 'pdfmake/build/pdfmake';
+import pdfFonts from 'pdfmake/build/vfs_fonts';
+pdfMake.vfs = pdfFonts.pdfMake.vfs;
+import htmlToPdfmake from 'html-to-pdfmake';
+
 import { Prescription } from 'src/app/shared/models/prescription';
 import { MedicalCheckupStore } from 'src/app/shared/services/medical-checkup/medical-checkup-store.service';
 import { PrescriptionStore } from 'src/app/shared/services/prescription/prescription-store.service';
@@ -24,6 +30,19 @@ export class PrescriptionEditorComponent
   selectedIndex: number = 0;
   prescriptionList: Array<Prescription> = [];
   currentTabList: Array<any> = [];
+  valueType: string = 'string';
+  saveButtonOptions: any = {
+    type: 'normal',
+    icon: 'save',
+    hint: 'Submit report',
+    onClick: this.updatePrescription.bind(this),
+  };
+  exportPDFButtonOptions: any = {
+    type: 'normal',
+    icon: 'exportpdf',
+    hint: 'Export to PDF',
+    onClick: this.exportPDF.bind(this),
+  };
 
   insertPrescription() {
     this.selectedIndex = this.currentTabList.length;
@@ -70,6 +89,39 @@ export class PrescriptionEditorComponent
     e.toData.splice(e.toIndex, 0, e.itemData);
   }
 
+  htmlEditorValueChanged(e: any) {
+    this.currentTabList[this.selectedIndex].htmlMarkUp = e;
+    console.log(this.currentTabList[this.selectedIndex].htmlMarkUp);
+  }
+
+  exportPDF() {
+    const doc = new jsPDF();
+    const html = htmlToPdfmake(
+      this.currentTabList[this.selectedIndex].htmlMarkUp
+    );
+    const documentDefinition = { content: html };
+    pdfMake
+      .createPdf(documentDefinition)
+      .download(`${this.currentTabList[this.selectedIndex].customerName}`);
+    console.log(html);
+    this.store.showNotif(
+      `Exported ${this.currentTabList[this.selectedIndex].customerName}.pdf`,
+      'custom'
+    );
+  }
+
+  updatePrescription() {
+    const currentID = this.currentTabList[this.selectedIndex]._id;
+    console.log('UPDATED PRESCRIPTION ID');
+    console.log(currentID);
+    this.prescriptionStore.updatePrescription(
+      this.currentTabList[this.selectedIndex],
+      currentID,
+      0,
+      this.pageSize
+    );
+  }
+
   prescriptionPageListener() {
     return this.prescriptionStore.$currentPage.subscribe((data: any) => {
       this.currentPrescriptionPage = data;
@@ -99,9 +151,6 @@ export class PrescriptionEditorComponent
     this.prescriptionPageListener();
     this.prescriptionStore.initInfiniteData(0, this.pageSize).then(() => {
       this.prescriptionDataListener();
-      // setTimeout(() => {
-      //   this.insertPrescription();
-      // }, 1500);
     });
   }
 
@@ -113,9 +162,7 @@ export class PrescriptionEditorComponent
         .getPrescriptionByMedicalCheckupID(this.selectedPrescription._id)
         .then(() => {
           this.prescriptionInstanceListener();
-          // setTimeout(() => {
           this.insertSelectedPrescription(this.currentPrescription);
-          // }, 1500);
         });
     }
   }

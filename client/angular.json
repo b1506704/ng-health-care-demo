@@ -54,6 +54,7 @@
             "allowedCommonJsDependencies": [
               "exceljs",
               "jspdf-autotable",
+              "pdfmake/build/pdfmake",
               "core-js-pure/features/array/from",
               "core-js-pure/features/array/is-array",
               "core-js-pure/features/object/create",

@@ -26,9 +26,11 @@
     "devextreme-schematics": "^1.2.16",
     "exceljs": "^4.2.1",
     "file-saver": "^2.0.5",
+    "html-to-pdfmake": "^2.3.2",
     "jspdf": "^2.3.1",
     "jspdf-autotable": "^3.5.15",
     "ngx-socket-io": "^4.1.0",
+    "pdfmake": "^0.2.2",
     "rxjs": "~6.6.0",
     "tslib": "^2.1.0",
     "zone.js": "~0.11.4"
@@ -36,7 +38,7 @@
   "devDependencies": {
     "@angular-devkit/build-angular": "~12.0.3",
     "@angular/cli": "~12.0.3",
-    "@angular/compiler-cli": "~12.0.3",
+    "@angular/compiler-cli": "~12.0.3",    
     "@types/jasmine": "~3.6.0",
     "@types/node": "^12.11.1",
     "devextreme-cli": "latest",

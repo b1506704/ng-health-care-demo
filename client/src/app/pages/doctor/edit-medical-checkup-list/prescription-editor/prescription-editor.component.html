@@ -15,7 +15,7 @@
     [deferRendering]="false"
     [showNavButtons]="true"
     [repaintChangesOnly]="true"
-    [selectedIndex]="selectedIndex"
+    [(selectedIndex)]="selectedIndex"
   >
     <div *dxTemplate="let content of 'title'">
       <span>{{ content?.customerName }}</span
@@ -26,10 +26,19 @@
       ></i>
     </div>
     <div *dxTemplate="let prescription of 'item'">
-      <dx-html-editor [height]="'100%'">
+      <dx-html-editor
+        [height]="'100%'"
+        (valueType)="valueType"
+        (valueChange)="htmlEditorValueChanged($event)"
+      >
         <dxo-toolbar [multiline]="false">
           <dxi-item name="undo"></dxi-item>
           <dxi-item name="redo"></dxi-item>
+          <dxi-item widget="dxButton" [options]="saveButtonOptions"></dxi-item>
+          <dxi-item
+            widget="dxButton"
+            [options]="exportPDFButtonOptions"
+          ></dxi-item>
           <dxi-item name="separator"></dxi-item>
           <dxi-item
             name="size"
@@ -43,10 +52,9 @@
               '36pt'
             ]"
           ></dxi-item>
-          <dxi-item
+          <!-- <dxi-item
             name="font"
-            [acceptedValues]="[
-              'hero',
+            [acceptedValues]="[              
               'Courier New',
               'Georgia',
               'Impact',
@@ -55,7 +63,7 @@
               'Times New Roman',
               'Verdana'
             ]"
-          ></dxi-item>
+          ></dxi-item> -->
           <dxi-item name="separator"></dxi-item>
           <dxi-item name="bold"></dxi-item>
           <dxi-item name="italic"></dxi-item>
