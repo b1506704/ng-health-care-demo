@@ -116,14 +116,30 @@
               <div class="card-assignee">
                 {{ item?.startDate | date: "fullDate" }}
               </div>
+              <dx-toolbar >
+                <dxi-item location="center">
+                  <dx-button
+                    icon="edit"
+                    type="normal"
+                    text="Edit"
+                    hint="Edit prescription report"
+                    (onClick)="selectPrescription(item)"
+                  >
+                  </dx-button>
+                </dxi-item>
+              </dx-toolbar>
             </ng-container>
           </div>
         </dx-sortable>
       </dx-scroll-view>
     </div>
   </dxi-item>
-  <dxi-item [ratio]="7">
-    <router-outlet></router-outlet>
+  <dxi-item [ratio]="8" [classList]="['box-shadow']">
+    <div class="box-container">
+      <app-prescription-view
+        [selectedPrescription]="selectedPrescription"
+      ></app-prescription-view>
+    </div>
   </dxi-item>
 </dx-box>
 <dx-speed-dial-action

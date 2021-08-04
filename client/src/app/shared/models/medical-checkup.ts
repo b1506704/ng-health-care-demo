@@ -1,6 +1,6 @@
 export interface MedicalCheckup {
   doctorID: String;
-  customerID: String;
+  customerID: string;
   customerName: String;
   priority: Number;
   healthInsurance: String;

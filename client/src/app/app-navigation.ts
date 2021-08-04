@@ -5,11 +5,6 @@ export const navigationCustomer = [
     icon: 'home',
   },
   {
-    text: 'Bill',
-    path: '/bill_list',
-    icon: 'cart',
-  },
-  {
     text: 'Help Center',
     icon: 'help',
     items: [
@@ -39,10 +34,6 @@ export const navigationCustomer = [
       {
         text: 'Medical Checkup',
         path: '/medical_checkup',
-      },
-      {
-        text: 'Prescription',
-        path: '/prescription_list',
       },
     ],
   },
@@ -78,10 +69,6 @@ export const navigationDoctor = [
       {
         text: 'Edit Medical Checkup',
         path: '/edit_medical_checkup_list',
-      },
-      {
-        text: 'Edit Prescription',
-        path: '/edit_prescription_list',
       },
     ],
   },

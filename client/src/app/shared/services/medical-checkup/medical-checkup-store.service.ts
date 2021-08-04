@@ -162,7 +162,7 @@ export class MedicalCheckupStore extends StateService<MedicalCheckupState> {
             pendingCheckupList: this.fillEmpty(
               page,
               size,
-              this.state.medicalCheckupList,
+              this.state.pendingCheckupList,
               data.items
             ),
           });
@@ -182,7 +182,142 @@ export class MedicalCheckupStore extends StateService<MedicalCheckupState> {
         },
       });
   }
+  //
+  initPendingInfiniteDataByCustomerID(
+    page: number,
+    size: number,
+    customerID: string
+  ) {
+    return this.medicalCheckupService
+      .fetchPendingMedicalCheckupByCustomerID(page, size, customerID)
+      .toPromise()
+      .then((data: any) => {
+        if (page === 0) {
+          this.setState({
+            pendingCheckupList: new Array<MedicalCheckup>(size),
+          });
+        } else {
+          this.setState({
+            pendingCheckupList: new Array<MedicalCheckup>(page * size),
+          });
+        }
+        console.log('Current flag: infite list');
+        console.log(this.state.pendingCheckupList);
+        this.setState({ totalCheckupPendingItems: data.totalItems });
+        this.setState({ totalCheckupPendingPages: data.totalPages });
+        this.setState({ currentCheckupPendingPage: data.currentPage });
+      })
+      .then(() => {
+        this.loadPendingDataAsyncByCustomerID(page, size, customerID);
+      });
+  }
 
+  loadPendingInfiniteDataAsyncByCustomerID(
+    page: number,
+    size: number,
+    customerID: string
+  ) {
+    this.setIsLoading(true);
+    this.medicalCheckupService
+      .fetchPendingMedicalCheckupByCustomerID(page, size, customerID)
+      .subscribe({
+        next: (data: any) => {
+          this.setState({
+            pendingCheckupList: this.state.pendingCheckupList.concat(
+              data.items
+            ),
+          });
+          console.log('Infinite list');
+          console.log(this.state.pendingCheckupList);
+          console.log('Server response');
+          console.log(data);
+          this.setState({ totalCheckupPendingItems: data.totalItems });
+          this.setState({ totalCheckupPendingPages: data.totalPages });
+          this.setState({ currentCheckupPendingPage: data.currentPage });
+          this.setIsLoading(false);
+        },
+        error: (data: any) => {
+          this.setIsLoading(false);
+          this.store.showNotif(data.error.errorMessage, 'error');
+          console.log(data);
+        },
+      });
+  }
+
+  initPendingInfiniteSearchByNameDataByCustomerID(
+    value: string,
+    page: number,
+    size: number,
+    customerID: string
+  ) {
+    this.store.showNotif('Searched Mode On', 'custom');
+    this.medicalCheckupService
+      .searchPendingMedicalCheckupByNameByCustomerID(
+        value,
+        page,
+        size,
+        customerID
+      )
+      .toPromise()
+      .then((data: any) => {
+        if (data.totalItems !== 0) {
+          this.setState({
+            pendingCheckupList: new Array<MedicalCheckup>(size),
+          });
+        } else {
+          this.store.showNotif('No result found!', 'custom');
+        }
+        console.log('Current flag: infitite searched list');
+        console.log(this.state.pendingCheckupList);
+        this.setState({ totalCheckupPendingItems: data.totalItems });
+        this.setState({ totalCheckupPendingPages: data.totalPages });
+        this.setState({ currentCheckupPendingPage: data.currentPage });
+      })
+      .then(() => {
+        this.searchPendingMedicalCheckupByNameAndCustomerID(
+          value,
+          page,
+          size,
+          customerID
+        );
+      });
+  }
+
+  loadPendingDataAsyncByCustomerID(
+    page: number,
+    size: number,
+    customerID: string
+  ) {
+    this.setIsLoading(true);
+    this.medicalCheckupService
+      .fetchPendingMedicalCheckupByCustomerID(page, size, customerID)
+      .subscribe({
+        next: (data: any) => {
+          this.setState({
+            pendingCheckupList: this.fillEmpty(
+              page,
+              size,
+              this.state.pendingCheckupList,
+              data.items
+            ),
+          });
+          console.log('Pure list');
+          console.log(this.state.pendingCheckupList);
+          console.log('Server response');
+          console.log(data);
+          this.setState({ totalCheckupPendingItems: data.totalItems });
+          this.setState({ totalCheckupPendingPages: data.totalPages });
+          this.setState({ currentCheckupPendingPage: data.currentPage });
+          this.setIsLoading(false);
+        },
+        error: (data: any) => {
+          this.setIsLoading(false);
+          this.store.showNotif(data.error.errorMessage, 'error');
+          console.log(data);
+        },
+      });
+  }
+  //
   initCompleteInfiniteData(page: number, size: number) {
     return this.medicalCheckupService
       .fetchCompleteMedicalCheckup(page, size)
@@ -295,6 +430,141 @@ export class MedicalCheckupStore extends StateService<MedicalCheckupState> {
       });
   }
 
+  initCompleteInfiniteDataByCustomerID(
+    page: number,
+    size: number,
+    customerID: string
+  ) {
+    return this.medicalCheckupService
+      .fetchCompleteMedicalCheckupByCustomerID(page, size, customerID)
+      .toPromise()
+      .then((data: any) => {
+        if (page === 0) {
+          this.setState({
+            completeCheckupList: new Array<MedicalCheckup>(size),
+          });
+        } else {
+          this.setState({
+            completeCheckupList: new Array<MedicalCheckup>(page * size),
+          });
+        }
+        console.log('Current flag: infite list');
+        console.log(this.state.completeCheckupList);
+        this.setState({ totalCheckupCompleteItems: data.totalItems });
+        this.setState({ totalCheckupCompletePages: data.totalPages });
+        this.setState({ currentCheckupCompletePage: data.currentPage });
+      })
+      .then(() => {
+        this.loadCompleteDataAsyncByCustomerID(page, size, customerID);
+      });
+  }
+
+  loadCompleteInfiniteDataAsyncByCustomerID(
+    page: number,
+    size: number,
+    customerID: string
+  ) {
+    this.setIsLoading(true);
+    this.medicalCheckupService
+      .fetchCompleteMedicalCheckupByCustomerID(page, size, customerID)
+      .subscribe({
+        next: (data: any) => {
+          this.setState({
+            completeCheckupList: this.state.completeCheckupList.concat(
+              data.items
+            ),
+          });
+          console.log('Infinite list');
+          console.log(this.state.completeCheckupList);
+          console.log('Server response');
+          console.log(data);
+          this.setState({ totalCheckupCompleteItems: data.totalItems });
+          this.setState({ totalCheckupCompletePages: data.totalPages });
+          this.setState({ currentCheckupCompletePage: data.currentPage });
+          this.setIsLoading(false);
+        },
+        error: (data: any) => {
+          this.setIsLoading(false);
+          this.store.showNotif(data.error.errorMessage, 'error');
+          console.log(data);
+        },
+      });
+  }
+
+  initCompleteInfiniteSearchByNameDataByCustomerID(
+    value: string,
+    page: number,
+    size: number,
+    customerID: string
+  ) {
+    this.store.showNotif('Searched Mode On', 'custom');
+    this.medicalCheckupService
+      .searchCompleteMedicalCheckupByNameByCustomerID(
+        value,
+        page,
+        size,
+        customerID
+      )
+      .toPromise()
+      .then((data: any) => {
+        if (data.totalItems !== 0) {
+          this.setState({
+            completeCheckupList: new Array<MedicalCheckup>(size),
+          });
+        } else {
+          this.store.showNotif('No result found!', 'custom');
+        }
+        console.log('Current flag: infitite searched list');
+        console.log(this.state.completeCheckupList);
+        this.setState({ totalCheckupCompleteItems: data.totalItems });
+        this.setState({ totalCheckupCompletePages: data.totalPages });
+        this.setState({ currentCheckupCompletePage: data.currentPage });
+      })
+      .then(() => {
+        this.searchCompleteMedicalCheckupByNameAndCustomerID(
+          value,
+          page,
+          size,
+          customerID
+        );
+      });
+  }
+
+  loadCompleteDataAsyncByCustomerID(
+    page: number,
+    size: number,
+    customerID: string
+  ) {
+    this.setIsLoading(true);
+    this.medicalCheckupService
+      .fetchCompleteMedicalCheckupByCustomerID(page, size, customerID)
+      .subscribe({
+        next: (data: any) => {
+          this.setState({
+            completeCheckupList: this.fillEmpty(
+              page,
+              size,
+              this.state.completeCheckupList,
+              data.items
+            ),
+          });
+          console.log('Pure list');
+          console.log(this.state.completeCheckupList);
+          console.log('Server response');
+          console.log(data);
+          this.setState({ totalCheckupCompleteItems: data.totalItems });
+          this.setState({ totalCheckupCompletePages: data.totalPages });
+          this.setState({ currentCheckupCompletePage: data.currentPage });
+          this.setIsLoading(false);
+        },
+        error: (data: any) => {
+          this.setIsLoading(false);
+          this.store.showNotif(data.error.errorMessage, 'error');
+          console.log(data);
+        },
+      });
+  }
+  //
   setIsLoading(_isLoading: Boolean) {
     this.store.setIsLoading(_isLoading);
   }
@@ -350,7 +620,8 @@ export class MedicalCheckupStore extends StateService<MedicalCheckupState> {
   uploadMedicalCheckup(
     medicalCheckup: MedicalCheckup,
     page: number,
-    size: number
+    size: number,
+    customerID: string
   ) {
     this.confirmDialog('').then((confirm: boolean) => {
       if (confirm) {
@@ -364,7 +635,7 @@ export class MedicalCheckupStore extends StateService<MedicalCheckupState> {
                 this.state.totalCheckupPendingItems + 1
               );
               console.log(data);
-              this.initPendingInfiniteData(page, size);
+              this.initPendingInfiniteDataByCustomerID(page, size, customerID);
               this.setIsLoading(false);
               this.store.showNotif(data.message, 'custom');
             },
@@ -512,7 +783,94 @@ export class MedicalCheckupStore extends StateService<MedicalCheckupState> {
         },
       });
   }
+  //
+  searchPendingMedicalCheckupByNameAndCustomerID(
+    value: string,
+    page: number,
+    size: number,
+    customerID: string
+  ) {
+    this.setIsLoading(true);
+    this.medicalCheckupService
+      .searchPendingMedicalCheckupByNameByCustomerID(
+        value,
+        page,
+        size,
+        customerID
+      )
+      .subscribe({
+        next: (data: any) => {
+          if (data.totalItems !== 0) {
+            this.setState({
+              pendingCheckupList: this.fillEmpty(
+                page,
+                size,
+                this.state.pendingCheckupList,
+                data.items
+              ),
+            });
+          } else {
+            this.store.showNotif('No result found!', 'custom');
+          }
+          console.log('Searched list');
+          console.log(this.state.medicalCheckupList);
+          console.log('Server response');
+          console.log(data);
+          this.setState({ totalCheckupPendingItems: data.totalItems });
+          this.setState({ totalCheckupPendingPages: data.totalPages });
+          this.setState({ currentCheckupPendingPage: data.currentPage });
+          this.setIsLoading(false);
+        },
+        error: (data: any) => {
+          this.setIsLoading(false);
+          this.store.showNotif(data.error.errorMessage, 'error');
+          console.log(data);
+        },
+      });
+  }
 
+  searchPendingInfiniteMedicalCheckupByNameAndCustomerID(
+    value: string,
+    page: number,
+    size: number,
+    customerID: string
+  ) {
+    this.setIsLoading(true);
+    this.medicalCheckupService
+      .searchPendingMedicalCheckupByNameByCustomerID(
+        value,
+        page,
+        size,
+        customerID
+      )
+      .subscribe({
+        next: (data: any) => {
+          if (data.totalItems !== 0) {
+            this.setState({
+              pendingCheckupList: this.state.pendingCheckupList.concat(
+                data.items
+              ),
+            });
+          } else {
+            this.store.showNotif('No result found!', 'custome');
+          }
+          console.log('Infite searched list');
+          console.log(this.state.pendingCheckupList);
+          console.log('Server response');
+          console.log(data);
+          this.setState({ totalCheckupPendingItems: data.totalItems });
+          this.setState({ totalCheckupPendingPages: data.totalPages });
+          this.setState({ currentCheckupPendingPage: data.currentPage });
+          this.setIsLoading(false);
+        },
+        error: (data: any) => {
+          this.setIsLoading(false);
+          this.store.showNotif(data.error.errorMessage, 'error');
+          console.log(data);
+        },
+      });
+  }
+  //
   searchCompleteMedicalCheckupByName(
     value: string,
     page: number,
@@ -587,7 +945,94 @@ export class MedicalCheckupStore extends StateService<MedicalCheckupState> {
         },
       });
   }
+  //
+  searchCompleteMedicalCheckupByNameAndCustomerID(
+    value: string,
+    page: number,
+    size: number,
+    customerID: string
+  ) {
+    this.setIsLoading(true);
+    this.medicalCheckupService
+      .searchCompleteMedicalCheckupByNameByCustomerID(
+        value,
+        page,
+        size,
+        customerID
+      )
+      .subscribe({
+        next: (data: any) => {
+          if (data.totalItems !== 0) {
+            this.setState({
+              completeCheckupList: this.fillEmpty(
+                page,
+                size,
+                this.state.completeCheckupList,
+                data.items
+              ),
+            });
+          } else {
+            this.store.showNotif('No result found!', 'custom');
+          }
+          console.log('Searched list');
+          console.log(this.state.medicalCheckupList);
+          console.log('Server response');
+          console.log(data);
+          this.setState({ totalCheckupCompleteItems: data.totalItems });
+          this.setState({ totalCheckupCompletePages: data.totalPages });
+          this.setState({ currentCheckupCompletePage: data.currentPage });
+          this.setIsLoading(false);
+        },
+        error: (data: any) => {
+          this.setIsLoading(false);
+          this.store.showNotif(data.error.errorMessage, 'error');
+          console.log(data);
+        },
+      });
+  }
 
+  searchCompleteInfiniteMedicalCheckupByNameAndCustomerID(
+    value: string,
+    page: number,
+    size: number,
+    customerID: string
+  ) {
+    this.setIsLoading(true);
+    this.medicalCheckupService
+      .searchCompleteMedicalCheckupByNameByCustomerID(
+        value,
+        page,
+        size,
+        customerID
+      )
+      .subscribe({
+        next: (data: any) => {
+          if (data.totalItems !== 0) {
+            this.setState({
+              completeCheckupList: this.state.completeCheckupList.concat(
+                data.items
+              ),
+            });
+          } else {
+            this.store.showNotif('No result found!', 'custome');
+          }
+          console.log('Infite searched list');
+          console.log(this.state.completeCheckupList);
+          console.log('Server response');
+          console.log(data);
+          this.setState({ totalCheckupCompleteItems: data.totalItems });
+          this.setState({ totalCheckupCompletePages: data.totalPages });
+          this.setState({ currentCheckupCompletePage: data.currentPage });
+          this.setIsLoading(false);
+        },
+        error: (data: any) => {
+          this.setIsLoading(false);
+          this.store.showNotif(data.error.errorMessage, 'error');
+          console.log(data);
+        },
+      });
+  }
+  //
   setIsPrescriptionDone(isDone: boolean) {
     this.setState({ isPrescriptionDone: isDone });
   }

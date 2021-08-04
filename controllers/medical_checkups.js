@@ -2,7 +2,6 @@ import express from "express";
 
 import MedicalCheckup from "../models/medical_checkup.js";
 import getPagination from "../middleware/getPagination.js";
-import Prescription from "../models/prescription.js";
 const router = express.Router();
 
 export const getPendingMedicalCheckups = (req, res) => {
@@ -16,7 +15,49 @@ export const getPendingMedicalCheckups = (req, res) => {
       offset: offset,
       limit: limit,
     };
-    MedicalCheckup.paginate({status: 'pending'}, options)
+    MedicalCheckup.paginate({ status: "pending" }, options)
+      .then((data) => {
+        res.status(200).json({
+          totalItems: data.totalDocs,
+          items: data.docs,
+          totalPages: data.totalPages,
+          currentPage: data.page - 1,
+          nextPage: data.nextPage,
+          prevPage: data.prevPage,
+        });
+      })
+      .catch((error) => {
+        res.status(404).json({ errorMessage: error.message });
+      });
+  } catch (error) {
+    res.status(404).json({ errorMessage: "Failed to get data!" });
+  }
+};
+
+export const getPendingMedicalCheckupsByCustomerID = (req, res) => {
+  const { page, size, customerID } = req.query;
+  console.log(`Page: ${page}  Size: ${size}`);
+  try {
+    const { limit, offset } = getPagination(page, size);
+    console.log(`Limit: ${limit}  Offset: ${offset}`);
+    const options = {
+      sort: { createdAt: "desc" },
+      offset: offset,
+      limit: limit,
+    };
+    MedicalCheckup.paginate(
+      {
+        $and: [
+          {
+            status: "pending",
+          },
+          {
+            customerID: customerID,
+          },
+        ],
+      },
+      options
+    )
       .then((data) => {
         res.status(200).json({
           totalItems: data.totalDocs,
@@ -46,7 +87,49 @@ export const getCompleteMedicalCheckups = (req, res) => {
       offset: offset,
       limit: limit,
     };
-    MedicalCheckup.paginate({status: 'complete'}, options)
+    MedicalCheckup.paginate({ status: "complete" }, options)
+      .then((data) => {
+        res.status(200).json({
+          totalItems: data.totalDocs,
+          items: data.docs,
+          totalPages: data.totalPages,
+          currentPage: data.page - 1,
+          nextPage: data.nextPage,
+          prevPage: data.prevPage,
+        });
+      })
+      .catch((error) => {
+        res.status(404).json({ errorMessage: error.message });
+      });
+  } catch (error) {
+    res.status(404).json({ errorMessage: "Failed to get data!" });
+  }
+};
+
+export const getCompleteMedicalCheckupsByCustomerID = (req, res) => {
+  const { page, size, customerID } = req.query;
+  console.log(`Page: ${page}  Size: ${size}`);
+  try {
+    const { limit, offset } = getPagination(page, size);
+    console.log(`Limit: ${limit}  Offset: ${offset}`);
+    const options = {
+      sort: { createdAt: "desc" },
+      offset: offset,
+      limit: limit,
+    };
+    MedicalCheckup.paginate(
+      {
+        $and: [
+          {
+            status: "complete",
+          },
+          {
+            customerID: customerID,
+          },
+        ],
+      },
+      options
+    )
       .then((data) => {
         res.status(200).json({
           totalItems: data.totalDocs,
@@ -220,12 +303,55 @@ export const searchPendingMedicalCheckupByName = (req, res) => {
     const query = {
       $and: [
         {
-          status: 'pending'
+          status: "pending",
         },
         {
-          purpose: { $regex: value, $options: "i" }
-        }
-      ]
+          purpose: { $regex: value, $options: "i" },
+        },
+      ],
+    };
+    const options = {
+      sort: { createdAt: "desc" },
+      offset: offset,
+      limit: limit,
+    };
+    MedicalCheckup.paginate(query, options)
+      .then((data) => {
+        res.status(200).json({
+          totalItems: data.totalDocs,
+          items: data.docs,
+          totalPages: data.totalPages,
+          currentPage: data.page - 1,
+          nextPage: data.nextPage,
+          prevPage: data.prevPage,
+        });
+      })
+      .catch((error) => {
+        res.status(404).json({ errorMessage: error.message });
+      });
+  } catch (error) {
+    res.status(404).json({ errorMessage: "Failed to get data!" });
+  }
+};
+
+export const searchPendingMedicalCheckupByNameAndCustomerID = (req, res) => {
+  const { value, page, size, customerID } = req.query;
+  console.log(`Page: ${page}  Size: ${size}. Value: ${value}`);
+  try {
+    const { limit, offset } = getPagination(page, size);
+    console.log(`Limit: ${limit}  Offset: ${offset}`);
+    const query = {
+      $and: [
+        {
+          customerID: customerID,
+        },
+        {
+          status: "pending",
+        },
+        {
+          purpose: { $regex: value, $options: "i" },
+        },
+      ],
     };
     const options = {
       sort: { createdAt: "desc" },
@@ -260,12 +386,55 @@ export const searchCompleteMedicalCheckupByName = (req, res) => {
     const query = {
       $and: [
         {
-          status: 'complete'
+          status: "complete",
         },
         {
-          purpose: { $regex: value, $options: "i" }
-        }
-      ]
+          purpose: { $regex: value, $options: "i" },
+        },
+      ],
+    };
+    const options = {
+      sort: { createdAt: "desc" },
+      offset: offset,
+      limit: limit,
+    };
+    MedicalCheckup.paginate(query, options)
+      .then((data) => {
+        res.status(200).json({
+          totalItems: data.totalDocs,
+          items: data.docs,
+          totalPages: data.totalPages,
+          currentPage: data.page - 1,
+          nextPage: data.nextPage,
+          prevPage: data.prevPage,
+        });
+      })
+      .catch((error) => {
+        res.status(404).json({ errorMessage: error.message });
+      });
+  } catch (error) {
+    res.status(404).json({ errorMessage: "Failed to get data!" });
+  }
+};
+
+export const searchCompleteMedicalCheckupByNameAndCustomerID = (req, res) => {
+  const { value, page, size, customerID } = req.query;
+  console.log(`Page: ${page}  Size: ${size}. Value: ${value}`);
+  try {
+    const { limit, offset } = getPagination(page, size);
+    console.log(`Limit: ${limit}  Offset: ${offset}`);
+    const query = {
+      $and: [
+        {
+          customerID: customerID,
+        },
+        {
+          status: "complete",
+        },
+        {
+          purpose: { $regex: value, $options: "i" },
+        },
+      ],
     };
     const options = {
       sort: { createdAt: "desc" },

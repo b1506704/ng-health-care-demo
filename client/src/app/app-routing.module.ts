@@ -12,14 +12,6 @@ const routes: Routes = [
       ),
   },
   {
-    path: 'bill_list',
-    loadChildren: () =>
-      import('./pages/customer/bill-list/bill-list.module').then(
-        (m) => m.BillListModule
-      ),
-    canActivate: [AuthGuardService],
-  },
-  {
     path: 'doctor_list',
     loadChildren: () =>
       import('./pages/customer/doctor-list/doctor-list.module').then(
@@ -55,14 +47,6 @@ const routes: Routes = [
       import('./pages/customer/schedule-list/schedule-list.module').then(
         (m) => m.ScheduleListModule
       ),
-    canActivate: [AuthGuardService],
-  },
-  {
-    path: 'prescription_list',
-    loadChildren: () =>
-      import(
-        './pages/customer/prescription-list/prescription-list.module'
-      ).then((m) => m.PrescriptionListModule),
     canActivate: [AuthGuardService],
   },
   // doctor route
@@ -111,14 +95,6 @@ const routes: Routes = [
       import(
         './pages/doctor/edit-medical-checkup-list/edit-medical-checkup-list.module'
       ).then((m) => m.EditMedicalCheckupListModule),
-    canActivate: [AuthGuardService],
-  },
-  {
-    path: 'edit_prescription_list',
-    loadChildren: () =>
-      import(
-        './pages/doctor/edit-prescription-list/edit-prescription-list.module'
-      ).then((m) => m.EditPrescriptionListModule),
     canActivate: [AuthGuardService],
   },
   {

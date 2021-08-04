@@ -8,17 +8,24 @@ import { MedicalCheckup } from '../../models/medical-checkup';
 })
 export class MedicalCheckupHttpService {
   constructor(private http: HttpClient) {}
-  apiMedicalCheckupUrl = 'https://ng-health-care-demo.herokuapp.com/medicalCheckups';
+  apiMedicalCheckupUrl =
+    'https://ng-health-care-demo.herokuapp.com/medicalCheckups';
   // apiMedicalCheckupUrl = 'http://localhost/medicalCheckups';
 
-  fetchPendingMedicalCheckup(page: number, size: number): Observable<MedicalCheckup> {
+  fetchPendingMedicalCheckup(
+    page: number,
+    size: number
+  ): Observable<MedicalCheckup> {
     const params = new HttpParams().set('page', page).set('size', size);
     console.log(params.toString());
-    return this.http.get<MedicalCheckup>(this.apiMedicalCheckupUrl + "/pending", {
-      params: params,
-      reportProgress: true,
-      observe: 'body',
-    });
+    return this.http.get<MedicalCheckup>(
+      this.apiMedicalCheckupUrl + '/pending',
+      {
+        params: params,
+        reportProgress: true,
+        observe: 'body',
+      }
+    );
   }
 
   searchPendingMedicalCheckupByName(
@@ -42,14 +49,63 @@ export class MedicalCheckupHttpService {
     );
   }
 
-  fetchCompleteMedicalCheckup(page: number, size: number): Observable<MedicalCheckup> {
+  fetchPendingMedicalCheckupByCustomerID(
+    page: number,
+    size: number,
+    customerID: string
+  ): Observable<MedicalCheckup> {
+    const params = new HttpParams()
+      .set('page', page)
+      .set('size', size)
+      .set('customerID', customerID);
+    console.log(params.toString());
+    return this.http.get<MedicalCheckup>(
+      this.apiMedicalCheckupUrl + '/pendingByCustomerID',
+      {
+        params: params,
+        reportProgress: true,
+        observe: 'body',
+      }
+    );
+  }
+
+  searchPendingMedicalCheckupByNameByCustomerID(
+    value: string,
+    page: number,
+    size: number,
+    customerID: string
+  ): Observable<MedicalCheckup> {
+    const params = new HttpParams()
+      .set('value', value)
+      .set('page', page)
+      .set('size', size)
+      .set('customerID', customerID);
+    console.log(params.toString());
+    return this.http.post<MedicalCheckup>(
+      this.apiMedicalCheckupUrl + '/pending/searchByNameAndCustomerID',
+      {},
+      {
+        params: params,
+        reportProgress: true,
+        observe: 'body',
+      }
+    );
+  }
+
+  fetchCompleteMedicalCheckup(
+    page: number,
+    size: number
+  ): Observable<MedicalCheckup> {
     const params = new HttpParams().set('page', page).set('size', size);
     console.log(params.toString());
-    return this.http.get<MedicalCheckup>(this.apiMedicalCheckupUrl + "/complete", {
-      params: params,
-      reportProgress: true,
-      observe: 'body',
-    });
+    return this.http.get<MedicalCheckup>(
+      this.apiMedicalCheckupUrl + '/complete',
+      {
+        params: params,
+        reportProgress: true,
+        observe: 'body',
+      }
+    );
   }
 
   searchCompleteMedicalCheckupByName(
@@ -64,6 +120,49 @@ export class MedicalCheckupHttpService {
     console.log(params.toString());
     return this.http.post<MedicalCheckup>(
       this.apiMedicalCheckupUrl + '/complete/searchByName',
+      {},
+      {
+        params: params,
+        reportProgress: true,
+        observe: 'body',
+      }
+    );
+  }
+
+  fetchCompleteMedicalCheckupByCustomerID(
+    page: number,
+    size: number,
+    customerID: string
+  ): Observable<MedicalCheckup> {
+    const params = new HttpParams()
+      .set('page', page)
+      .set('size', size)
+      .set('customerID', customerID);
+    console.log(params.toString());
+    return this.http.get<MedicalCheckup>(
+      this.apiMedicalCheckupUrl + '/completeByCustomerID',
+      {
+        params: params,
+        reportProgress: true,
+        observe: 'body',
+      }
+    );
+  }
+
+  searchCompleteMedicalCheckupByNameByCustomerID(
+    value: string,
+    page: number,
+    size: number,
+    customerID: string
+  ): Observable<MedicalCheckup> {
+    const params = new HttpParams()
+      .set('value', value)
+      .set('page', page)
+      .set('size', size)
+      .set('customerID', customerID);
+    console.log(params.toString());
+    return this.http.post<MedicalCheckup>(
+      this.apiMedicalCheckupUrl + '/complete/searchByNameAndCustomerID',
       {},
       {
         params: params,
@@ -122,7 +221,9 @@ export class MedicalCheckupHttpService {
     });
   }
 
-  getMedicalCheckupByCustomerID(customerID: string): Observable<MedicalCheckup> {
+  getMedicalCheckupByCustomerID(
+    customerID: string
+  ): Observable<MedicalCheckup> {
     const params = new HttpParams().set('customerID', customerID);
     console.log(params.toString());
     return this.http.post<MedicalCheckup>(

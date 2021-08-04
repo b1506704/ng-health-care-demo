@@ -67,19 +67,6 @@ export class EditMedicalCheckupListComponent implements OnInit, OnDestroy {
   isDiagnosePopupVisible: boolean = false;
   checkUpDetail: any;
   doctorData: Doctor;
-  submitButtonOptions: any = {
-    text: 'Submit',
-    type: 'normal',
-    useSubmitBehavior: true,
-  };
-  resetButtonOptions: any = {
-    text: 'Clear',
-    type: 'normal',
-    useSubmitBehavior: false,
-    onClick: () => {
-      this.resetValues();
-    },
-  };
 
   selectPrescription(prescription: any) {
     this.selectedPrescription = prescription;
@@ -303,10 +290,6 @@ export class EditMedicalCheckupListComponent implements OnInit, OnDestroy {
   onDragCompleteEnd(e: any) {
     this.isCompleteDragging = false;
     this.store.setIsLoading(false);
-  }
-
-  resetValues() {
-    //
   }
 
   getDoctorID() {
