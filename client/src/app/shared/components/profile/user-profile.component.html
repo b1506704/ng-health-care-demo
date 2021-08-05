@@ -1,0 +1,363 @@
+<form
+  id="form-container"
+  (submit)="onSubmit($event)"
+  [classList]="['signupForm']"
+>
+  <div class="long-title">
+    <h3>Profile Detail</h3>
+  </div>
+  <dx-form
+    id="form"
+    [formData]="user"
+    [showValidationSummary]="true"
+    validationGroup="userData"
+    (onContentReady)="onFormShown($event)"
+  >
+    <dxi-item itemType="group">
+      <dxi-item itemType="group" caption="Account Information">
+        <dxi-item
+          dataField="userName"
+          [label]="{ text: 'Username' }"
+          editorType="dxTextBox"
+          [editorOptions]="{ disabled: true }"
+        >
+        </dxi-item>
+        <dxi-item
+          dataField="passWord"
+          [label]="{ text: 'Password' }"
+          editorType="dxTextBox"
+          [editorOptions]="{ mode: 'password' }"
+        >
+          <dxi-validation-rule type="required" message="Password is required">
+          </dxi-validation-rule>
+          <dxi-validation-rule
+            type="stringLength"
+            message="Password cannot contain more than 12 letters!"
+            [min]="1"
+            [max]="8"
+          >
+          </dxi-validation-rule>
+        </dxi-item>
+        <dxi-item
+          dataField="role"
+          [label]="{ text: 'Role' }"
+          editorType="dxSelectBox"
+          [editorOptions]="{
+            items: ['Customer', 'Doctor', 'Admin'],
+            value: currentRole,
+            disabled: true
+          }"
+        >
+          <dxi-validation-rule type="required" message="Role is required">
+          </dxi-validation-rule>
+        </dxi-item>
+        <dxi-item itemType="group" [colCount]="2" [cssClass]="'buttonGroup'">
+          <dxi-item
+            itemType="button"
+            horizontalAlignment="center"
+            [buttonOptions]="submitButtonOptions"
+          >
+          </dxi-item>
+          <dxi-item
+            itemType="button"
+            horizontalAlignment="center"
+            [buttonOptions]="resetButtonOptions"
+          >
+          </dxi-item>
+        </dxi-item>
+      </dxi-item>
+    </dxi-item>
+    <dxi-item itemType="group"></dxi-item>
+  </dx-form>
+</form>
+<ng-container *ngIf="currentRole === 'Customer'">
+  <form
+    id="customer-form-container"
+    (submit)="onCustomerSubmit($event)"
+    [classList]="['signupForm']"
+  >
+    <dx-form
+      id="customer-form"
+      [formData]="customerData"
+      [showValidationSummary]="true"
+      validationGroup="customerData"
+    >
+      <dxi-item itemType="group">
+        <dxi-item itemType="group" caption="Personal Information">
+          <dxi-item
+            dataField="fullName"
+            [label]="{ text: 'Full Name' }"
+            editorType="dxTextBox"
+          >
+            <dxi-validation-rule
+              type="required"
+              message="Full name is required"
+            >
+            </dxi-validation-rule>
+            <dxi-validation-rule
+              type="stringLength"
+              message="Full name cannot lower than 1 letter!"
+              [min]="1"
+            >
+            </dxi-validation-rule>
+          </dxi-item>
+          <dxi-item
+            dataField="gender"
+            [label]="{ text: 'Gender' }"
+            editorType="dxSelectBox"
+            [editorOptions]="{
+              items: ['Male', 'Female'],
+              value: customerData?.gender
+            }"
+          >
+            <dxi-validation-rule type="required" message="Gender is required">
+            </dxi-validation-rule>
+          </dxi-item>
+          <dxi-item
+            dataField="age"
+            [label]="{ text: 'Age' }"
+            editorType="dxNumberBox"
+          >
+            <dxi-validation-rule type="required" message="Age is required">
+            </dxi-validation-rule>
+            <dxi-validation-rule
+              type="range"
+              message="Age cannot lower than 1"
+              [min]="1"
+            >
+            </dxi-validation-rule>
+          </dxi-item>
+          <dxi-item
+            dataField="bloodType"
+            [label]="{ text: 'Gender' }"
+            editorType="dxSelectBox"
+            [editorOptions]="{
+              items: ['O', 'A', 'B'],
+              value: customerData?.bloodType
+            }"
+          >
+            <dxi-validation-rule type="required" message="Gender is required">
+            </dxi-validation-rule>
+          </dxi-item>
+          <dxi-item
+            dataField="height"
+            [label]="{ text: 'Height' }"
+            editorType="dxNumberBox"
+          >
+            <dxi-validation-rule type="required" message="Height is required">
+            </dxi-validation-rule>
+            <dxi-validation-rule
+              type="range"
+              message="Height cannot lower than 1"
+              [min]="1"
+            >
+            </dxi-validation-rule>
+          </dxi-item>
+          <dxi-item
+            dataField="weight"
+            [label]="{ text: 'Weight' }"
+            editorType="dxNumberBox"
+          >
+            <dxi-validation-rule type="required" message="Weight is required">
+            </dxi-validation-rule>
+            <dxi-validation-rule
+              type="range"
+              message="Weight cannot lower than 1"
+              [min]="1"
+            >
+            </dxi-validation-rule>
+          </dxi-item>
+          <dxi-item
+            dataField="occupation"
+            [label]="{ text: 'Job' }"
+            editorType="dxTextBox"
+          >
+            <dxi-validation-rule type="required" message="Job is required">
+            </dxi-validation-rule>
+            <dxi-validation-rule
+              type="stringLength"
+              message="Job cannot lower than 12 letters!"
+              [min]="1"
+            >
+            </dxi-validation-rule>
+          </dxi-item>
+          <dxi-item
+            dataField="address"
+            [label]="{ text: 'Address' }"
+            editorType="dxTextBox"
+          >
+            <dxi-validation-rule type="required" message="Address is required">
+            </dxi-validation-rule>
+            <dxi-validation-rule
+              type="stringLength"
+              message="Address cannot lower than 1 letter!"
+              [min]="1"
+            >
+            </dxi-validation-rule>
+          </dxi-item>
+          <dxi-item itemType="group" [colCount]="2" [cssClass]="'buttonGroup'">
+            <dxi-item
+              itemType="button"
+              horizontalAlignment="center"
+              [buttonOptions]="submitCustomerButtonOptions"
+            >
+            </dxi-item>
+            <dxi-item
+              itemType="button"
+              horizontalAlignment="center"
+              [buttonOptions]="resetCustomerButtonOptions"
+            >
+            </dxi-item>
+          </dxi-item>
+        </dxi-item>
+      </dxi-item>
+    </dx-form>
+  </form>
+</ng-container>
+<ng-container *ngIf="currentRole === 'Doctor'">
+  <form
+    id="doctor-form-container"
+    (submit)="onDoctorSubmit($event)"
+    [classList]="['signupForm']"
+  >
+    <dx-form
+      id="doctor-form"
+      [formData]="doctorData"
+      [showValidationSummary]="true"
+      validationGroup="doctorData"
+    >
+      <dxi-item itemType="group">
+        <dxi-item itemType="group" caption="Personal Information">
+          <dxi-item
+            dataField="fullName"
+            [label]="{ text: 'Full Name' }"
+            editorType="dxTextBox"
+          >
+            <dxi-validation-rule
+              type="required"
+              message="Full name is required"
+            >
+            </dxi-validation-rule>
+            <dxi-validation-rule
+              type="stringLength"
+              message="Full name cannot lower than 1 letter!"
+              [min]="1"
+            >
+            </dxi-validation-rule>
+          </dxi-item>
+          <dxi-item
+            dataField="gender"
+            [label]="{ text: 'Gender' }"
+            editorType="dxSelectBox"
+            [editorOptions]="{
+              items: ['Male', 'Female'],
+              value: doctorData?.gender
+            }"
+          >
+            <dxi-validation-rule type="required" message="Gender is required">
+            </dxi-validation-rule>
+          </dxi-item>
+          <dxi-item
+            dataField="age"
+            [label]="{ text: 'Age' }"
+            editorType="dxNumberBox"
+          >
+            <dxi-validation-rule type="required" message="Age is required">
+            </dxi-validation-rule>
+            <dxi-validation-rule
+              type="range"
+              message="Age cannot lower than 1"
+              [min]="1"
+            >
+            </dxi-validation-rule>
+          </dxi-item>
+          <dxi-item
+            dataField="role"
+            [label]="{ text: 'Role' }"
+            editorType="dxSelectBox"
+            [editorOptions]="{
+              items: ['Doctor', 'Nurses', 'Assistants'],
+              value: doctorData?.role
+            }"
+          >
+            <dxi-validation-rule type="required" message="Role is required">
+            </dxi-validation-rule>
+          </dxi-item>
+          <dxi-item
+            dataField="department"
+            [label]="{ text: 'Department' }"
+            editorType="dxSelectBox"
+            [editorOptions]="{
+              items: [
+                'Dermatology',
+                'Oncology',
+                'Endocrinology',
+                'Gastroenterology',
+                'Hepato-Biliary-Pancreatic',
+                'Neurology',
+                'Respiratory',
+                'Infectious',
+                'Ophthalmology'
+              ],
+              value: doctorData?.department
+            }"
+          >
+            <dxi-validation-rule
+              type="required"
+              message="Department is required"
+            >
+            </dxi-validation-rule>
+          </dxi-item>
+          <dxi-item
+            dataField="yearsOfExperience"
+            [label]="{ text: 'Year of experience' }"
+            editorType="dxNumberBox"
+          >
+            <dxi-validation-rule
+              type="required"
+              message="Year of experience is required"
+            >
+            </dxi-validation-rule>
+            <dxi-validation-rule
+              type="range"
+              message="Year of Experience cannot lower than 1"
+              [min]="1"
+            >
+            </dxi-validation-rule>
+          </dxi-item>
+          <dxi-item
+            dataField="description"
+            [label]="{ text: 'Description' }"
+            editorType="dxTextBox"
+          >
+            <dxi-validation-rule
+              type="required"
+              message="Description is required"
+            >
+            </dxi-validation-rule>
+            <dxi-validation-rule
+              type="stringLength"
+              message="Description cannot lower than 1 letter!"
+              [min]="1"
+            >
+            </dxi-validation-rule>
+          </dxi-item>
+          <dxi-item itemType="group" [colCount]="2" [cssClass]="'buttonGroup'">
+            <dxi-item
+              itemType="button"
+              horizontalAlignment="center"
+              [buttonOptions]="submitDoctorButtonOptions"
+            >
+            </dxi-item>
+            <dxi-item
+              itemType="button"
+              horizontalAlignment="center"
+              [buttonOptions]="resetDoctorButtonOptions"
+            >
+            </dxi-item>
+          </dxi-item>
+        </dxi-item>
+      </dxi-item>
+    </dx-form>
+  </form>
+</ng-container>

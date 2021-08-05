@@ -34,7 +34,6 @@ export class DiseaseStore extends StateService<DiseaseState> {
     private store: StoreService
   ) {
     super(initialState);
-    this.initData(0, 5);
   }
 
   fillEmpty(
@@ -84,15 +83,10 @@ export class DiseaseStore extends StateService<DiseaseState> {
       .fetchDisease(page, size)
       .toPromise()
       .then((data: any) => {
-        if (page === 0) {
-          this.setState({
-            diseaseList: new Array<Disease>(size),
-          });
-        } else {
-          this.setState({
-            diseaseList: new Array<Disease>(page * size),
-          });
-        }
+        this.setState({
+          diseaseList: new Array<Disease>(data.items.length),
+        });
+
         console.log('Current flag: infite list');
         console.log(this.state.diseaseList);
         this.setState({ totalItems: data.totalItems });
@@ -155,7 +149,7 @@ export class DiseaseStore extends StateService<DiseaseState> {
       .toPromise()
       .then((data: any) => {
         this.setState({
-          diseaseList: new Array<Disease>(size),
+          diseaseList: new Array<Disease>(data.items.length),
         });
         console.log('Current flag: infinite filtered list');
         console.log(this.state.diseaseList);
@@ -167,7 +161,6 @@ export class DiseaseStore extends StateService<DiseaseState> {
         this.filterDiseaseByCategory(value, page, size);
       });
   }
-
 
   initSearchByNameData(value: string, page: number, size: number) {
     this.store.showNotif('Searched Mode On', 'custom');
@@ -197,7 +190,7 @@ export class DiseaseStore extends StateService<DiseaseState> {
       .then((data: any) => {
         if (data.totalItems !== 0) {
           this.setState({
-            diseaseList: new Array<Disease>(size),
+            diseaseList: new Array<Disease>(data.items.length),
           });
         } else {
           this.store.showNotif('No result found!', 'custom');
@@ -260,7 +253,7 @@ export class DiseaseStore extends StateService<DiseaseState> {
       .toPromise()
       .then((data: any) => {
         this.setState({
-          diseaseList: new Array<Disease>(size),
+          diseaseList: new Array<Disease>(data.items.length),
         });
         console.log('Current flag: sort list');
         console.log(this.state.diseaseList);
@@ -414,23 +407,21 @@ export class DiseaseStore extends StateService<DiseaseState> {
     this.confirmDialog('').then((confirm: boolean) => {
       if (confirm) {
         this.setIsLoading(true);
-        this.diseaseService
-          .deleteSelectedDiseases(selectedDiseases)
-          .subscribe({
-            next: (data: any) => {
-              this.setState({ responseMsg: data });
-              console.log(data);
-              this.loadDataAsync(page, size);
-              console.log(this.state.diseaseList);
-              this.setIsLoading(false);
-              this.store.showNotif(data.message, 'custom');
-            },
-            error: (data: any) => {
-              this.setIsLoading(false);
-              this.store.showNotif(data.error.errorMessage, 'error');
-              console.log(data);
-            },
-          });
+        this.diseaseService.deleteSelectedDiseases(selectedDiseases).subscribe({
+          next: (data: any) => {
+            this.setState({ responseMsg: data });
+            console.log(data);
+            this.loadDataAsync(page, size);
+            console.log(this.state.diseaseList);
+            this.setIsLoading(false);
+            this.store.showNotif(data.message, 'custom');
+          },
+          error: (data: any) => {
+            this.setIsLoading(false);
+            this.store.showNotif(data.error.errorMessage, 'error');
+            console.log(data);
+          },
+        });
       }
     });
   }
@@ -651,7 +642,6 @@ export class DiseaseStore extends StateService<DiseaseState> {
     });
   }
 
-
   sortDiseaseByName(value: string, page: number, size: number) {
     this.setIsLoading(true);
     this.diseaseService.sortDiseaseByName(value, page, size).subscribe({
@@ -735,7 +725,6 @@ export class DiseaseStore extends StateService<DiseaseState> {
       },
     });
   }
-
 
   setExportData(array: Array<Disease>) {
     this.setState({ diseaseList: array });

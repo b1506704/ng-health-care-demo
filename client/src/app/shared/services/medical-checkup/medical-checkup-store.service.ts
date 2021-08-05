@@ -45,7 +45,6 @@ export class MedicalCheckupStore extends StateService<MedicalCheckupState> {
     private store: StoreService
   ) {
     super(initialState);
-    // this.initInfiniteData(0, 5);
   }
 
   fillEmpty(
@@ -76,15 +75,10 @@ export class MedicalCheckupStore extends StateService<MedicalCheckupState> {
       .fetchPendingMedicalCheckup(page, size)
       .toPromise()
       .then((data: any) => {
-        if (page === 0) {
-          this.setState({
-            pendingCheckupList: new Array<MedicalCheckup>(size),
-          });
-        } else {
-          this.setState({
-            pendingCheckupList: new Array<MedicalCheckup>(page * size),
-          });
-        }
+        this.setState({
+          pendingCheckupList: new Array<MedicalCheckup>(data.items.length),
+        });
+
         console.log('Current flag: infite list');
         console.log(this.state.pendingCheckupList);
         this.setState({ totalCheckupPendingItems: data.totalItems });
@@ -136,7 +130,7 @@ export class MedicalCheckupStore extends StateService<MedicalCheckupState> {
       .then((data: any) => {
         if (data.totalItems !== 0) {
           this.setState({
-            pendingCheckupList: new Array<MedicalCheckup>(size),
+            pendingCheckupList: new Array<MedicalCheckup>(data.items.length),
           });
         } else {
           this.store.showNotif('No result found!', 'custom');
@@ -192,15 +186,10 @@ export class MedicalCheckupStore extends StateService<MedicalCheckupState> {
       .fetchPendingMedicalCheckupByCustomerID(page, size, customerID)
       .toPromise()
       .then((data: any) => {
-        if (page === 0) {
-          this.setState({
-            pendingCheckupList: new Array<MedicalCheckup>(size),
-          });
-        } else {
-          this.setState({
-            pendingCheckupList: new Array<MedicalCheckup>(page * size),
-          });
-        }
+        this.setState({
+          pendingCheckupList: new Array<MedicalCheckup>(data.items.length),
+        });
+
         console.log('Current flag: infite list');
         console.log(this.state.pendingCheckupList);
         this.setState({ totalCheckupPendingItems: data.totalItems });
@@ -262,7 +251,7 @@ export class MedicalCheckupStore extends StateService<MedicalCheckupState> {
       .then((data: any) => {
         if (data.totalItems !== 0) {
           this.setState({
-            pendingCheckupList: new Array<MedicalCheckup>(size),
+            pendingCheckupList: new Array<MedicalCheckup>(data.items.length),
           });
         } else {
           this.store.showNotif('No result found!', 'custom');
@@ -323,15 +312,10 @@ export class MedicalCheckupStore extends StateService<MedicalCheckupState> {
       .fetchCompleteMedicalCheckup(page, size)
       .toPromise()
       .then((data: any) => {
-        if (page === 0) {
-          this.setState({
-            completeCheckupList: new Array<MedicalCheckup>(size),
-          });
-        } else {
-          this.setState({
-            completeCheckupList: new Array<MedicalCheckup>(page * size),
-          });
-        }
+        this.setState({
+          completeCheckupList: new Array<MedicalCheckup>(data.items.length),
+        });
+
         console.log('Current flag: infite list');
         console.log(this.state.completeCheckupList);
         this.setState({ totalCheckupCompleteItems: data.totalItems });
@@ -383,7 +367,7 @@ export class MedicalCheckupStore extends StateService<MedicalCheckupState> {
       .then((data: any) => {
         if (data.totalItems !== 0) {
           this.setState({
-            completeCheckupList: new Array<MedicalCheckup>(size),
+            completeCheckupList: new Array<MedicalCheckup>(data.items.length),
           });
         } else {
           this.store.showNotif('No result found!', 'custom');
@@ -439,15 +423,10 @@ export class MedicalCheckupStore extends StateService<MedicalCheckupState> {
       .fetchCompleteMedicalCheckupByCustomerID(page, size, customerID)
       .toPromise()
       .then((data: any) => {
-        if (page === 0) {
-          this.setState({
-            completeCheckupList: new Array<MedicalCheckup>(size),
-          });
-        } else {
-          this.setState({
-            completeCheckupList: new Array<MedicalCheckup>(page * size),
-          });
-        }
+        this.setState({
+          completeCheckupList: new Array<MedicalCheckup>(data.items.length),
+        });
+
         console.log('Current flag: infite list');
         console.log(this.state.completeCheckupList);
         this.setState({ totalCheckupCompleteItems: data.totalItems });
@@ -509,7 +488,7 @@ export class MedicalCheckupStore extends StateService<MedicalCheckupState> {
       .then((data: any) => {
         if (data.totalItems !== 0) {
           this.setState({
-            completeCheckupList: new Array<MedicalCheckup>(size),
+            completeCheckupList: new Array<MedicalCheckup>(data.items.length),
           });
         } else {
           this.store.showNotif('No result found!', 'custom');

@@ -130,8 +130,12 @@
                 {{ item?.effect }}
               </div>
               <div class="card-assignee">{{ item?.quantity }} pills</div>
-              <div class="card-assignee">{{ item?.price }} $/1 pill</div>
-              <div class="card-assignee">{{ item?.totalCost }} $</div>
+              <div class="card-assignee">
+                {{ item?.price | formatCurrency: "$" }}/ 1 pill
+              </div>
+              <div class="card-assignee">
+                {{ item?.totalCost | formatCurrency: "$" }}
+              </div>
               <div class="card-assignee">
                 {{ item?.advice }}
               </div>

@@ -3,11 +3,11 @@
     *ngIf="patientData"
     style="display: flex; justify-content: space-around; align-items: center"
   >
-    <h2 style="text-align: center">Patient {{ customerData.fullName }}</h2>
+    <h2 style="text-align: center">Patient {{ customerData?.fullName }}</h2>
     <div>
-      HR: {{ patientData.heartRate }}. RR: {{ patientData.respiratoryRate }}.
-      BT: {{ patientData.bodyTemperature }}. BP:
-      {{ patientData.bloodPressure }}.
+      HR: {{ patientData?.heartRate }}. RR: {{ patientData?.respiratoryRate }}.
+      BT: {{ patientData?.bodyTemperature }}. BP:
+      {{ patientData?.bloodPressure }}.
     </div>
   </div>
   <div class="overlay" *ngIf="!patientData">
@@ -104,14 +104,14 @@
           >
             Patient Info
           </p>
-          <div>Full Name: {{ customerData.fullName }}</div>
-          <div>Age: {{ customerData.age }}</div>
-          <div>Gender: {{ customerData.gender }}</div>
-          <div>Blood Type: {{ customerData.bloodType }}</div>
-          <div>Height: {{ customerData.height }}</div>
-          <div>Weight: {{ customerData.weight }}</div>
-          <div>Job: {{ customerData.occupation }}</div>
-          <div>Address: {{ customerData.address }}</div>
+          <div>Full Name: {{ customerData?.fullName }}</div>
+          <div>Age: {{ customerData?.age }}</div>
+          <div>Gender: {{ customerData?.gender }}</div>
+          <div>Blood Type: {{ customerData?.bloodType }}</div>
+          <div>Height: {{ customerData?.height }}</div>
+          <div>Weight: {{ customerData?.weight }}</div>
+          <div>Job: {{ customerData?.occupation }}</div>
+          <div>Address: {{ customerData?.address }}</div>
         </ng-container>
       </div>
       <div id="gauge-demo">

@@ -219,8 +219,8 @@ export class RoomMonitorComponent implements OnInit, OnDestroy {
     this.roomStore.initInfiniteData(0, this.pageSize);
   }
 
-  navigateToSchedule() {
-    this.router.navigate(['/schedule_list']);
+  navigateToMedicalCheckup() {
+    this.router.navigate(['/edit_medical_checkup_list']);
   }
 
   selectRoom(e: Room) {
@@ -244,9 +244,10 @@ export class RoomMonitorComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.sourceDataListener();
     this.currentPageListener();
-    this.roomStore.initInfiniteData(0, this.pageSize);
+    this.roomStore.initInfiniteData(0, this.pageSize).then(() => {
+      this.sourceDataListener();
+    });
   }
 
   ngOnDestroy(): void {

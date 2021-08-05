@@ -51,7 +51,7 @@ export class MedicineListComponent implements OnInit, OnDestroy {
 
   filterSelectBoxOptions: any = {
     items: this.brandList,
-    valueExpr: '_id',
+    valueExpr: 'name',
     displayExpr: 'name',
     placeholder: 'Filter with brand',
     onValueChanged: this.onFilterChange.bind(this),
@@ -70,7 +70,8 @@ export class MedicineListComponent implements OnInit, OnDestroy {
     placeholder: 'Sort price',
     displayExpr: 'name',
     onValueChanged: this.onSortValueChanged.bind(this),
-  };
+  }; 
+  currency: string = '$'; 
 
   constructor(
     private medicineStore: MedicineStore,
@@ -156,7 +157,7 @@ export class MedicineListComponent implements OnInit, OnDestroy {
     this.isSortingByPrice = false;
     this.currentCategoryFilterValue = e.value;
     console.log(e.value);
-    if (e.value !== '-1') {
+    if (e.value !== '(NONE)') {
       this.medicineStore.initInfiniteFilterByCategoryData(
         e.value,
         0,
@@ -216,8 +217,8 @@ export class MedicineListComponent implements OnInit, OnDestroy {
     this.medicineStore.initInfiniteData(0, this.pageSize);
   }
 
-  navigateToDoctor() {
-    this.router.navigate(['/doctor_list']);
+  navigateToDoctorSchedule() {
+    this.router.navigate(['/doctor_schedule']);
   }
 
   sourceDataListener() {
@@ -237,9 +238,10 @@ export class MedicineListComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.sourceDataListener();
     this.currentPageListener();
-    this.medicineStore.initInfiniteData(0, this.pageSize);
+    this.medicineStore.initInfiniteData(0, this.pageSize).then(() => {
+      this.sourceDataListener();
+    });
   }
 
   ngOnDestroy(): void {

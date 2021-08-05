@@ -51,7 +51,7 @@ export class DoctorListComponent implements OnInit, OnDestroy {
 
   filterSelectBoxOptions: any = {
     items: this.departmentList,
-    valueExpr: '_id',
+    valueExpr: 'name',
     displayExpr: 'name',
     placeholder: 'Filter with department',
     onValueChanged: this.onFilterChange.bind(this),
@@ -156,7 +156,7 @@ export class DoctorListComponent implements OnInit, OnDestroy {
     this.isSortingByPrice = false;
     this.currentCategoryFilterValue = e.value;
     console.log(e.value);
-    if (e.value !== '-1') {
+    if (e.value !== '(NONE)') {
       this.doctorStore.initInfiniteFilterByCategoryData(
         e.value,
         0,
@@ -237,9 +237,10 @@ export class DoctorListComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.sourceDataListener();
     this.currentPageListener();
-    this.doctorStore.initInfiniteData(0, this.pageSize);
+    this.doctorStore.initInfiniteData(0, this.pageSize).then(() => {
+      this.sourceDataListener();
+    });
   }
 
   ngOnDestroy(): void {

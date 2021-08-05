@@ -38,8 +38,8 @@ export class StatisticsComponent implements OnInit, OnDestroy {
     this.router.navigate(['doctor'], { relativeTo: this.route });
   }
 
-  navigateToEditTheme() {
-    this.router.navigate(['/edit_theme']);
+  navigateToEditUser() {
+    this.router.navigate(['/edit_user_list']);
   }
   
   currentPageListener() {

@@ -34,7 +34,6 @@ export class MedicineStore extends StateService<MedicineState> {
     private store: StoreService
   ) {
     super(initialState);
-    this.initData(0, 5);
   }
 
   fillEmpty(
@@ -65,15 +64,9 @@ export class MedicineStore extends StateService<MedicineState> {
       .fetchMedicine(page, size)
       .toPromise()
       .then((data: any) => {
-        if (page === 0) {
-          this.setState({
-            medicineList: new Array<Medicine>(size),
-          });
-        } else {
-          this.setState({
-            medicineList: new Array<Medicine>(page * size),
-          });
-        }
+        this.setState({
+          medicineList: new Array<Medicine>(data.items.length),
+        });
         console.log('Current flag: infite list');
         console.log(this.state.medicineList);
         this.setState({ totalItems: data.totalItems });
@@ -155,7 +148,7 @@ export class MedicineStore extends StateService<MedicineState> {
       .toPromise()
       .then((data: any) => {
         this.setState({
-          medicineList: new Array<Medicine>(size),
+          medicineList: new Array<Medicine>(data.items.length),
         });
         console.log('Current flag: infinite filtered list');
         console.log(this.state.medicineList);
@@ -196,7 +189,7 @@ export class MedicineStore extends StateService<MedicineState> {
       .then((data: any) => {
         if (data.totalItems !== 0) {
           this.setState({
-            medicineList: new Array<Medicine>(size),
+            medicineList: new Array<Medicine>(data.items.length),
           });
         } else {
           this.store.showNotif('No result found!', 'custom');
@@ -239,7 +232,7 @@ export class MedicineStore extends StateService<MedicineState> {
       .toPromise()
       .then((data: any) => {
         this.setState({
-          medicineList: new Array<Medicine>(size),
+          medicineList: new Array<Medicine>(data.items.length),
         });
         console.log('Current flag: sort list');
         console.log(this.state.medicineList);

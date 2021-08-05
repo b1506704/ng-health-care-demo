@@ -95,6 +95,9 @@ export class DoctorStatisticsComponent implements OnInit, OnDestroy {
     this.funnelChartSourceListener();
     this.pieChartSourceListener();
     this.sourceDataListener();
+    setTimeout(() => {
+      this.doctorStore.initData(0, 50);
+    }, 150);
   }
 
   ngOnDestroy(): void {

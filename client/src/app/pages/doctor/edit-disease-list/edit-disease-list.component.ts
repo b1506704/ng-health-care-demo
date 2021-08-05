@@ -679,8 +679,8 @@ export class EditDiseaseListComponent implements OnInit, OnDestroy {
     this.diseaseStore.deleteAllDiseases();
   }
 
-  navigateToEditMedicine() {
-    this.router.navigate(['/edit_medicine_list']);
+  navigateToRoomMonitor() {
+    this.router.navigate(['/room_monitor']);
   }
 
   sourceDataListener() {

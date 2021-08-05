@@ -36,7 +36,7 @@ export class UserStore extends StateService<UserState> {
     private store: StoreService
   ) {
     super(initialState);
-    this.initData(0, 5);
+    // this.initData(0, 5);
 
     this.$isLoggedIn.subscribe((data: any) => {
       if (data === true) {

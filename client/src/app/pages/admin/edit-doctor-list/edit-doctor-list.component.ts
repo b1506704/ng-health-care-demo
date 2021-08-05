@@ -679,8 +679,8 @@ export class EditDoctorListComponent implements OnInit, OnDestroy {
     this.doctorStore.deleteAllDoctors();
   }
 
-  navigateToEditCustomer() {
-    this.router.navigate(['/edit_customer_list']);
+  navigateToEditSchedule() {
+    this.router.navigate(['/edit_schedule']);
   }
 
   sourceDataListener() {

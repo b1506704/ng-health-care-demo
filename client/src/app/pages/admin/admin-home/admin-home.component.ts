@@ -18,21 +18,21 @@ export class AdminHomeComponent implements OnInit {
       title: 'DYNAMIC STATISTICS',
       subTitle: 'Various charts with auto-calculated figures and range selectors',
       imgUrl: this.baseImgUrl + 'landing_page_admin_1.jpg',
-      link: '/statistics',
+      link: 'statistics',
     },
     {
       title: 'USER-FRIENDLY USER MANAGEMENT SYSTEM',
       subTitle:
         'Fully functioned editor with office plugin to export PDF and XLSX',
       imgUrl: this.baseImgUrl + 'landing_page_admin_2.jfif',
-      link: '/edit_customer_list',
+      link: 'edit_customer_list',
     },
     {
       title: 'SCHEDULE AND BILL EDITOR',
       subTitle:
         'Provide a tool for admins to manage on-going schedule and transactions',
       imgUrl: this.baseImgUrl + 'landing_page_admin_3.jpg',
-      link: '/edit_schedule',
+      link: 'edit_schedule',
     },
   ];
   slideshowDelay: number = 2500;

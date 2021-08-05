@@ -16,6 +16,7 @@ import {
 } from 'devextreme-angular';
 import { DiagnoseEditorComponent } from './diagnose-editor/diagnose-editor.component';
 import { PrescriptionEditorComponent } from './prescription-editor/prescription-editor.component';
+import { FormatCurrencyModule } from 'src/app/shared/pipes/formatCurrency.module';
 
 @NgModule({
   imports: [
@@ -30,6 +31,7 @@ import { PrescriptionEditorComponent } from './prescription-editor/prescription-
     DxSpeedDialActionModule,
     DxPopupModule,
     DxFormModule,
+    FormatCurrencyModule,
     DxScrollViewModule,
   ],
   declarations: [

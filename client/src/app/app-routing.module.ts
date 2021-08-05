@@ -88,7 +88,7 @@ const routes: Routes = [
         './pages/doctor/edit-health-condition-list/edit-health-condition-list.module'
       ).then((m) => m.EditHealthConditionModule),
   },
-  
+
   {
     path: 'edit_medical_checkup_list',
     loadChildren: () =>
@@ -190,6 +190,13 @@ const routes: Routes = [
     loadChildren: () =>
       import('./shared/components/sign-up/sign-up.module').then(
         (m) => m.SignUpModule
+      ),
+  },
+  {
+    path: 'profile',
+    loadChildren: () =>
+      import('./shared/components/profile/user-profile.module').then(
+        (m) => m.UserProfileModule
       ),
   },
   // {

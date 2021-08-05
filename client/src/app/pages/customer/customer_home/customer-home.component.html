@@ -35,206 +35,152 @@
   </div>
 </dx-gallery>
 <h2 class="feature-heading">Features</h2>
-<dx-box [direction]="'col'" [height]="'1000px'">
-  <dxi-item [ratio]="1">
-    <dx-box [direction]="'row'">
-      <dxi-item
-        [ratio]="2"
-        style="display: flex; justify-content: flex-start; align-items: center"
-      >
-        <div style="height: 100%">
-          <img
-            src="../../../../assets/imgs/landing_page_11.jpg"
-            alt="..."
-            style="height: 100%; width: 100%"
-          />
-        </div>
-      </dxi-item>
-      <dxi-item
-        [ratio]="1"
-        style="display: flex; justify-content: flex-start; align-items: center"
-      >
-        <div class="feature-title">INFINITE SCROLLING LIST</div>
-        <div class="feature-body">
-          Checking medicine and doctor information with infinite scrolling
-          technique
-        </div>
-        <div class="feature-icons">
-          <dx-button icon="find" text="Search"> </dx-button>
-          <dx-button icon="filter" text="Filter"> </dx-button>
-          <dx-button icon="sortdown" text="Sort"> </dx-button>
-          <dx-button icon="pulldown" text="Infinite scrolling"> </dx-button>
-        </div>
-      </dxi-item>
-    </dx-box>
-  </dxi-item>
-  <dxi-item [ratio]="1">
-    <dx-box [direction]="'row'">
-      <dxi-item
-        [ratio]="2"
-        style="display: flex; justify-content: flex-start; align-items: center"
-      >
-        <div style="height: 100%">
-          <img
-            src="../../../../assets/imgs/landing_page_12.jpg"
-            alt="..."
-            style="height: 100%; width: 100%"
-          />
-        </div>
-      </dxi-item>
-      <dxi-item
-        [ratio]="1"
-        style="
-          display: flex;
-          justify-content: flex-start;
-          align-items: center;
-          height: 100%;
-        "
-      >
-        <div class="feature-title">WORKING SCHEDULE</div>
-        <div class="feature-body">
-          Providing a dynamic view to check doctor's working schedule.
-        </div>
-        <div class="feature-icons">
-          <dx-button icon="event" text="Date Selector"> </dx-button>
-          <dx-button icon="like" text="Friendly UI"> </dx-button>
-          <dx-button icon="runner" text="Dynamic View"> </dx-button>
-          <dx-button icon="tags" text="Room Indicator"> </dx-button>
-        </div>
-      </dxi-item>
-    </dx-box>
-  </dxi-item>
-  <dxi-item [ratio]="1">
-    <dx-box [direction]="'row'">
-      <dxi-item
-        [ratio]="2"
-        style="display: flex; justify-content: flex-start; align-items: center"
-      >
-        <div style="height: 100%">
-          <img
-            src="../../../../assets/imgs/landing_page_14.jpg"
-            alt="..."
-            style="height: 100%; width: 100%"
-          />
-        </div>
-      </dxi-item>
-      <dxi-item
-        [ratio]="1"
-        style="
-          display: flex;
-          justify-content: flex-start;
-          align-items: center;
-          height: 100%;
-        "
-      >
-        <div class="feature-title">REQUEST CHECKUP</div>
-        <div class="feature-body">
-          Popup request checkup form, display kanban view with 2 types of
-          request, and prescription detail in tab panel.
-        </div>
-        <div class="feature-icons">
-          <dx-button icon="rename" text="Form Editor"> </dx-button>
-          <dx-button icon="columnchooser" text="Popup UI"> </dx-button>
-          <dx-button icon="find" text="Search"> </dx-button>
-          <dx-button icon="movetofolder" text="Tab Panel"> </dx-button>
-        </div>
-      </dxi-item>
-    </dx-box>
-  </dxi-item>
-  <dxi-item [ratio]="1">
-    <dx-box [direction]="'row'">
-      <dxi-item
-        [ratio]="2"
-        style="display: flex; justify-content: flex-start; align-items: center"
-      >
-        <div style="height: 100%">
-          <img
-            src="../../../../assets/imgs/landing_page_13.jpg"
-            alt="..."
-            style="height: 100%; width: 100%"
-          />
-        </div>
-      </dxi-item>
-      <dxi-item
-        [ratio]="1"
-        style="
-          display: flex;
-          justify-content: flex-start;
-          align-items: center;
-          height: 100%;
-        "
-      >
-        <div class="feature-title">HEALTH CONDITION MONITORING</div>
-        <div class="feature-body">
-          See your curren health condition and contact with doctor.
-        </div>
-        <div class="feature-icons">
-          <dx-button icon="info" text="Doctor Interact"> </dx-button>
-          <dx-button icon="formula" text="Auto Calculate"> </dx-button>
-          <dx-button icon="like" text="Friendly UI"> </dx-button>
-          <dx-button icon="runner" text="Emergent Alert"> </dx-button>
-        </div>
-      </dxi-item>
-    </dx-box>
-  </dxi-item>
-</dx-box>
+<div class="feature-container box-shadow">
+  <div class="feature-content">
+    <div class="feature-title">INFINITE SCROLLING LIST</div>
+    <div class="feature-body">
+      Checking medicine and doctor information with infinite scrolling technique
+    </div>
+    <div class="feature-icons">
+      <dx-button icon="find" text="Search"> </dx-button>
+      <dx-button icon="filter" text="Filter"> </dx-button>
+      <dx-button icon="sortdown" text="Sort"> </dx-button>
+      <dx-button icon="pulldown" text="Infinite scrolling"> </dx-button>
+    </div>
+  </div>
+  <div class="feature-img">
+    <img
+      src="../../../../assets/imgs/landing_page_11.jpg"
+      alt="..."
+      style="
+        height: 100%;
+        width: 100%;
+        border-radius: 15px;
+        box-shadow: rgba(79, 205, 255, 0.25) 0px 25px 50px -12px;
+      "
+    />
+  </div>
+</div>
+<div class="feature-container box-shadow">
+  <div class="feature-content">
+    <div class="feature-title">WORKING SCHEDULE</div>
+    <div class="feature-body">
+      Providing a dynamic view to check doctor's working schedule.
+    </div>
+    <div class="feature-icons">
+      <dx-button icon="event" text="Date Selector"> </dx-button>
+      <dx-button icon="like" text="Friendly UI"> </dx-button>
+      <dx-button icon="runner" text="Dynamic View"> </dx-button>
+      <dx-button icon="tags" text="Room Indicator"> </dx-button>
+    </div>
+  </div>
+  <div class="feature-img">
+    <img
+      src="../../../../assets/imgs/landing_page_12.jpg"
+      alt="..."
+      style="
+        height: 100%;
+        width: 100%;
+        border-radius: 15px;
+        box-shadow: rgba(79, 205, 255, 0.25) 0px 25px 50px -12px;
+      "
+    />
+  </div>
+</div>
+<div class="feature-container box-shadow">
+  <div class="feature-content">
+    <div class="feature-title">REQUEST CHECKUP</div>
+    <div class="feature-body">
+      Popup request checkup form, display kanban view with 2 types of request,
+      and prescription detail in tab panel.
+    </div>
+    <div class="feature-icons">
+      <dx-button icon="rename" text="Form Editor"> </dx-button>
+      <dx-button icon="columnchooser" text="Popup UI"> </dx-button>
+      <dx-button icon="find" text="Search"> </dx-button>
+      <dx-button icon="movetofolder" text="Tab Panel"> </dx-button>
+    </div>
+  </div>
+  <div class="feature-img">
+    <img
+      src="../../../../assets/imgs/landing_page_14.jpg"
+      alt="..."
+      style="
+        height: 100%;
+        width: 100%;
+        border-radius: 15px;
+        box-shadow: rgba(79, 205, 255, 0.25) 0px 25px 50px -12px;
+      "
+    />
+  </div>
+</div>
+<div class="feature-container box-shadow">
+  <div class="feature-content">
+    <div class="feature-title">HEALTH CONDITION MONITORING</div>
+    <div class="feature-body">
+      See your curren health condition and contact with doctor.
+    </div>
+    <div class="feature-icons">
+      <dx-button icon="info" text="Doctor Interact"> </dx-button>
+      <dx-button icon="formula" text="Auto Calculate"> </dx-button>
+      <dx-button icon="like" text="Friendly UI"> </dx-button>
+      <dx-button icon="runner" text="Emergent Alert"> </dx-button>
+    </div>
+  </div>
+  <div class="feature-img">
+    <img
+      src="../../../../assets/imgs/landing_page_13.jpg"
+      alt="..."
+      style="
+        height: 100%;
+        width: 100%;
+        border-radius: 15px;
+        box-shadow: rgba(79, 205, 255, 0.25) 0px 25px 50px -12px;
+      "
+    />
+  </div>
+</div>
 
 <h2 class="feature-heading">Organization</h2>
-<dx-box [direction]="'col'" [height]="'1000px'">
-  <dxi-item [ratio]="1">
-    <dx-box [direction]="'row'">
-      <dxi-item
-        [ratio]="1"
-        style="display: flex; justify-content: center; align-items: center"
-      >
-        <div>
-          <img
-            src="../../../../assets/imgs/elon_musk.jpeg"
-            alt="..."
-            style="height: 200px; width: 200px; border-radius: 200px"
-          />
-        </div>
-      </dxi-item>
-      <dxi-item
-        [ratio]="2"
-        style="display: flex; justify-content: center; align-items: center"
-      >
-        <div class="feature-title">E. MUSK</div>
-        <div class="feature-body">Mascot of Tesla Clinic</div>
-      </dxi-item>
-    </dx-box>
-  </dxi-item>
-  <dxi-item [ratio]="1">
-    <dx-box [direction]="'row'">
-      <dxi-item
-        [ratio]="1"
-        style="display: flex; justify-content: center; align-items: center"
-      >
-        <div>
-          <img
-            src="../../../../assets/imgs/tesla_director.jpg"
-            alt="..."
-            style="height: 200px; width: 200px; border-radius: 200px"
-          />
-        </div>
-      </dxi-item>
-      <dxi-item
-        [ratio]="2"
-        style="
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          height: 100%;
-        "
-      >
-        <div class="feature-title">Nicole Tesla</div>
-        <div class="feature-body">
-          Main developer, programmer, feature planner, UI, UX designer.
-        </div>
-      </dxi-item>
-    </dx-box>
-  </dxi-item>
-</dx-box>
+<div class="organization-container">
+  <div class="organization-img">
+    <img
+      src="../../../../assets/imgs/elon_musk.jpeg"
+      alt="..."
+      style="
+        height: 300px;
+        width: 300px;
+        border-radius: 300px;
+        box-shadow: rgba(79, 205, 255, 0.25) 0px 25px 50px -12px;
+      "
+    />
+  </div>
+  <div class="organization-content">
+    <div class="feature-title">Anonymous</div>
+    <div class="feature-body">Mascot of Tesla Clinic</div>
+  </div>
+</div>
+<div class="organization-container">
+  <div class="organization-img">
+    <img
+      src="../../../../assets/imgs/tesla_director.jpg"
+      alt="..."
+      style="
+        height: 300px;
+        width: 300px;
+        border-radius: 300px;
+        box-shadow: rgba(79, 205, 255, 0.25) 0px 25px 50px -12px;
+      "
+    />
+  </div>
+  <div class="organization-content">
+    <div class="feature-title">Nicole Tesla</div>
+    <div class="feature-body">
+      Main developer, programmer, feature planner, UI, UX designer.
+    </div>
+  </div>
+</div>
+
 <div class="footer">
-  <h2>@{{ date }}. Tesla Clinic. Developed by Le Bao Anh.</h2>
+  <h2>@{{ date }}. Tesla Clinic. Developed by Le Bao Anh - B1506704.</h2>
 </div>

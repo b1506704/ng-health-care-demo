@@ -305,8 +305,8 @@ export class ScheduleListComponent implements OnInit, OnDestroy {
     this.scheduleStore.initData(this.currentIndexFromServer, this.pageSize);
   }
 
-  navigateToEditHealthCondition() {
-    this.router.navigate(['/edit_health_condition_list']);
+  navigateToHealthCondition() {
+    this.router.navigate(['/health_condition']);
   }
 
   sourceDataListener() {
@@ -324,6 +324,9 @@ export class ScheduleListComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.sourceDataListener();
     this.currentPageListener();
+    setTimeout(() => {
+      this.onRefresh();
+    }, 150);
   }
 
   ngOnDestroy(): void {

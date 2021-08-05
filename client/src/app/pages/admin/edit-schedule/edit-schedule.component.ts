@@ -688,8 +688,8 @@ export class EditScheduleComponent implements OnInit, OnDestroy {
     this.scheduleStore.deleteAllSchedules();
   }
 
-  navigateToEditCustomer() {
-    this.router.navigate(['/edit_customer_list']);
+  navigateToEditRoom() {
+    this.router.navigate(['/edit_room_list']);
   }
 
   sourceDataListener() {

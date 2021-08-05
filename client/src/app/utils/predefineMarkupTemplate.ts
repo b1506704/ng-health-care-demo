@@ -1,15 +1,18 @@
 import { MarkupTemplate } from '../shared/models/markupTemplate';
+import formatCurrency from './formatCurrency';
 
 export default function predefineMarkupTemplate(input: MarkupTemplate) {
   const title = 'TESLA CLINIC PRESCRIPTION';
   const date = new Date().toLocaleDateString();
   let diseaseList = '';
   let medicineList = '';
+  let sum = 0;
   input.diseaseList.forEach((e: any) => {
     diseaseList += `${e.name}, `;
   });
   let index = 0;
   input.medicineList.forEach((e: any) => {
+    sum += e.totalCost;
     medicineList += `<tr>
     <td>
       ${index + 1}
@@ -24,7 +27,7 @@ export default function predefineMarkupTemplate(input: MarkupTemplate) {
       ${e.advice}
     </td>
     <td>
-      ${e.totalCost} $
+      ${formatCurrency(e.totalCost, '$')}
     </td>
   </tr>`;
     index += 1;
@@ -57,6 +60,7 @@ export default function predefineMarkupTemplate(input: MarkupTemplate) {
             </thead>
             <tbody>
             ${medicineList}
+            <p><strong>Total Cost: ${formatCurrency(sum, '$')}</strong></p>
             </tbody>
           </table>
     `;

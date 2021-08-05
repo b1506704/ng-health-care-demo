@@ -111,13 +111,15 @@ export class CustomerStatisticsComponent implements OnInit, OnDestroy {
       this.customerList = data;
     });
   }
-  
+
   ngOnInit(): void {
     this.barChartSourceListener();
     this.funnelChartSourceListener();
     this.pieChartSourceListener();
     this.sourceDataListener();
-    
+    setTimeout(() => {
+      this.customerStore.initData(0, 50);
+    }, 150);
   }
 
   ngOnDestroy(): void {
@@ -125,6 +127,5 @@ export class CustomerStatisticsComponent implements OnInit, OnDestroy {
     this.funnelChartSourceListener().unsubscribe();
     this.barChartSourceListener().unsubscribe();
     this.pieChartSourceListener().unsubscribe();
-    
   }
 }

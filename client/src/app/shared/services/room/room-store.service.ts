@@ -36,7 +36,6 @@ export class RoomStore extends StateService<RoomState> {
     private store: StoreService
   ) {
     super(initialState);
-    this.initData(0, 5);
   }
 
   fillEmpty(
@@ -82,19 +81,13 @@ export class RoomStore extends StateService<RoomState> {
   }
 
   initInfiniteData(page: number, size: number) {
-    this.roomService
+    return this.roomService
       .fetchRoom(page, size)
       .toPromise()
       .then((data: any) => {
-        if (page === 0) {
-          this.setState({
-            roomList: new Array<Room>(size),
-          });
-        } else {
-          this.setState({
-            roomList: new Array<Room>(page * size),
-          });
-        }
+        this.setState({
+          roomList: new Array<Room>(data.items.length),
+        });
         console.log('Current flag: infite list');
         console.log(this.state.roomList);
         this.setState({ totalItems: data.totalItems });
@@ -157,7 +150,7 @@ export class RoomStore extends StateService<RoomState> {
       .toPromise()
       .then((data: any) => {
         this.setState({
-          roomList: new Array<Room>(size),
+          roomList: new Array<Room>(data.items.length),
         });
         console.log('Current flag: infinite filtered list');
         console.log(this.state.roomList);
@@ -198,7 +191,7 @@ export class RoomStore extends StateService<RoomState> {
       .then((data: any) => {
         if (data.totalItems !== 0) {
           this.setState({
-            roomList: new Array<Room>(size),
+            roomList: new Array<Room>(data.items.length),
           });
         } else {
           this.store.showNotif('No result found!', 'custom');
@@ -241,7 +234,7 @@ export class RoomStore extends StateService<RoomState> {
       .toPromise()
       .then((data: any) => {
         this.setState({
-          roomList: new Array<Room>(size),
+          roomList: new Array<Room>(data.items.length),
         });
         console.log('Current flag: sort list');
         console.log(this.state.roomList);

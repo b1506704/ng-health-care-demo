@@ -38,7 +38,6 @@ export class PrescriptionStore extends StateService<PrescriptionState> {
     private medicalCheckupService: MedicalCheckupStore
   ) {
     super(initialState);
-    this.initData(0, 5);
   }
 
   fillEmpty(

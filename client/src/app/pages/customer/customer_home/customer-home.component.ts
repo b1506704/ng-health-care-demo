@@ -19,20 +19,20 @@ export class CustomerHomeComponent implements OnInit {
       subTitle:
         'Request and manage your checkups, see prescription in tab panel',
       imgUrl: this.baseImgUrl + 'landing_page_3.jpg',
-      link: '/medical_checkup',
+      link: 'medical_checkup',
     },
     {
       title: 'HEALTH CONDITION OBSERVATION',
       subTitle: 'See your health condition statistics and contact with doctor',
       imgUrl: this.baseImgUrl + 'landing_page_5.jpg',
-      link: '/health_condition',
+      link: 'health_condition',
     },
     {
       title: 'HELP CENTER AND WORKING SCHEDULE ',
       subTitle:
         'Medicine encyclopedia, doctor profile and working schedule of clinic',
       imgUrl: this.baseImgUrl + 'landing_page_admin_3.jpg',
-      link: '/edit_schedule',
+      link: 'doctor_schedule',
     },
   ];
   slideshowDelay: number = 2500;

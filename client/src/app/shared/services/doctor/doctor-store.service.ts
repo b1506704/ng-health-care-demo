@@ -42,7 +42,6 @@ export class DoctorStore extends StateService<DoctorState> {
     private store: StoreService
   ) {
     super(initialState);
-    this.initData(0, 5);
   }
 
   fillEmpty(
@@ -88,17 +87,17 @@ export class DoctorStore extends StateService<DoctorState> {
   }
 
   initInfiniteData(page: number, size: number) {
-    this.doctorService
+    return this.doctorService
       .fetchDoctor(page, size)
       .toPromise()
       .then((data: any) => {
         if (page === 0) {
           this.setState({
-            doctorList: new Array<Doctor>(size),
+            doctorList: new Array<Doctor>(data.items.length),
           });
         } else {
           this.setState({
-            doctorList: new Array<Doctor>(page * size),
+            doctorList: new Array<Doctor>(data.items.length),
           });
         }
         console.log('Current flag: infite list');
@@ -163,7 +162,7 @@ export class DoctorStore extends StateService<DoctorState> {
       .toPromise()
       .then((data: any) => {
         this.setState({
-          doctorList: new Array<Doctor>(size),
+          doctorList: new Array<Doctor>(data.items.length),
         });
         console.log('Current flag: infinite filtered list');
         console.log(this.state.doctorList);
@@ -204,7 +203,7 @@ export class DoctorStore extends StateService<DoctorState> {
       .then((data: any) => {
         if (data.totalItems !== 0) {
           this.setState({
-            doctorList: new Array<Doctor>(size),
+            doctorList: new Array<Doctor>(data.items.length),
           });
         } else {
           this.store.showNotif('No result found!', 'custom');
@@ -247,7 +246,7 @@ export class DoctorStore extends StateService<DoctorState> {
       .toPromise()
       .then((data: any) => {
         this.setState({
-          doctorList: new Array<Doctor>(size),
+          doctorList: new Array<Doctor>(data.items.length),
         });
         console.log('Current flag: sort list');
         console.log(this.state.doctorList);

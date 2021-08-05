@@ -41,7 +41,6 @@ export class CustomerStore extends StateService<CustomerState> {
     private store: StoreService
   ) {
     super(initialState);
-    this.initData(0, 5);
   }
 
   fillEmpty(

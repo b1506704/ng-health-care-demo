@@ -17,34 +17,34 @@ export class DoctorHomeComponent implements OnInit {
       title: 'REAL-TIME MONITORING SERVICE',
       subTitle: 'Stable and high-quality on-bed device tracking',
       imgUrl: this.baseImgUrl + 'landing_page_1.jpg',
-      link: '/room_monitor',
+      link: 'room_monitor',
     },
     {
       title: 'USER-FRIENDLY PRESCRIPTION MANAGEMENT SYSTEM',
       subTitle:
         'Fully functioned editor with office plugin to export PDF and XLSX',
       imgUrl: this.baseImgUrl + 'landing_page_2.jpg',
-      link: '/edit_prescription_list',
+      link: 'edit_medical_checkup_list',
     },
     {
       title: 'SCHEDULE MANAGEMENT INTERFACE',
       subTitle: 'Provide dynamic UI to organize medical-checkups schedule',
       imgUrl: this.baseImgUrl + 'landing_page_3.jpg',
-      link: '/edit_medical_checkup_list',
+      link: 'schedule_list',
     },
     {
       title: 'MEDICINE AND DISEASE ENCYCLOPEDIA',
       subTitle:
         'Provide a tool for doctors to update on-going medical changes ',
       imgUrl: this.baseImgUrl + 'landing_page_4.jpg',
-      link: '/edit_medicine_list',
+      link: 'edit_medicine_list',
     },
   ];
   slideshowDelay: number = 2500;
   featureList: Array<any>;
   constructor(private router: Router) {}
 
-  onSelectionChanged(e:any) {
+  onSelectionChanged(e: any) {
     this.currentItem = e.addedItems[0];
   }
 

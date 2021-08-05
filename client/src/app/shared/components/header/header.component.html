@@ -13,12 +13,6 @@
     >
     </dxi-item>
     <dxi-item location="before">
-      <!-- widget="dxButton"
-      [options]="{
-        icon: 'like',
-        type: 'normal',
-        onClick: navigateHome
-      }" -->
       <div *dxTemplate="let data of 'item'">
         <dx-button icon="like" type="normal"> </dx-button>
       </div>
@@ -81,9 +75,9 @@
           height="100%"
           stylingMode="text"
         >
+          <!-- [user]="user" -->
           <div *dxTemplate="let data of 'content'">
             <app-user-panel
-              [user]="user"
               [menuItems]="userMenuItems"
               menuMode="context"
             ></app-user-panel>
@@ -91,9 +85,9 @@
         </dx-button>
       </div>
     </dxi-item>
+    <!-- [user]="user" -->
     <div *dxTemplate="let data of 'menuItem'">
       <app-user-panel
-        [user]="user"
         [menuItems]="userMenuItems"
         menuMode="list"
       ></app-user-panel>

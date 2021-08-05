@@ -34,7 +34,6 @@ export class BillStore extends StateService<BillState> {
     private store: StoreService
   ) {
     super(initialState);
-    this.initData(0, 5);
   }
 
   fillEmpty(

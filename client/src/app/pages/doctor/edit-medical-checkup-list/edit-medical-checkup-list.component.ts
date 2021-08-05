@@ -351,8 +351,8 @@ export class EditMedicalCheckupListComponent implements OnInit, OnDestroy {
     );
   }
 
-  navigateToRoomMonitor() {
-    this.router.navigate(['/room_monitor']);
+  navigateToScheduleList() {
+    this.router.navigate(['/schedule_list']);
   }
 
   ngOnInit(): void {

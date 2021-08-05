@@ -679,8 +679,8 @@ export class EditBillListComponent implements OnInit, OnDestroy {
     this.billStore.deleteAllBills();
   }
 
-  navigateToEditSchedule() {
-    this.router.navigate(['/edit_schedule']);
+  navigateToStatistics() {
+    this.router.navigate(['/statistics']);
   }
 
   sourceDataListener() {

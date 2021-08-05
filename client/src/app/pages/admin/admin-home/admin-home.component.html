@@ -35,142 +35,110 @@
   </div>
 </dx-gallery>
 <h2 class="feature-heading">Features</h2>
-<dx-box [direction]="'col'" [height]="'1000px'">
-  <dxi-item [ratio]="1">
-    <dx-box [direction]="'row'">
-      <dxi-item
-        [ratio]="2"
-        style="display: flex; justify-content: flex-start; align-items: center"
-      >
-        <div style="height: 100%">
-          <img
-            src="../../../../assets/imgs/landing_page_9.jpg"
-            alt="..."
-            style="height: 100%; width: 100%"
-          />
-        </div>
-      </dxi-item>
-      <dxi-item
-        [ratio]="1"
-        style="display: flex; justify-content: flex-start; align-items: center"
-      >
-        <div class="feature-title">DATAGRID EDITOR</div>
-        <div class="feature-body">
-          Fully functioned database management with cutting-edge tools and
-          techniques
-        </div>
-        <div class="feature-icons">
-          <dx-button icon="splitcells" text="Row Edit"> </dx-button>
-          <dx-button icon="tableproperties" text="Column Edit"> </dx-button>
-          <dx-button icon="trash" text="Delete All"> </dx-button>
-          <dx-button icon="unselectall" text="Selective Remove"> </dx-button>
-          <dx-button icon="xlsxfile" text="Export XLSX"> </dx-button>
-          <dx-button icon="exportpdf" text="Export PDF"> </dx-button>
-          <dx-button icon="add" text="Live Insert"> </dx-button>
-          <dx-button icon="filter" text="Filter & Sort"> </dx-button>
-          <dx-button icon="search" text="Smart Search"> </dx-button>
-          <dx-button icon="range" text="Random Generate"> </dx-button>
-          <dx-button icon="globe" text="SS Pagination"> </dx-button>
-          <dx-button icon="verticalaligncenter" text="Responsive UI">
-          </dx-button>
-        </div>
-      </dxi-item>
-    </dx-box>
-  </dxi-item>
-  <dxi-item [ratio]="1">
-    <dx-box [direction]="'row'">
-      <dxi-item
-        [ratio]="2"
-        style="display: flex; justify-content: flex-start; align-items: center"
-      >
-        <div style="height: 100%">
-          <img
-            src="../../../../assets/imgs/landing_page_10.jpg"
-            alt="..."
-            style="height: 100%; width: 100%"
-          />
-        </div>
-      </dxi-item>
-      <dxi-item
-        [ratio]="1"
-        style="
-          display: flex;
-          justify-content: flex-start;
-          align-items: center;
-          height: 100%;
-        "
-      >
-        <div class="feature-title">DYNAMIC STATISTICS</div>
-        <div class="feature-body">
-          Providing a variety of charts with auto-calculating function and range selectors.
-        </div>
-        <div class="feature-icons">
-          <dx-button icon="splitcells" text="Range Selector"> </dx-button>
-          <dx-button icon="refresh" text="Fetch Data"> </dx-button>
-          <dx-button icon="formula" text="Auto Calculate"> </dx-button>
-          <dx-button icon="like" text="Friendly UI"> </dx-button>
-        </div>
-      </dxi-item>
-    </dx-box>
-  </dxi-item>
-</dx-box>
+
+<div class="feature-container box-shadow">
+  <div class="feature-content">
+    <div class="feature-title">DATAGRID EDITOR</div>
+    <div class="feature-body">
+      Fully functioned database management with cutting-edge tools and
+      techniques
+    </div>
+    <div class="feature-icons">
+      <dx-button icon="splitcells" text="Row Edit"> </dx-button>
+      <dx-button icon="tableproperties" text="Column Edit"> </dx-button>
+      <dx-button icon="trash" text="Delete All"> </dx-button>
+      <dx-button icon="unselectall" text="Selective Remove"> </dx-button>
+      <dx-button icon="xlsxfile" text="Export XLSX"> </dx-button>
+      <dx-button icon="exportpdf" text="Export PDF"> </dx-button>
+      <dx-button icon="add" text="Live Insert"> </dx-button>
+      <dx-button icon="filter" text="Filter & Sort"> </dx-button>
+      <dx-button icon="search" text="Smart Search"> </dx-button>
+      <dx-button icon="range" text="Random Generate"> </dx-button>
+      <dx-button icon="globe" text="SS Pagination"> </dx-button>
+      <dx-button icon="verticalaligncenter" text="Responsive UI"></dx-button>
+    </div>
+  </div>
+  <div class="feature-img">
+    <img
+      src="../../../../assets/imgs/landing_page_9.jpg"
+      alt="..."
+      style="
+        height: 100%;
+        width: 100%;
+        border-radius: 15px;
+        box-shadow: rgba(79, 205, 255, 0.25) 0px 25px 50px -12px;
+      "
+    />
+  </div>
+</div>
+<div class="feature-container box-shadow">
+  <div class="feature-content">
+    <div class="feature-title">DYNAMIC STATISTICS</div>
+    <div class="feature-body">
+      Providing a variety of charts with auto-calculating function and range
+      selectors.
+    </div>
+    <div class="feature-icons">
+      <dx-button icon="splitcells" text="Range Selector"> </dx-button>
+      <dx-button icon="refresh" text="Fetch Data"> </dx-button>
+      <dx-button icon="formula" text="Auto Calculate"> </dx-button>
+      <dx-button icon="like" text="Friendly UI"> </dx-button>
+    </div>
+  </div>
+  <div class="feature-img">
+    <img
+      src="../../../../assets/imgs/landing_page_10.jpg"
+      alt="..."
+      style="
+        height: 100%;
+        width: 100%;
+        border-radius: 15px;
+        box-shadow: rgba(79, 205, 255, 0.25) 0px 25px 50px -12px;
+      "
+    />
+  </div>
+</div>
 
 <h2 class="feature-heading">Organization</h2>
-<dx-box [direction]="'col'" [height]="'1000px'">
-  <dxi-item [ratio]="1">
-    <dx-box [direction]="'row'">
-      <dxi-item
-        [ratio]="1"
-        style="display: flex; justify-content: center; align-items: center"
-      >
-        <div>
-          <img
-            src="../../../../assets/imgs/elon_musk.jpeg"
-            alt="..."
-            style="height: 200px; width: 200px; border-radius: 200px"
-          />
-        </div>
-      </dxi-item>
-      <dxi-item
-        [ratio]="2"
-        style="display: flex; justify-content: center; align-items: center"
-      >
-        <div class="feature-title">E. MUSK</div>
-        <div class="feature-body">Mascot of Tesla Clinic</div>
-      </dxi-item>
-    </dx-box>
-  </dxi-item>
-  <dxi-item [ratio]="1">
-    <dx-box [direction]="'row'">
-      <dxi-item
-        [ratio]="1"
-        style="display: flex; justify-content: center; align-items: center"
-      >
-        <div>
-          <img
-            src="../../../../assets/imgs/tesla_director.jpg"
-            alt="..."
-            style="height: 200px; width: 200px; border-radius: 200px"
-          />
-        </div>
-      </dxi-item>
-      <dxi-item
-        [ratio]="2"
-        style="
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          height: 100%;
-        "
-      >
-        <div class="feature-title">Nicole Tesla</div>
-        <div class="feature-body">
-          Main developer, programmer, feature planner, UI, UX designer.
-        </div>
-      </dxi-item>
-    </dx-box>
-  </dxi-item>
-</dx-box>
+<div class="organization-container">
+  <div class="organization-img">
+    <img
+      src="../../../../assets/imgs/elon_musk.jpeg"
+      alt="..."
+      style="
+        height: 300px;
+        width: 300px;
+        border-radius: 300px;
+        box-shadow: rgba(79, 205, 255, 0.25) 0px 25px 50px -12px;
+      "
+    />
+  </div>
+  <div class="organization-content">
+    <div class="feature-title">Anonymous</div>
+    <div class="feature-body">Mascot of Tesla Clinic</div>
+  </div>
+</div>
+<div class="organization-container">
+  <div class="organization-img">
+    <img
+      src="../../../../assets/imgs/tesla_director.jpg"
+      alt="..."
+      style="
+        height: 300px;
+        width: 300px;
+        border-radius: 300px;
+        box-shadow: rgba(79, 205, 255, 0.25) 0px 25px 50px -12px;
+      "
+    />
+  </div>
+  <div class="organization-content">
+    <div class="feature-title">Nicole Tesla</div>
+    <div class="feature-body">
+      Main developer, programmer, feature planner, UI, UX designer.
+    </div>
+  </div>
+</div>
+
 <div class="footer">
-  <h2>@{{ date }}. Tesla Clinic. Developed by Le Bao Anh.</h2>
+  <h2>@{{ date }}. Tesla Clinic. Developed by Le Bao Anh - B1506704.</h2>
 </div>

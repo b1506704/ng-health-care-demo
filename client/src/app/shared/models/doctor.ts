@@ -1,5 +1,5 @@
 export interface Doctor {
-  _id: String;
+  _id: string;
   userName: String;
   fullName: String;
   age: Number;
