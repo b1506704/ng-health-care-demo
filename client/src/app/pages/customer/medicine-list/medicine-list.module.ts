@@ -4,11 +4,14 @@ import { MedicineListRoutingModule } from './medicine-list-routing.module';
 import { MedicineListComponent } from './medicine-list.component';
 import {
   DxButtonModule,
+  DxFormModule,
+  DxPopupModule,
   DxScrollViewModule,
   DxSpeedDialActionModule,
   DxToolbarModule,
 } from 'devextreme-angular';
 import { FormatCurrencyModule } from 'src/app/shared/pipes/formatCurrency.module';
+import { MedicineDetailComponent } from './medicine-detail/medicine-detail.component';
 
 @NgModule({
   imports: [
@@ -19,7 +22,9 @@ import { FormatCurrencyModule } from 'src/app/shared/pipes/formatCurrency.module
     DxButtonModule,
     DxSpeedDialActionModule,
     FormatCurrencyModule,
+    DxPopupModule,
+    DxFormModule
   ],
-  declarations: [MedicineListComponent],
+  declarations: [MedicineListComponent, MedicineDetailComponent],
 })
 export class MedicineListModule {}

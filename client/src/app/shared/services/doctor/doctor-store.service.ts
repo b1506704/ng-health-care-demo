@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
 import { Doctor } from '../../models/doctor';
 import { StateService } from '../state.service';
 import { StoreService } from '../store.service';
@@ -519,12 +518,16 @@ export class DoctorStore extends StateService<DoctorState> {
     this.setState({ currentPage: _currentPage });
   }
 
-  getDoctor(id: string | number) {
-    return this.$doctorList.pipe(
-      map(
-        (doctors: Array<Doctor>) => doctors.find((doctor) => doctor._id === id)!
-      )
-    );
+  getDoctor(id: string) {
+    this.setIsLoading(true);
+    return this.doctorService
+      .getDoctor(id)
+      .toPromise()
+      .then((data: any) => {
+        this.setState({ doctorInstance: data });
+        console.log(data);
+        this.setIsLoading(false);
+      });
   }
 
   getDoctorByUserName(userName: string) {

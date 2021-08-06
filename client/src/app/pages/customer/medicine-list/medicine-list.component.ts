@@ -16,6 +16,7 @@ export class MedicineListComponent implements OnInit, OnDestroy {
   scrollView: DxScrollViewComponent;
   medicineList!: Array<Medicine>;
   brandList: Array<Object> = brandList();
+  currentMedicineID!: string;
   // item loaded per pull down event
   pageSize: number = 10;
   pullDown = false;
@@ -27,6 +28,7 @@ export class MedicineListComponent implements OnInit, OnDestroy {
   isFilteringByPrice: boolean;
   isSortingByName: boolean;
   isSortingByPrice: boolean;
+  isDetailPopupVisible: boolean = false;
 
   currentCategoryFilterValue: string;
   timeout: any;
@@ -78,6 +80,15 @@ export class MedicineListComponent implements OnInit, OnDestroy {
     private store: StoreService,
     private router: Router
   ) {}
+
+  selectMedicine(_id: string) {
+    this.currentMedicineID = _id;
+    console.log('SELECTED ID');
+    console.log(_id);
+    // setTimeout(() => {
+    this.isDetailPopupVisible = true;
+    // }, 1000);
+  }
 
   updateContent = (args: any, eventName: any) => {
     const editorMode = this.checkEditorMode();

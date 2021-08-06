@@ -14,6 +14,7 @@ import { CommonModule } from '@angular/common';
 import { Router, NavigationEnd } from '@angular/router';
 import { ScreenService } from 'src/app/shared/services/screen.service';
 import { DxToastModule } from 'devextreme-angular';
+import { UserStore } from 'src/app/shared/services/user/user-store.service';
 
 @Component({
   selector: 'app-side-nav-outer-toolbar',
@@ -25,11 +26,12 @@ export class SideNavOuterToolbarComponent implements OnInit {
   scrollView!: DxScrollViewComponent;
   selectedRoute = '';
 
-  menuOpened!: boolean;
+  menuOpened: boolean = false;
 
   isNotifVisible!: Boolean;
   notifType: string = 'info';
   responseMsg: String = 'OK';
+  isSideMenuVisible: boolean = false;
 
   temporaryMenuOpened = false;
 
@@ -41,9 +43,23 @@ export class SideNavOuterToolbarComponent implements OnInit {
   minMenuSize = 0;
   shaderEnabled = false;
 
-  constructor(private screen: ScreenService, private router: Router) {}
+  constructor(
+    private screen: ScreenService,
+    private router: Router,
+    private userStore: UserStore
+  ) {}
 
   ngOnInit() {
+    // this.updateDrawer();
+    this.userStore.$isLoggedIn.subscribe((data: any) => {
+      this.isSideMenuVisible = data;
+      if (data === false) {
+        this.temporaryMenuOpened = false;
+        this.menuOpened = false;
+      }
+      console.log('IS LOGGED IN');
+      console.log(data);
+    });
     this.menuOpened = this.screen.sizes['screen-large'];
 
     this.router.events.subscribe((val) => {
@@ -63,7 +79,12 @@ export class SideNavOuterToolbarComponent implements OnInit {
 
     this.menuMode = isLarge ? 'overlap' : 'overlap';
     this.menuRevealMode = isXSmall ? 'slide' : 'expand';
-    this.minMenuSize = isXSmall ? 0 : 60;
+    this.minMenuSize = 0;
+    // if (this.isSideMenuVisible) {
+    //   this.minMenuSize = isXSmall ? 0 : 60;
+    // } else {
+    //   this.minMenuSize = 0;
+    // }
     this.shaderEnabled = !isLarge;
   }
 

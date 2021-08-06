@@ -1,0 +1,29 @@
+<dx-scroll-view
+  [bounceEnabled]="true"
+  [scrollByContent]="true"
+  [scrollByThumb]="true"
+>
+  <div class="img-container">
+    <img src="../../../../../assets/imgs/favipiravir_1.png" alt="..." />
+  </div>
+  <form id="doctor-form-container" [classList]="['signupForm']">
+    <dx-form id="doctor-form" [formData]="doctorData" [readOnly]="true">
+      <dxi-item itemType="group" caption="Personal Information">
+        <dxi-item dataField="fullName" [label]="{ text: 'Full Name' }">
+        </dxi-item>
+        <dxi-item dataField="gender" [label]="{ text: 'Gender' }"> </dxi-item>
+        <dxi-item dataField="age" [label]="{ text: 'Age' }"> </dxi-item>
+        <dxi-item dataField="role" [label]="{ text: 'Role' }"> </dxi-item>
+        <dxi-item dataField="department" [label]="{ text: 'Department' }">
+        </dxi-item>
+        <dxi-item
+          dataField="yearsOfExperience"
+          [label]="{ text: 'Years of experience' }"
+        >
+        </dxi-item>
+        <dxi-item dataField="description" [label]="{ text: 'Description' }">
+        </dxi-item>
+      </dxi-item>
+    </dx-form>
+  </form>
+</dx-scroll-view>

@@ -62,22 +62,26 @@ export class HeaderComponent implements OnInit {
     });
     this.userStore.$isLoggedIn.subscribe((data: any) => {
       this.isLoggedIn = data;
-      this.store.$currentRole.subscribe((data: string) => {
-        switch (data.trim().toLocaleLowerCase()) {
-          case 'admin':
-            this.router.navigate(['/admin_home']);
-            break;
-          case 'doctor':
-            this.router.navigate(['/doctor_home']);
-            break;
-          case 'customer':
-            this.router.navigate(['/customer_home']);
-            break;
-          default:
-            this.router.navigate(['/doctor_home']);
-            break;
-        }
-      });
+      if (this.isLoggedIn) {
+        this.store.$currentRole.subscribe((data: string) => {
+          switch (data.trim().toLocaleLowerCase()) {
+            case 'admin':
+              this.router.navigate(['/admin_home']);
+              break;
+            case 'doctor':
+              this.router.navigate(['/doctor_home']);
+              break;
+            case 'customer':
+              this.router.navigate(['/customer_home']);
+              break;
+            default:
+              this.router.navigate(['/doctor_home']);
+              break;
+          }
+        });
+      } else {
+        this.onLogin();
+      }
     });
   }
 

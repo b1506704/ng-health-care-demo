@@ -6,9 +6,15 @@
   width: 100%;
 }
 .menu {
+  visibility: visible;
   background-color: rgba(3, 2, 0, 0.144);
   backdrop-filter: blur(5px);
 }
+
+.hidden {
+  visibility: hidden;
+}
+
 .layout-header {
   z-index: 1501;
 }

@@ -38,6 +38,7 @@ export const navigationCustomer = [
     ],
   },
 ];
+
 export const navigationDoctor = [
   {
     text: 'Home',
@@ -121,5 +122,11 @@ export const navigationAdmin = [
     text: 'Statistics',
     path: '/statistics',
     icon: 'chart',
+  },
+];
+export const navigationNonUser = [
+  {
+    text: '',
+    path: '',
   },
 ];

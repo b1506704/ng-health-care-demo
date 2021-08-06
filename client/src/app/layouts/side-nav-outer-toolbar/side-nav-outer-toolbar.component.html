@@ -15,18 +15,21 @@
   [minSize]="minMenuSize"
   [shading]="shaderEnabled"
   [(opened)]="menuOpened"
+  [activeStateEnabled]="true"
 >
   <app-side-navigation-menu
     [compactMode]="!menuOpened"
     [selectedItem]="selectedRoute"
-    class="menu"
+    [ngClass]="{
+      menu: isSideMenuVisible === true,
+      hidden: isSideMenuVisible === false
+    }"
     *dxTemplate="let dataMenu of 'panel'"
     (selectedItemChanged)="navigationChanged($event)"
     (openMenu)="navigationClick()"
   >
   </app-side-navigation-menu>
-
-  <dx-scroll-view class="with-footer">
+  <dx-scroll-view>
     <div class="content">
       <ng-content></ng-content>
     </div>
@@ -35,6 +38,7 @@
     </div>
   </dx-scroll-view>
 </dx-drawer>
+
 <dx-toast
   [(visible)]="isNotifVisible"
   type="{{ notifType }}"

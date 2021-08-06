@@ -2,7 +2,7 @@ import { Disease } from "./disease";
 import { Medicine } from "./medicine";
 
 export interface Prescription {
-  medicalCheckupID: String;
+  medicalCheckupID: string;
   customerID: String;
   customerName: String;
   doctorID: String;

@@ -82,6 +82,7 @@
             type="outline"
             text="Detail"
             hint="Click to see medicine detail"
+            (onClick)="selectMedicine(item?._id)"
           ></dx-button>
         </div>
       </div>
@@ -95,3 +96,21 @@
   (onClick)="scrollTop()"
 >
 </dx-speed-dial-action>
+<dx-popup
+  [(visible)]="isDetailPopupVisible"
+  [height]="'95%'"
+  [width]="'50%'"
+  [showTitle]="true"
+  [shading]="true"
+  [title]="'Medicine Detail'"
+  [dragEnabled]="true"
+  [closeOnOutsideClick]="false"
+  [showCloseButton]="true"
+>
+  <div *dxTemplate="let data of 'content'">
+    <ng-container *ngIf="currentMedicineID">
+      <app-medicine-detail [medicineID]="currentMedicineID">
+      </app-medicine-detail>
+    </ng-container>
+  </div>
+</dx-popup>

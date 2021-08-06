@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
 import { Medicine } from '../../models/medicine';
 import { StateService } from '../state.service';
 import { StoreService } from '../store.service';
@@ -10,6 +9,7 @@ import { confirm } from 'devextreme/ui/dialog';
 interface MedicineState {
   medicineList: Array<Medicine>;
   exportData: Array<Medicine>;
+  medicineInstance: Medicine;
   selectedMedicine: Object;
   totalPages: number;
   currentPage: number;
@@ -20,6 +20,7 @@ const initialState: MedicineState = {
   medicineList: [],
   selectedMedicine: {},
   exportData: [],
+  medicineInstance: undefined,
   totalPages: 0,
   currentPage: 0,
   totalItems: 0,
@@ -312,6 +313,10 @@ export class MedicineStore extends StateService<MedicineState> {
     (state) => state.medicineList
   );
 
+  $medicineInstance: Observable<Medicine> = this.select(
+    (state) => state.medicineInstance
+  );
+
   $exportData: Observable<Array<Medicine>> = this.select(
     (state) => state.exportData
   );
@@ -471,13 +476,16 @@ export class MedicineStore extends StateService<MedicineState> {
     this.setState({ currentPage: _currentPage });
   }
 
-  getMedicine(id: string | number) {
-    return this.$medicineList.pipe(
-      map(
-        (medicines: Array<Medicine>) =>
-          medicines.find((medicine) => medicine._id === id)!
-      )
-    );
+  getMedicine(id: string) {
+    this.setIsLoading(true);
+    return this.medicineService
+      .getMedicine(id)
+      .toPromise()
+      .then((data: any) => {
+        this.setState({ medicineInstance: data });
+        console.log(data);
+        this.setIsLoading(false);
+      });
   }
 
   filterMedicineByPrice(

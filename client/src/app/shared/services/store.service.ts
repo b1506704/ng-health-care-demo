@@ -18,7 +18,7 @@ const initialState: StoreState = {
   userList: [],
   selectedUser: {},
   currentUser: {},
-  currentRole: 'Doctor',
+  currentRole: '',
   isLoading: false,
   responseMsg: '',
   notifType: '',

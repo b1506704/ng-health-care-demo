@@ -19,10 +19,12 @@ import {
   navigationCustomer,
   navigationAdmin,
   navigationDoctor,
+  navigationNonUser,
 } from '../../../app-navigation';
 
 import * as events from 'devextreme/events';
 import { StoreService } from '../../services/store.service';
+import { UserStore } from '../../services/user/user-store.service';
 
 @Component({
   selector: 'app-side-navigation-menu',
@@ -40,8 +42,12 @@ export class SideNavigationMenuComponent
 
   @Output()
   openMenu = new EventEmitter<any>();
-
-  constructor(private elementRef: ElementRef, private store: StoreService) {}
+  isLoggedIn: boolean = false;
+  constructor(
+    private elementRef: ElementRef,
+    private store: StoreService,
+    private userStore: UserStore
+  ) {}
 
   onItemClick(event: ItemClickEvent) {
     this.selectedItemChanged.emit(event);
@@ -89,7 +95,7 @@ export class SideNavigationMenuComponent
           });
           break;
         default:
-          this._items = navigationDoctor.map((item) => {
+          this._items = navigationNonUser.map((item) => {
             if (item.path && !/^\//.test(item.path)) {
               item.path = `/${item.path}`;
             }
@@ -143,7 +149,7 @@ export class SideNavigationMenuComponent
         default:
           this.menu.instance.option(
             'items',
-            navigationDoctor.map((item) => {
+            navigationNonUser.map((item) => {
               if (item.path && !/^\//.test(item.path)) {
                 item.path = `/${item.path}`;
               }
@@ -175,6 +181,9 @@ export class SideNavigationMenuComponent
   }
 
   ngOnInit(): void {
+    this.userStore.$isLoggedIn.subscribe((data: boolean) => {
+      this.isLoggedIn = data;
+    });
     this.userRoleListener();
     this.renderItemMenu();
   }

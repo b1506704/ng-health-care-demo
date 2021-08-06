@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
 import { Prescription } from '../../models/prescription';
 import { StateService } from '../state.service';
 import { StoreService } from '../store.service';

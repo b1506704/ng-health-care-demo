@@ -7,7 +7,10 @@ import {
   DxToolbarModule,
   DxButtonModule,
   DxSpeedDialActionModule,
+  DxPopupModule,
+  DxFormModule,
 } from 'devextreme-angular';
+import { DoctorDetailComponent } from './doctor-detail/doctor-detail.component';
 
 @NgModule({
   imports: [
@@ -17,7 +20,9 @@ import {
     DxToolbarModule,
     DxButtonModule,
     DxSpeedDialActionModule,
+    DxPopupModule,
+    DxFormModule
   ],
-  declarations: [DoctorListComponent],
+  declarations: [DoctorListComponent, DoctorDetailComponent],
 })
 export class DoctorListModule {}

@@ -1,17 +1,19 @@
 <header class="trans-menu">
   <dx-toolbar class="header-toolbar">
-    <dxi-item
-      *ngIf="menuToggleEnabled"
-      location="before"
-      widget="dxButton"
-      cssClass="menu-button"
-      [options]="{
-        icon: 'menu',
-        stylingMode: 'text',
-        onClick: toggleMenu
-      }"
-    >
-    </dxi-item>
+    <ng-container *ngIf="isLoggedIn">
+      <dxi-item
+        *ngIf="menuToggleEnabled"
+        location="before"
+        widget="dxButton"
+        cssClass="menu-button"
+        [options]="{
+          icon: 'menu',
+          stylingMode: 'text',
+          onClick: toggleMenu
+        }"
+      >
+      </dxi-item>
+    </ng-container>
     <dxi-item location="before">
       <div *dxTemplate="let data of 'item'">
         <dx-button icon="like" type="normal"> </dx-button>
