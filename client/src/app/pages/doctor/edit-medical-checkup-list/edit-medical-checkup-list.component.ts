@@ -343,9 +343,12 @@ export class EditMedicalCheckupListComponent implements OnInit, OnDestroy {
   prescriptionDoneListener() {
     return this.medicalCheckupStore.$isPrescriptionDone.subscribe(
       (data: boolean) => {
-        this.isDiagnosePopupVisible = !data;
         setTimeout(() => {
-          this.selectPrescription(this.completeList[0]);
+          if (data === true) {
+            this.isDiagnosePopupVisible = false;
+            this.selectPrescription(this.completeList[0]);
+            this.medicalCheckupStore.setIsPrescriptionDone(false);
+          }
         }, 1000);
       }
     );

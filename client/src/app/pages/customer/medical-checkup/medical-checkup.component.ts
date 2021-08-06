@@ -318,7 +318,7 @@ export class MedicalCheckupComponent implements OnInit, OnDestroy {
 
   getPatientID() {
     return this.store.$currentUser.subscribe((data: any) => {
-      if (data) {
+      if (data !== null) {
         console.log('LOGGED IN USER:');
         console.log(data);
         this.customerStore.getCustomerByUserName(data.userName).then(() => {

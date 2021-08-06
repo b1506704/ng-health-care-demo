@@ -97,7 +97,9 @@ export class UserProfileComponent implements OnInit, OnDestroy {
 
   userDataListener() {
     return this.store.$currentUser.subscribe((data: any) => {
-      this.currentUser = data;
+      if (data !== null) {
+        this.currentUser = data;
+      }
     });
   }
 

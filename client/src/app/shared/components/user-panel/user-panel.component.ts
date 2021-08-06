@@ -24,7 +24,9 @@ export class UserPanelComponent implements OnInit {
 
   ngOnInit(): void {
     this.store.$currentUser.subscribe((data: any) => {
-      this.currentUser = data;
+      if (data !== null) {
+        this.currentUser = data;
+      }
     });
   }
 }

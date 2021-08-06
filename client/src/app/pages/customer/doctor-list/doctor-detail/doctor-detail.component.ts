@@ -19,9 +19,12 @@ export class DoctorDetailComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   renderSourceData() {
-    this.doctorStore.getDoctor(this.doctorID).then(() => {
-      this.doctorDataListener();
-    });
+    this.doctorData = null;
+    setTimeout(() => {
+      this.doctorStore.getDoctor(this.doctorID).then(() => {
+        this.doctorDataListener();
+      });
+    }, 100);
   }
 
   ngOnInit(): void {}

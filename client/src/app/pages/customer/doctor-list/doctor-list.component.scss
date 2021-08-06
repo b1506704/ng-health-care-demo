@@ -7,14 +7,14 @@
 }
 
 .card-container .card {
-  height: 200px;
+  height: 250px;
   margin: 10px;
   background-color: rgba(0, 10, 12, 0.486);
   border-radius: 10px;
   box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px,
     rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px,
     rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
-  width: 200px;
+  width: 250px;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -29,5 +29,5 @@
 
 .card-container .card .card-img {
   height: 100px;
-  width: 190px;
+  width: 240px;
 }

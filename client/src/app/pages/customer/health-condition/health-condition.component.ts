@@ -66,10 +66,10 @@ export class HealthConditionComponent implements OnInit, OnDestroy {
 
   getPatientID() {
     return this.store.$currentUser.subscribe((data: any) => {
-      if (data) {
+      if (data !== null) {
         console.log('LOGGED IN USER:');
         console.log(data);
-        this.customerStore.getCustomerByUserName(data.userName).then(() => {
+        this.customerStore.getCustomerByUserName(data?.userName).then(() => {
           this.customerStore.$customerInstance.subscribe((data: any) => {
             this.customerData = data;
             this.patientID = data._id;
@@ -103,7 +103,7 @@ export class HealthConditionComponent implements OnInit, OnDestroy {
       this.socket.emit('sendMessage', {
         sender: this.customerData.fullName,
         message: this.currentMessage,
-        date: new Date().toLocaleTimeString()
+        date: new Date().toLocaleTimeString(),
       });
       this.dxTextBox.instance.reset();
       this.dxScrollView.instance.scrollBy(
@@ -128,6 +128,7 @@ export class HealthConditionComponent implements OnInit, OnDestroy {
     this.patientDataListener().unsubscribe();
     this.messageListener().unsubscribe();
     this.commandListener().unsubscribe();
+    this.getPatientID().unsubscribe();
   }
 
   co2Socket() {

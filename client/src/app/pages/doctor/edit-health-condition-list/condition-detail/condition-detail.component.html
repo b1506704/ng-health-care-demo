@@ -1,7 +1,7 @@
 <div style="height: 60vh">
   <div
     *ngIf="patientData"
-    style="display: flex; justify-content: space-around; align-items: center"
+    style="display: flex; justify-content: space-around; align-items: center; flex-wrap: wrap;"
   >
     <h2 style="text-align: center">Patient {{ customerData?.fullName }}</h2>
     <div>
@@ -15,7 +15,7 @@
   </div>
   <ng-container *ngIf="patientData">
     <div
-      style="display: flex; justify-content: space-evenly; align-items: center"
+      style="display: flex; justify-content: space-evenly; align-items: center; flex-wrap: wrap;"
     >
       <div
         style="

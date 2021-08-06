@@ -80,8 +80,10 @@ export class ConditionDetailComponent implements OnInit, OnDestroy {
       this.patientID = param.get('id');
       this.customerStore.getCustomer(param.get('id')).then(() => {
         this.customerStore.$customerInstance.subscribe((data: any) => {
-          this.customerData = data;
-          console.log(data);
+          if (data !== null) {
+            this.customerData = data;
+            console.log(data);
+          }
         });
       });
     });
@@ -89,7 +91,7 @@ export class ConditionDetailComponent implements OnInit, OnDestroy {
 
   getDoctorID() {
     return this.store.$currentUser.subscribe((data: any) => {
-      if (data) {
+      if (data !== null) {
         console.log('LOGGED IN USER:');
         console.log(data);
         this.doctorStore.getDoctorByUserName(data.userName).then(() => {
@@ -124,7 +126,7 @@ export class ConditionDetailComponent implements OnInit, OnDestroy {
       this.socket.emit('sendMessage', {
         sender: this.doctorData.fullName,
         message: this.currentMessage,
-        date: new Date().toLocaleTimeString()
+        date: new Date().toLocaleTimeString(),
       });
       this.dxTextBox.instance.reset();
       this.dxScrollView.instance.scrollBy(

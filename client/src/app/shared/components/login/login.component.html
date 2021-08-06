@@ -1,66 +1,46 @@
-<dx-box direction="col" width="100%" [height]="'45vh'">
-  <dxi-item class="rect demo-dark header" [ratio]="1"></dxi-item>
-  <dxi-item [ratio]="2">
-    <dx-box direction="row" width="100%">
-      <dxi-item class="rect demo-dark" [ratio]="1"></dxi-item>
-      <dxi-item class="rect demo-light" [ratio]="1">
-        <form (submit)="onLoginSubmit($event)" [classList]="['loginForm']">
-          <div class="long-title">
-            <h3>Login</h3>
-          </div>
-          <dx-form
-            id="form"
-            (onContentReady)="onFormShown($event)"
-            [formData]="user"
-            [readOnly]="false"
-            [showColonAfterLabel]="true"
-            [showValidationSummary]="true"
-            [scrollingEnabled]="true"
-            validationGroup="userData"
-          >
-            <dxi-item itemType="group" caption="Account Information">
-              <dxi-item dataField="userName" [label]="{ text: 'Username' }">
-                <dxi-validation-rule
-                  type="required"
-                  message="Username is required"
-                >
-                </dxi-validation-rule>
-              </dxi-item>
-              <dxi-item
-                dataField="passWord"
-                [label]="{ text: 'Password' }"
-                [editorOptions]="{ mode: 'password' }"
-              >
-                <dxi-validation-rule
-                  type="required"
-                  message="Password is required"
-                >
-                </dxi-validation-rule>
-              </dxi-item>
-            </dxi-item>
-            <dxi-item
-              itemType="group"
-              [colCount]="2"
-              [cssClass]="'buttonGroup'"
-            >
-              <dxi-item
-                itemType="button"
-                horizontalAlignment="center"
-                [buttonOptions]="loginButtonOptions"
-              >
-              </dxi-item>
-              <dxi-item
-                itemType="button"
-                horizontalAlignment="center"
-                [buttonOptions]="resetButtonOptions"
-              >
-              </dxi-item>
-            </dxi-item>
-          </dx-form>
-        </form>
+<div style="display: flex; justify-content: center; align-items: center">
+  <form (submit)="onLoginSubmit($event)" [classList]="['loginForm']">
+    <div class="long-title">
+      <h3>Login</h3>
+    </div>
+    <dx-form
+      id="form"
+      (onContentReady)="onFormShown($event)"
+      [formData]="user"
+      [readOnly]="false"
+      [showColonAfterLabel]="true"
+      [showValidationSummary]="true"
+      [scrollingEnabled]="true"
+      validationGroup="userData"
+    >
+      <dxi-item itemType="group" caption="Account Information">
+        <dxi-item dataField="userName" [label]="{ text: 'Username' }">
+          <dxi-validation-rule type="required" message="Username is required">
+          </dxi-validation-rule>
+        </dxi-item>
+        <dxi-item
+          dataField="passWord"
+          [label]="{ text: 'Password' }"
+          [editorOptions]="{ mode: 'password' }"
+        >
+          <dxi-validation-rule type="required" message="Password is required">
+          </dxi-validation-rule>
+        </dxi-item>
       </dxi-item>
-      <dxi-item class="rect demo-dark" [ratio]="1"></dxi-item>
-    </dx-box>
-  </dxi-item>
-  <dxi-item class="rect demo-dark footer" [ratio]="1"></dxi-item>
-</dx-box>
+      <dxi-item itemType="group" [colCount]="2" [cssClass]="'buttonGroup'">
+        <dxi-item
+          itemType="button"
+          horizontalAlignment="center"
+          [buttonOptions]="loginButtonOptions"
+        >
+        </dxi-item>
+        <dxi-item
+          itemType="button"
+          horizontalAlignment="center"
+          [buttonOptions]="resetButtonOptions"
+        >
+        </dxi-item>
+      </dxi-item>
+    </dx-form>
+  </form>
+</div>

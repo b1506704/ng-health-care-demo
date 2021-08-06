@@ -577,7 +577,7 @@ export class UserStore extends StateService<UserState> {
     this.userService.logoutUser(user).subscribe({
       next: (data: any) => {
         this.setState({ responseMsg: data });
-        this.store.setCurrentUser({});
+        this.store.setCurrentUser(null);
         this.store.setCurrentUserRole('');
         this.setIsLoading(false);
         localStorage.removeItem('access_token');
