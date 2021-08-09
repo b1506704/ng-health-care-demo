@@ -1,6 +1,6 @@
 <dx-gallery
   [dataSource]="dataSource"
-  [height]="550"
+  [height]="'100vh'"
   [slideshowDelay]="slideshowDelay"
   [loop]="true"
   width="100%"
@@ -21,8 +21,8 @@
         <img class="gallery-image" src="{{ galleryItem.imgUrl }}" />
       </div>
       <div class="content-body">
-        <div class="gallery-title">{{ galleryItem.title }}</div>
-        <div class="gallery-subtitle">{{ galleryItem.subTitle }}</div>
+        <p class="gallery-title">{{ galleryItem.title }}</p>
+        <p class="gallery-subtitle">{{ galleryItem.subTitle }}</p>
         <dx-button
           icon="arrowright"
           type="normal"

@@ -8,6 +8,7 @@ import {
   DxFormModule,
   DxHtmlEditorModule,
   DxPopupModule,
+  DxResponsiveBoxModule,
   DxScrollViewModule,
   DxSortableModule,
   DxSpeedDialActionModule,

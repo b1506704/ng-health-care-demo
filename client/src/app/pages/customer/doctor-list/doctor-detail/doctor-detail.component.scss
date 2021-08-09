@@ -4,10 +4,19 @@
   align-items: center;
   margin-bottom: 15px;
 }
-
-.img-container img {
-  height: 150px;
-  width: 150px;
-  border-radius: 150px;
-  box-shadow: rgba(79, 205, 255, 0.25) 0px 25px 50px -12px;
+@media screen and (max-width: 450px) {
+  .img-container img {
+    height: 100px;
+    width: 100px;
+    border-radius: 100px;
+    box-shadow: rgba(79, 205, 255, 0.25) 0px 25px 50px -12px;
+  }
+}
+@media screen and (min-width: 451px) {
+  .img-container img {
+    height: 150px;
+    width: 150px;
+    border-radius: 150px;
+    box-shadow: rgba(79, 205, 255, 0.25) 0px 25px 50px -12px;
+  }
 }

@@ -11,11 +11,28 @@
   align-items: center;
   height: 100%;
   width: 100%;
-  background-color: rgba(0, 0, 0, 0.103);
+  background-color: rgba(3, 2, 0, 0.9);
   z-index: 999;
-  backdrop-filter: blur(5px);
   position: absolute;
 }
+
+@supports (
+  (-webkit-backdrop-filter: blur(2em)) or (backdrop-filter: blur(2em))
+) {
+  .overlay {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+    background-color: rgba(3, 2, 0, 0.5);
+    backdrop-filter: blur(2em);
+    -webkit-backdrop-filter: blur(2em);
+    z-index: 999;
+    position: absolute;
+  }
+}
+
 .bar_loader,
 .bar_loader:before,
 .bar_loader:after {

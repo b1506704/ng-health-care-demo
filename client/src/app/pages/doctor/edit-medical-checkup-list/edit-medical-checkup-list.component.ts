@@ -358,6 +358,10 @@ export class EditMedicalCheckupListComponent implements OnInit, OnDestroy {
     this.router.navigate(['/schedule_list']);
   }
 
+  screen(width: any) {
+    return ( width < 451 ) ? 'sm' : 'lg';
+  }
+
   ngOnInit(): void {
     this.currentCheckupPendingPageListener();
     this.currentCheckupCompletePageListener();
