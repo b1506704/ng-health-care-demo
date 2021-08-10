@@ -7,14 +7,15 @@
     font-size: large;
     font-weight: bold;
     user-select: none;
+    margin-bottom: 10px;
   "
 >
-  <span> Patient: {{ checkUpDetail.customerName }} </span>
-  <span> Symptoms: {{ checkUpDetail.purpose }}</span>
-  <span> Doctor: {{ doctorData.fullName }}</span>
+  <span> Patient: {{ checkUpDetail?.customerName }} </span>
+  <span> Symptoms: {{ checkUpDetail?.purpose }}</span>
+  <span> Doctor: {{ doctorData?.fullName }}</span>
 </div>
-<dx-box>
-  <dxi-item [ratio]="2" [classList]="['box-shadow']">
+<div class="checkup-container">
+  <div class="box-shadow">
     <p
       [ngClass]="{
         'sortable-header-animation': isMedicineDragging === true,
@@ -27,14 +28,13 @@
       <dxi-item
         widget="dxTextBox"
         [options]="searchMedicineBoxOptions"
-        location="center"
-        locateInMenu="auto"
+        location="before"
       >
       </dxi-item>
       <dxi-item
         widget="dxButton"
         [options]="refreshMedicineButtonOptions"
-        location="center"
+        location="after"
         locateInMenu="auto"
       >
       </dxi-item>
@@ -77,8 +77,8 @@
         </dx-sortable>
       </dx-scroll-view>
     </div>
-  </dxi-item>
-  <dxi-item [ratio]="2" [classList]="['box-shadow']">
+  </div>
+  <div class="box-shadow">
     <p
       [ngClass]="{
         'sortable-header-animation': isMedicineDragging === true,
@@ -166,8 +166,8 @@
         </dx-sortable>
       </dx-scroll-view>
     </div>
-  </dxi-item>
-  <dxi-item [ratio]="2" [classList]="['box-shadow']">
+  </div>
+  <div class="box-shadow">
     <p
       [ngClass]="{
         'sortable-header-animation': isDiseaseDragging === true,
@@ -180,14 +180,13 @@
       <dxi-item
         widget="dxTextBox"
         [options]="searchDiseaseBoxOptions"
-        location="center"
-        locateInMenu="auto"
+        location="before"
       >
       </dxi-item>
       <dxi-item
         widget="dxButton"
         [options]="refreshDiseaseButtonOptions"
-        location="center"
+        location="after"
         locateInMenu="auto"
       >
       </dxi-item>
@@ -230,8 +229,8 @@
         </dx-sortable>
       </dx-scroll-view>
     </div>
-  </dxi-item>
-  <dxi-item [ratio]="2" [classList]="['box-shadow']">
+  </div>
+  <div class="box-shadow">
     <p
       [ngClass]="{
         'sortable-header-animation': isDiseaseDragging === true,
@@ -311,8 +310,8 @@
         </dx-sortable>
       </dx-scroll-view>
     </div>
-  </dxi-item>
-</dx-box>
+  </div>
+</div>
 <dx-toolbar>
   <dxi-item location="after" locateInMenu="auto">
     <dx-button
@@ -336,8 +335,8 @@
   </dxi-item>
 </dx-toolbar>
 <dx-popup
-  [width]="'50%'"
-  [height]="'95%'"
+  [width]="'80%'"
+  [height]="'80%'"
   [showTitle]="true"
   [shading]="true"
   [title]="'Medicine Detail'"
@@ -398,19 +397,13 @@
               >
               </dxi-validation-rule>
             </dxi-item>
-            <dxi-item
-              dataField="brand"
-              [label]="{ text: 'Brand' }"
-              editorType="dxTextBox"
-              [editorOptions]="{ disabled: true }"
-            >
-            </dxi-item>
-            <dxi-item
-              dataField="effect"
-              [label]="{ text: 'Effect' }"
-              editorType="dxTextBox"
-              [editorOptions]="{ disabled: true }"
-            >
+            <dxi-item name="effect">
+              <dxo-label text="Effect"></dxo-label>
+              <div *dxTemplate>
+                <div class="responsive-field">
+                  {{ currentMedicine?.effect }}
+                </div>
+              </div>
             </dxi-item>
             <dxi-item
               itemType="group"
@@ -437,8 +430,8 @@
   </div>
 </dx-popup>
 <dx-popup
-  [width]="'50%'"
-  [height]="'70%'"
+  [width]="'80%'"
+  [height]="'80%'"
   [showTitle]="true"
   [shading]="true"
   [title]="'Disease Detail'"
@@ -488,12 +481,13 @@
               >
               </dxi-validation-rule>
             </dxi-item>
-            <dxi-item
-              dataField="description"
-              [label]="{ text: 'Description' }"
-              editorType="dxTextBox"
-              [editorOptions]="{ disabled: true }"
-            >
+            <dxi-item name="description">
+              <dxo-label text="Description"></dxo-label>
+              <div *dxTemplate>
+                <div class="responsive-field">
+                  {{ currentDisease?.description }}
+                </div>
+              </div>
             </dxi-item>
             <dxi-item
               itemType="group"

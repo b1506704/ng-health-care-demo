@@ -6,7 +6,6 @@ pdfMake.vfs = pdfFonts.pdfMake.vfs;
 import htmlToPdfmake from 'html-to-pdfmake';
 
 import { Prescription } from 'src/app/shared/models/prescription';
-import { MedicalCheckupStore } from 'src/app/shared/services/medical-checkup/medical-checkup-store.service';
 import { PrescriptionStore } from 'src/app/shared/services/prescription/prescription-store.service';
 import { StoreService } from 'src/app/shared/services/store.service';
 
@@ -19,7 +18,6 @@ export class PrescriptionViewComponent
   implements OnInit, OnDestroy, OnChanges
 {
   constructor(
-    private medicalCheckupStore: MedicalCheckupStore,
     private store: StoreService,
     private prescriptionStore: PrescriptionStore
   ) {}

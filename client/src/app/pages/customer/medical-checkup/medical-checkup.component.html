@@ -11,21 +11,20 @@
     </dx-button>
   </dxi-item>
 </dx-toolbar>
-<dx-box>
-  <dxi-item [ratio]="2">
+<div class="checkup-container">
+  <div class="box-shadow">
     <p class="sortable-header">Pending</p>
     <dx-toolbar>
       <dxi-item
         widget="dxTextBox"
         [options]="searchPendingBoxOptions"
-        location="center"
-        locateInMenu="auto"
+        location="before"
       >
       </dxi-item>
       <dxi-item
         widget="dxButton"
         [options]="refreshPendingButtonOptions"
-        location="center"
+        location="after"
         locateInMenu="auto"
       >
       </dxi-item>
@@ -37,7 +36,7 @@
         [showScrollbar]="true"
         [reachBottomText]="'Loading...'"
         [scrollByContent]="true"
-        [height]="'45vh'"
+        [height]="'40vh'"
         (onPullDown)="updatePendingTopContent($event)"
         (onReachBottom)="updatePendingBottomContent($event)"
         [scrollByThumb]="true"
@@ -67,21 +66,20 @@
         </dx-sortable>
       </dx-scroll-view>
     </div>
-  </dxi-item>
-  <dxi-item [ratio]="2">
+  </div>
+  <div class="box-shadow">
     <p class="sortable-header">Complete</p>
     <dx-toolbar>
       <dxi-item
         widget="dxTextBox"
         [options]="searchCompleteBoxOptions"
-        location="center"
-        locateInMenu="auto"
+        location="before"
       >
       </dxi-item>
       <dxi-item
         widget="dxButton"
         [options]="refreshCompleteButtonOptions"
-        location="center"
+        location="after"
         locateInMenu="auto"
       >
       </dxi-item>
@@ -94,7 +92,7 @@
         [reachBottomText]="'Loading...'"
         [scrollByContent]="true"
         [scrollByThumb]="true"
-        [height]="'45vh'"
+        [height]="'40vh'"
         (onPullDown)="updateCompleteTopContent($event)"
         (onReachBottom)="updateCompleteBottomContent($event)"
       >
@@ -116,7 +114,7 @@
               <div class="card-assignee">
                 {{ item?.startDate | date: "fullDate" }}
               </div>
-              <dx-toolbar >
+              <dx-toolbar>
                 <dxi-item location="center">
                   <dx-button
                     icon="edit"
@@ -133,15 +131,13 @@
         </dx-sortable>
       </dx-scroll-view>
     </div>
-  </dxi-item>
-  <dxi-item [ratio]="8" [classList]="['box-shadow']">
-    <div class="box-container">
-      <app-prescription-view
-        [selectedPrescription]="selectedPrescription"
-      ></app-prescription-view>
-    </div>
-  </dxi-item>
-</dx-box>
+  </div>
+  <div class="html-editor-container">
+    <app-prescription-view
+      [selectedPrescription]="selectedPrescription"
+    ></app-prescription-view>
+  </div>
+</div>
 <dx-speed-dial-action
   icon="like"
   label="Request Checkup"
@@ -150,8 +146,8 @@
 >
 </dx-speed-dial-action>
 <dx-popup
-  [width]="400"
-  [height]="580"
+  [width]="'80%'"
+  [height]="'80%'"
   [showTitle]="true"
   [shading]="true"
   [title]="'Checkup Information'"

@@ -20,33 +20,30 @@
       >
       </dx-button>
     </dxi-item>
-
     <dxi-item [location]="'center'" [text]="'Room ' + roomDetail.number">
     </dxi-item>
   </dx-toolbar>
-  <div style="margin-left: 15px">
-    <dx-box>
-      <dxi-item [ratio]="1">
-        <ng-container *ngIf="customerList">
-          <dx-list
-            [height]="'70vh'"
-            [dataSource]="customerList"
-            [searchEnabled]="true"
-            searchExpr="fullName"
-            searchMode="contains"
-            selectionMode="single"
-            (onSelectionChanged)="listSelectionChanged($event)"
-            [selectedItemKeys]="[customerList._id]"
-          >
-            <div *dxTemplate="let data of 'item'">
-              <div>{{ data?.fullName }}</div>
-            </div>
-          </dx-list>
-        </ng-container>
-      </dxi-item>
-      <dxi-item [ratio]="6">
-        <router-outlet name="conditionOutlet"></router-outlet>
-      </dxi-item>
-    </dx-box>
+  <div class="monitor-container">
+    <ng-container *ngIf="customerList">
+      <div class="list-container box-shadow">
+        <dx-list
+          [height]="'70vh'"
+          [dataSource]="customerList"
+          [searchEnabled]="true"
+          searchExpr="fullName"
+          searchMode="contains"
+          selectionMode="single"
+          (onSelectionChanged)="listSelectionChanged($event)"
+          [selectedItemKeys]="[customerList._id]"
+        >
+          <div *dxTemplate="let data of 'item'">
+            <div>{{ data?.fullName }}</div>
+          </div>
+        </dx-list>
+      </div>
+    </ng-container>
+    <div class="condition-container">
+      <router-outlet name="conditionOutlet"></router-outlet>
+    </div>
   </div>
 </ng-container>

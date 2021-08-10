@@ -1,7 +1,12 @@
 <div style="height: 60vh">
   <div
     *ngIf="patientData"
-    style="display: flex; justify-content: space-around; align-items: center; flex-wrap: wrap;"
+    style="
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      flex-wrap: wrap;
+    "
   >
     <h2 style="text-align: center">
       Your Room: {{ customerData?.assignedRoom }}
@@ -17,7 +22,12 @@
   </div>
   <ng-container *ngIf="patientData">
     <div
-      style="display: flex; justify-content: space-evenly; align-items: center; flex-wrap: wrap;"
+      style="
+        display: flex;
+        justify-content: space-evenly;
+        align-items: center;
+        flex-wrap: wrap;
+      "
     >
       <div
         style="
@@ -46,14 +56,14 @@
           >
             Your Info
           </p>
-          <div>Full Name: {{ customerData.fullName }}</div>
-          <div>Age: {{ customerData.age }}</div>
-          <div>Gender: {{ customerData.gender }}</div>
-          <div>Blood Type: {{ customerData.bloodType }}</div>
-          <div>Height: {{ customerData.height }}</div>
-          <div>Weight: {{ customerData.weight }}</div>
-          <div>Job: {{ customerData.occupation }}</div>
-          <div>Address: {{ customerData.address }}</div>
+          <div>Full Name: {{ customerData?.fullName }}</div>
+          <div>Age: {{ customerData?.age }}</div>
+          <div>Gender: {{ customerData?.gender }}</div>
+          <div>Blood Type: {{ customerData?.bloodType }}</div>
+          <div>Height: {{ customerData?.height }}</div>
+          <div>Weight: {{ customerData?.weight }}</div>
+          <div>Job: {{ customerData?.occupation }}</div>
+          <div>Address: {{ customerData?.address }}</div>
         </ng-container>
       </div>
       <div id="gauge-demo">
@@ -164,8 +174,8 @@
   >
   </dx-speed-dial-action>
   <dx-popup
-    [width]="400"
-    [height]="380"
+    [width]="'90%'"
+    [height]="'80%'"
     [showTitle]="true"
     [shading]="true"
     [title]="'Doctor Command'"
@@ -205,8 +215,8 @@
     </div>
   </dx-popup>
   <dx-popup
-    [width]="400"
-    [height]="380"
+    [width]="'90%'"
+    [height]="'80%'"
     [showTitle]="true"
     [shading]="true"
     [title]="'Healthcare Service'"
@@ -214,7 +224,7 @@
     [closeOnOutsideClick]="false"
     [showCloseButton]="true"
     [(visible)]="popupVisible"
-    [position]="'right'"
+    [position]="'center'"
     [classList]="['popup']"
   >
     <div *dxTemplate="let data of 'content'">
@@ -251,26 +261,12 @@
               color: rgb(255, 249, 249);
             "
           >
-            {{ item.message }}
+            {{ item?.message }}
           </div>
-          <div>{{ item.date }}</div>
+          <div>{{ item?.date }}</div>
         </div>
       </dx-scroll-view>
     </div>
-    <dxi-toolbar-item
-      widget="dxButton"
-      toolbar="bottom"
-      location="after"
-      [options]="sendMessageButtonOption"
-    >
-    </dxi-toolbar-item>
-    <dxi-toolbar-item
-      widget="dxButton"
-      toolbar="bottom"
-      location="before"
-      [options]="clearMessageButtonOption"
-    >
-    </dxi-toolbar-item>
     <dxi-toolbar-item toolbar="bottom" location="center">
       <dx-text-box
         (onValueChanged)="onTextBoxValueChanged($event)"
@@ -279,6 +275,14 @@
         [placeholder]="'Enter message...'"
       >
       </dx-text-box>
+    </dxi-toolbar-item>
+    <dxi-toolbar-item
+      widget="dxButton"
+      toolbar="bottom"
+      location="center"
+      locateInMenu="auto"
+      [options]="sendMessageButtonOption"
+    >
     </dxi-toolbar-item>
   </dx-popup>
 </div>

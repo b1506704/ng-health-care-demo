@@ -1,7 +1,6 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { Disease } from 'src/app/shared/models/disease';
 import { Doctor } from 'src/app/shared/models/doctor';
-import { MedicalCheckup } from 'src/app/shared/models/medical-checkup';
 import { Medicine } from 'src/app/shared/models/medicine';
 import { DiseaseStore } from 'src/app/shared/services/disease/disease-store.service';
 import { MedicineStore } from 'src/app/shared/services/medicine/medicine-store.service';
@@ -89,7 +88,7 @@ export class DiagnoseEditorComponent implements OnInit, OnDestroy {
     hint: 'Delete all',
     onClick: this.onDiagnoseDiseaseDeleteAll.bind(this),
   };
-  sortableHeight: any = '40vh';
+  sortableHeight: any = '30vh';
   degree: Object = {
     items: ['1', '2', '3', '4'],
     value: '1',

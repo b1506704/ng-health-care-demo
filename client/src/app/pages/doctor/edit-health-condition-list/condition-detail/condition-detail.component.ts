@@ -48,13 +48,13 @@ export class ConditionDetailComponent implements OnInit, OnDestroy {
     { text: 'We have your test results. Please come to my office now.' },
     { text: 'Please stay in your bed for further instruction' },
   ];
-
   currentMessage: string = '';
   messageList: Array<string> = [];
   currentCondition = this.socket.fromEvent<any>('condition');
   conditions = this.socket.fromEvent<Array<any>>('conditions');
   message = this.socket.fromEvent<any>('message');
   command = this.socket.fromEvent<any>('command');
+
   customizeText(arg: any) {
     return arg.valueText + ' BPM';
   }

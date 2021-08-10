@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { MedicalCheckupRoutingModule } from './medical-checkup-routing.module';
 import { MedicalCheckupComponent } from './medical-checkup.component';
 import {
-  DxBoxModule,
   DxButtonModule,
   DxFormModule,
   DxHtmlEditorModule,
@@ -24,7 +23,6 @@ import { PrescriptionViewComponent } from './prescription-view/prescription-view
     DxTabPanelModule,
     DxHtmlEditorModule,
     DxButtonModule,
-    DxBoxModule,
     DxSortableModule,
     DxSpeedDialActionModule,
     DxPopupModule,

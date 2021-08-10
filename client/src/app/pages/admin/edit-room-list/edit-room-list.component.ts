@@ -114,8 +114,7 @@ export class EditRoomListComponent implements OnInit, OnDestroy {
         },
       },
       {
-        location: 'center',
-        locateInMenu: 'auto',
+        location: 'before',
         widget: 'dxTextBox',
         options: {
           valueChangeEvent: 'keyup',
@@ -123,7 +122,7 @@ export class EditRoomListComponent implements OnInit, OnDestroy {
           onKeyUp: this.onSearchKeyupHandler.bind(this),
           onValueChanged: this.onSearchValueChanged.bind(this),
           mode: 'search',
-          placeholder: 'Search with room number',
+          placeholder: 'Search number',
         },
       },
       {

@@ -8,15 +8,14 @@
   <dxi-item
     widget="dxTextBox"
     [options]="searchBoxOptions"
-    location="center"
-    [locateInMenu]="'auto'"
+    location="before"
   >
   </dxi-item>
   <dxi-item
     widget="dxButton"
     [options]="refreshButtonOptions"
-    location="center"
-    [locateInMenu]="'center'"
+    location="after"
+    [locateInMenu]="'auto'"
   >
   </dxi-item>
   <dxi-item [locateInMenu]="'auto'" [location]="'after'">
@@ -96,8 +95,8 @@
 </dx-speed-dial-action>
 <dx-popup
   [(visible)]="isDetailPopupVisible"
-  [height]="'95%'"
-  [width]="'50%'"
+  [height]="'80%'"
+  [width]="'80%'"
   [showTitle]="true"
   [shading]="true"
   [title]="'Doctor Detail'"

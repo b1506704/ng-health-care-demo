@@ -44,7 +44,7 @@ export class HeaderComponent implements OnInit {
 
   isLoadIndicatorVisible: boolean = false;
   isLoggedIn: boolean = false;
-  currentUser: User;
+  currentUser!: User;
 
   constructor(
     private router: Router,
@@ -57,7 +57,9 @@ export class HeaderComponent implements OnInit {
       this.isLoadIndicatorVisible = data;
     });
     this.store.$currentUser.subscribe((data: any) => {
-      this.currentUser = data;
+      if (data !== null) {
+        this.currentUser = data;
+      }
       // console.log(data);
     });
     this.userStore.$isLoggedIn.subscribe((data: any) => {

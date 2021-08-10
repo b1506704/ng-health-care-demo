@@ -22,7 +22,7 @@
   .dx-toolbar-items-container
   .dx-toolbar-after {
   padding: 0 40px;
-  
+
   :host-context(.screen-x-small) & {
     padding: 0 20px;
   }
@@ -34,11 +34,17 @@
   padding: 0;
 }
 
-.neon-header {
-  // text-shadow: $neon-light;
-  font-family: Hero;
-  font-size: 30px;
-  letter-spacing: 5px;
+@media screen and (max-width: 340px) {
+  .neon-header {
+    display: none;
+  }
+}
+@media screen and (min-width: 341px) {
+  .neon-header {
+    font-family: Hero;
+    font-size: 30px;
+    letter-spacing: 5px;
+  }
 }
 
 ::ng-deep .header-title .dx-item-content {

@@ -3,12 +3,10 @@ import { CommonModule } from '@angular/common';
 import { EditMedicalCheckupListRoutingModule } from './edit-medical-checkup-list-routing.module';
 import { EditMedicalCheckupListComponent } from './edit-medical-checkup-list.component';
 import {
-  DxBoxModule,
   DxButtonModule,
   DxFormModule,
   DxHtmlEditorModule,
   DxPopupModule,
-  DxResponsiveBoxModule,
   DxScrollViewModule,
   DxSortableModule,
   DxSpeedDialActionModule,
@@ -26,7 +24,6 @@ import { FormatCurrencyModule } from 'src/app/shared/pipes/formatCurrency.module
     DxToolbarModule,
     DxButtonModule,
     DxTabPanelModule,
-    DxBoxModule,
     DxHtmlEditorModule,
     DxSortableModule,
     DxSpeedDialActionModule,

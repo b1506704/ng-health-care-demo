@@ -9,7 +9,13 @@
   <form id="doctor-form-container" [classList]="['doctor-form']">
     <dx-form id="doctor-form" [formData]="doctorData" [readOnly]="true">
       <dxi-item itemType="group" caption="Personal Information">
-        <dxi-item dataField="fullName" [label]="{ text: 'Full Name' }">
+        <dxi-item name="fullName">
+          <dxo-label text="Full Name"></dxo-label>
+          <div *dxTemplate>
+            <div class="responsive-field">
+              {{ doctorData?.fullName }}
+            </div>
+          </div>
         </dxi-item>
         <dxi-item dataField="gender" [label]="{ text: 'Gender' }"> </dxi-item>
         <dxi-item dataField="age" [label]="{ text: 'Age' }"> </dxi-item>
@@ -21,7 +27,13 @@
           [label]="{ text: 'Years of experience' }"
         >
         </dxi-item>
-        <dxi-item dataField="description" [label]="{ text: 'Description' }">
+        <dxi-item name="description">
+          <dxo-label text="Description"></dxo-label>
+          <div *dxTemplate>
+            <div class="responsive-field">
+              {{ doctorData?.description }}
+            </div>
+          </div>
         </dxi-item>
       </dxi-item>
     </dx-form>

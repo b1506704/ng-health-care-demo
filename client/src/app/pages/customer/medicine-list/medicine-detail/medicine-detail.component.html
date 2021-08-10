@@ -9,23 +9,32 @@
   <form id="medicine-form-container" [classList]="['signupForm']">
     <dx-form id="medicine-form" [formData]="medicineData" [readOnly]="true">
       <dxi-item itemType="group" caption="Medicine Information">
-        <dxi-item dataField="name" [label]="{ text: 'Name' }"> </dxi-item>
+        <dxi-item name="name">
+          <dxo-label text="Name"></dxo-label>
+          <div *dxTemplate>
+            <div class="responsive-field">
+              {{ medicineData?.name }}
+            </div>
+          </div>
+        </dxi-item>
+
         <dxi-item dataField="brand" [label]="{ text: 'Brand' }"> </dxi-item>
         <dxi-item name="price">
           <dxo-label text="Price"></dxo-label>
           <div *dxTemplate>
-            <div
-              style="
-                width: 100%;
-                border-bottom: rgb(255, 255, 255) 2px dotted;
-                font-size: large;
-              "
-            >
+            <div class="responsive-field">
               {{ price }}
             </div>
           </div>
         </dxi-item>
-        <dxi-item dataField="effect" [label]="{ text: 'Effect' }"> </dxi-item>
+        <dxi-item name="effect">
+          <dxo-label text="Effect"></dxo-label>
+          <div *dxTemplate>
+            <div class="responsive-field">
+              {{ medicineData?.effect }}
+            </div>
+          </div>
+        </dxi-item>
       </dxi-item>
     </dx-form>
   </form>

@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
 import { Doctor } from 'src/app/shared/models/doctor';
 import { DoctorStore } from 'src/app/shared/services/doctor/doctor-store.service';
+import { ScreenService } from 'src/app/shared/services/screen.service';
 
 @Component({
   selector: 'app-doctor-statistics',
@@ -49,7 +49,10 @@ export class DoctorStatisticsComponent implements OnInit, OnDestroy {
   chartHeight: number | string = 500;
   chartWidth: number | string = 1000;
 
-  constructor(private doctorStore: DoctorStore, private router: Router) {}
+  constructor(
+    private doctorStore: DoctorStore,
+    private screen: ScreenService
+  ) {}
 
   onPointClick(e: any) {
     e.target.select();
@@ -86,11 +89,17 @@ export class DoctorStatisticsComponent implements OnInit, OnDestroy {
     });
   }
 
-  navigateToEditTheme() {
-    this.router.navigate(['/edit_theme']);
-  }
-
   ngOnInit(): void {
+    const isXSmall = this.screen.sizes['screen-x-small'];
+    console.log('SCREEN XSMALL');
+    console.log(isXSmall);
+    if (isXSmall === true) {
+      this.chartHeight = 310;
+      this.chartWidth = 310;
+    } else {
+      this.chartHeight = 600;
+      this.chartWidth = 600;
+    }
     this.barChartSourceListener();
     this.funnelChartSourceListener();
     this.pieChartSourceListener();

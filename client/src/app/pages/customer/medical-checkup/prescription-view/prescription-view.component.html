@@ -5,6 +5,7 @@
   dragDirection="horizontal"
   (onDragStart)="onTabDragStart($event)"
   (onReorder)="onTabDrop($event)"
+  [width]="'100%'"
 >
   <dx-tab-panel
     [dataSource]="currentTabList"

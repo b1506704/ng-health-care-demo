@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
 import { Customer } from 'src/app/shared/models/customer';
 import { CustomerStore } from 'src/app/shared/services/customer/customer-store.service';
+import { ScreenService } from 'src/app/shared/services/screen.service';
 
 @Component({
   selector: 'app-customer-statistics',
@@ -46,10 +46,13 @@ export class CustomerStatisticsComponent implements OnInit, OnDestroy {
       totalCount: '',
     },
   ];
-  chartHeight: number | string = 500;
-  chartWidth: number | string = 1000;
+  chartHeight: any = 610;
+  chartWidth: any = 610;
 
-  constructor(private customerStore: CustomerStore, private router: Router) {}
+  constructor(
+    private customerStore: CustomerStore,
+    private screen: ScreenService
+  ) {}
 
   customizeTooltip = (info: any) => {
     return {
@@ -113,6 +116,16 @@ export class CustomerStatisticsComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    const isXSmall = this.screen.sizes['screen-x-small'];
+    console.log('SCREEN XSMALL');
+    console.log(isXSmall);
+    if (isXSmall === true) {
+      this.chartHeight = 310;
+      this.chartWidth = 310;
+    } else {
+      this.chartHeight = 600;
+      this.chartWidth = 600;
+    }
     this.barChartSourceListener();
     this.funnelChartSourceListener();
     this.pieChartSourceListener();

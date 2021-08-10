@@ -4,6 +4,13 @@
   align-items: center;
   margin-bottom: 15px;
 }
+.responsive-field {
+  width: 100%;
+  border-bottom: rgb(255, 255, 255) 2px dotted;
+  font-size: large;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
 @media screen and (max-width: 450px) {
   .img-container img {
     height: 100px;

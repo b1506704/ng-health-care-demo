@@ -1,27 +1,31 @@
 @import "../../../../dx-styles.scss";
+
 ::ng-deep #form-container {
   margin: 10px;
 }
 ::ng-deep .buttonGroup {
   margin-top: 20px;
 }
-::ng-deep .signupForm {
-  background-color: transparent;
-  // box-shadow: $box-shadow;
-  padding-left: 15px;
-  padding-right: 15px;
-}
-::ng-deep .long-title h3 {
-  font-family: "Segoe UI Light", "Helvetica Neue Light", "Segoe UI",
-    "Helvetica Neue", "Trebuchet MS", Verdana;
-  font-weight: 200;
-  font-size: 28px;
-  text-align: center;
-  margin-bottom: 20px;
-}
 
 #kanban {
   white-space: nowrap;
+}
+
+.kanban-toolbar {
+  background-color: transparent;
+}
+
+.sortable-header-animation {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+  font-family: hero;
+  font-size: 25px;
+  animation-name: randomColor;
+  animation-duration: 0.25s;
+  animation-direction: alternate;
+  animation-iteration-count: infinite;
 }
 
 .sortable-header {
@@ -44,6 +48,7 @@
   width: 100%;
   padding: 10px 20px;
   margin: 10px;
+  user-select: none;
   cursor: pointer;
 }
 
@@ -63,6 +68,53 @@
   width: 5px;
   border-radius: 2px;
   background: #86c285;
+}
+@media screen and (max-width: 800px) {
+  .checkup-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+  }
+  .html-editor-container {
+    margin-top: 20px;
+    padding-left: 15px;
+    padding-right: 15px;
+    width: 100%;
+  }
+  .box-shadow {
+    height: 80vh;
+    padding-left: 10px;
+    padding-right: 10px;
+    margin-top: 20px;
+    width: 100%;
+    box-shadow: rgba(0, 0, 0, 0.17) 0px -23px 25px 0px inset,
+      rgba(0, 0, 0, 0.15) 0px -36px 30px 0px inset,
+      rgba(0, 0, 0, 0.1) 0px -79px 40px 0px inset,
+      rgba(0, 0, 0, 0.06) 0px 2px 1px, rgba(0, 0, 0, 0.09) 0px 4px 2px,
+      rgba(0, 0, 0, 0.09) 0px 8px 4px, rgba(0, 0, 0, 0.09) 0px 16px 8px,
+      rgba(0, 0, 0, 0.09) 0px 32px 16px;
+  }
+}
+@media screen and (min-width: 801px) {
+  .checkup-container {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+  }
+  .box-shadow {
+    max-height: 75vh;
+    height: 70vh;
+    box-shadow: rgba(0, 0, 0, 0.17) 0px -23px 25px 0px inset,
+      rgba(0, 0, 0, 0.15) 0px -36px 30px 0px inset,
+      rgba(0, 0, 0, 0.1) 0px -79px 40px 0px inset,
+      rgba(0, 0, 0, 0.06) 0px 2px 1px, rgba(0, 0, 0, 0.09) 0px 4px 2px,
+      rgba(0, 0, 0, 0.09) 0px 8px 4px, rgba(0, 0, 0, 0.09) 0px 16px 8px,
+      rgba(0, 0, 0, 0.09) 0px 32px 16px;
+  }
+  .html-editor-container {
+    width: 60%;
+  }
 }
 
 .priority-0 {
@@ -87,4 +139,13 @@
 
 ::ng-deep .dx-sortable {
   display: block;
+}
+
+@keyframes randomColor {
+  from {
+    color: rgb(255, 255, 255);
+  }
+  to {
+    color: rgb(250, 102, 102);
+  }
 }

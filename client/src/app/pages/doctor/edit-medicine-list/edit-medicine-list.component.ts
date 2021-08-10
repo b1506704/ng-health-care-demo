@@ -112,8 +112,7 @@ export class EditMedicineListComponent implements OnInit, OnDestroy {
         },
       },
       {
-        location: 'center',
-        locateInMenu: 'auto',
+        location: 'before',
         widget: 'dxTextBox',
         options: {
           valueChangeEvent: 'keyup',
@@ -121,7 +120,7 @@ export class EditMedicineListComponent implements OnInit, OnDestroy {
           onKeyUp: this.onSearchKeyupHandler.bind(this),
           onValueChanged: this.onSearchValueChanged.bind(this),
           mode: 'search',
-          placeholder: 'Search with name',
+          placeholder: 'Search name',
         },
       },
       {
