@@ -69,7 +69,7 @@ export const getImageBySourceID = async (req, res) => {
     if (image) {
       res.status(200).json(image);
     } else {
-      res.status(404).json({ errorMessage: "Requested data does not exist!" });
+      res.status(200).json(null);
     }
   } catch (error) {
     res.status(404).json({ errorMessage: "Failed to get data!" });
@@ -117,22 +117,20 @@ export const createImage = async (req, res) => {
   const { sourceID, url } = req.body;
   console.log(req.body);
   try {
-    const newImage = new Image({
-      sourceID,
-      url,
-    });
-    await newImage.save();
-    // await MedicalCheckup.findOneAndUpdate(
-    //   {
-    //     _id: medicalCheckupID,
-    //   },
-    //   {
-    //     status: "complete",
-    //     priority: 1,
-    //     doctorID: doctorID,
-    //   }
-    // );
-    // console.log(`Update checkup ${medicalCheckupID}`);
+    const foundImage = await Image.findOne({ sourceID: sourceID });
+    if (foundImage) {
+      await Image.findOneAndUpdate(
+        { sourceID: sourceID },
+        { url: url },
+        { new: true }
+      );
+    } else {
+      const newImage = new Image({
+        sourceID,
+        url,
+      });
+      await newImage.save();
+    }
     res.status(200).json({
       message: `Image of ${sourceID} created`,
     });

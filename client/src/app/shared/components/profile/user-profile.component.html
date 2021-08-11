@@ -85,6 +85,20 @@
       >
         <dxi-item itemType="group">
           <dxi-item itemType="group" caption="Personal Information">
+            <dxi-item name="avatar">
+              <div *dxTemplate>
+                <div class="image-container">
+                  <img [src]="imageData.url" alt="..." />
+                  <input
+                    class="img-input"
+                    type="file"
+                    id="img"
+                    accept="image/*"
+                    (change)="handleInputChange($event)"
+                  />
+                </div>
+              </div>
+            </dxi-item>
             <dxi-item
               dataField="fullName"
               [label]="{ text: 'Full Name' }"
@@ -236,6 +250,20 @@
       >
         <dxi-item itemType="group">
           <dxi-item itemType="group" caption="Personal Information">
+            <dxi-item name="avatar">
+              <div *dxTemplate>
+                <div class="image-container">
+                  <img [src]="imageData.url" alt="..." />
+                  <input
+                    class="img-input"
+                    type="file"
+                    id="img"
+                    accept="image/*"
+                    (change)="handleInputChange($event)"
+                  />
+                </div>
+              </div>
+            </dxi-item>
             <dxi-item
               dataField="fullName"
               [label]="{ text: 'Full Name' }"

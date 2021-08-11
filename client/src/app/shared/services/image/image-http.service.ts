@@ -1,7 +1,6 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, throwError } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { Observable } from 'rxjs';
 import { Image } from '../../models/image';
 
 @Injectable({
@@ -10,51 +9,206 @@ import { Image } from '../../models/image';
 export class ImageHttpService {
   constructor(private http: HttpClient) {}
   apiImageUrl = 'https://ng-health-care-demo.herokuapp.com/images';
+  // apiImageUrl = 'http://localhost/images';
 
-  fetchImage(): Observable<Image> {
-    return this.http
-      .get<Image>(this.apiImageUrl, {
+  fetchImage(page: number, size: number): Observable<Image> {
+    const params = new HttpParams().set('page', page).set('size', size);
+    console.log(params.toString());
+    return this.http.get<Image>(this.apiImageUrl, {
+      params: params,
+      reportProgress: true,
+      observe: 'body',
+    });
+  }
+
+  searchImageByName(
+    value: string,
+    page: number,
+    size: number
+  ): Observable<Image> {
+    const params = new HttpParams()
+      .set('value', value)
+      .set('page', page)
+      .set('size', size);
+    console.log(params.toString());
+    return this.http.post<Image>(
+      this.apiImageUrl + '/searchByName',
+      {},
+      {
+        params: params,
         reportProgress: true,
         observe: 'body',
-      })
-      .pipe(catchError(this.handleError));
+      }
+    );
+  }
+
+  filterImageByPrice(
+    criteria: string,
+    value: number,
+    page: number,
+    size: number
+  ): Observable<Image> {
+    const params = new HttpParams()
+      .set('criteria', criteria)
+      .set('value', value)
+      .set('page', page)
+      .set('size', size);
+    console.log(params.toString());
+    return this.http.post<Image>(
+      this.apiImageUrl,
+      {},
+      {
+        params: params,
+        reportProgress: true,
+        observe: 'body',
+      }
+    );
+  }
+
+  filterImageByCategory(
+    value: string,
+    page: number,
+    size: number
+  ): Observable<Image> {
+    const params = new HttpParams()
+      .set('value', value)
+      .set('page', page)
+      .set('size', size);
+    console.log(params.toString());
+    return this.http.post<Image>(
+      this.apiImageUrl + '/filterByCategory',
+      {},
+      {
+        params: params,
+        reportProgress: true,
+        observe: 'body',
+      }
+    );
+  }
+
+  sortImageByName(
+    value: string,
+    page: number,
+    size: number
+  ): Observable<Image> {
+    const params = new HttpParams()
+      .set('value', value)
+      .set('page', page)
+      .set('size', size);
+    console.log(params.toString());
+    return this.http.post<Image>(
+      this.apiImageUrl + '/sortByName',
+      {},
+      {
+        params: params,
+        reportProgress: true,
+        observe: 'body',
+      }
+    );
+  }
+
+  sortImageByPrice(
+    value: string,
+    page: number,
+    size: number
+  ): Observable<Image> {
+    const params = new HttpParams()
+      .set('value', value)
+      .set('page', page)
+      .set('size', size);
+    console.log(params.toString());
+    return this.http.post<Image>(
+      this.apiImageUrl + '/sortByPrice',
+      {},
+      {
+        params: params,
+        reportProgress: true,
+        observe: 'body',
+      }
+    );
   }
 
   uploadImage(image: Image): Observable<Image> {
-    return this.http
-      .post<Image>(this.apiImageUrl, image, {
-        reportProgress: true,
-        observe: 'body',
-      })
-      .pipe(catchError(this.handleError));
+    return this.http.post<Image>(this.apiImageUrl, image, {
+      reportProgress: true,
+      observe: 'body',
+    });
   }
 
-  deleteImage(image: Image): Observable<ArrayBuffer> {
-    return this.http
-      .delete<ArrayBuffer>(this.apiImageUrl + `/${image.id}`, {
-        reportProgress: true,
-        observe: 'body',
-      })
-      .pipe(catchError(this.handleError));
+  generateRandomImage(): Observable<Image> {
+    return this.http.post<Image>(this.apiImageUrl + '/randomImage', {
+      reportProgress: true,
+      observe: 'body',
+    });
   }
 
-  updateImage(image: Image): Observable<Image> {
-    return this.http
-      .post<Image>(this.apiImageUrl + `/updateImage/${image.id}`, image, {
-        reportProgress: true,
-        observe: 'body',
-      })
-      .pipe(catchError(this.handleError));
+  deleteAllImages(): Observable<Image> {
+    return this.http.post<Image>(this.apiImageUrl + '/deleteAll', {
+      reportProgress: true,
+      observe: 'body',
+    });
   }
 
-  handleError(error: any) {
-    let errorMessage = '';
-    if (error.error instanceof ErrorEvent) {
-      errorMessage = error.error.message;
-    } else {
-      errorMessage = `Error Code: ${error.status}\nMessage: ${error.message}`;
-    }
-    console.log(errorMessage);
-    return throwError(errorMessage);
+  deleteImage(id: string): Observable<ArrayBuffer> {
+    return this.http.delete<ArrayBuffer>(this.apiImageUrl + `/${id}`, {
+      reportProgress: true,
+      observe: 'body',
+    });
+  }
+
+  getImage(id: string): Observable<Image> {
+    return this.http.get<Image>(this.apiImageUrl + `/${id}`, {
+      reportProgress: true,
+      observe: 'body',
+    });
+  }
+
+  getImageBySourceID(sourceID: string): Observable<Image> {
+    const params = new HttpParams().set('sourceID', sourceID);
+    console.log(params.toString());
+    return this.http.post<Image>(
+      this.apiImageUrl + '/bySourceID',
+      {},
+      {
+        params: params,
+        reportProgress: true,
+        observe: 'body',
+      }
+    );
+  }
+
+  deleteSelectedImages(
+    selectedItems: Array<String>
+  ): Observable<Array<String>> {
+    return this.http.post<Array<String>>(
+      this.apiImageUrl + '/batch',
+      selectedItems,
+      {
+        reportProgress: true,
+        observe: 'body',
+      }
+    );
+  }
+
+  updateImage(image: Image, key: string): Observable<Image> {
+    return this.http.post<Image>(
+      this.apiImageUrl + `/updateImage/${key}`,
+      image,
+      {
+        reportProgress: true,
+        observe: 'body',
+      }
+    );
+  }
+
+  fetchAll(): Observable<Image> {
+    return this.http.post<Image>(
+      this.apiImageUrl + `/fetchAll`,
+      {},
+      {
+        reportProgress: true,
+        observe: 'body',
+      }
+    );
   }
 }

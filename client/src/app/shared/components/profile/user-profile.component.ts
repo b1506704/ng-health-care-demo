@@ -5,6 +5,8 @@ import { DxFormComponent } from 'devextreme-angular';
 import { CustomerStore } from '../../services/customer/customer-store.service';
 import { DoctorStore } from '../../services/doctor/doctor-store.service';
 import { Customer } from '../../models/customer';
+import { ImageStore } from '../../services/image/image-store.service';
+import { Image } from '../../models/image';
 @Component({
   selector: 'app-user-profile',
   templateUrl: 'user-profile.component.html',
@@ -63,11 +65,16 @@ export class UserProfileComponent implements OnInit, OnDestroy {
   doctorData!: any;
   currentUser!: User;
   currentRole!: string;
+  imageData: Image = {
+    sourceID: '',
+    url: '../../../../assets/imgs/profile.png',
+  };
 
   constructor(
     private store: StoreService,
     private customerStore: CustomerStore,
-    private doctorStore: DoctorStore
+    private doctorStore: DoctorStore,
+    private imageStore: ImageStore
   ) {}
 
   onFormShown(e: any) {
@@ -82,6 +89,8 @@ export class UserProfileComponent implements OnInit, OnDestroy {
 
   onCustomerSubmit = (e: any) => {
     e.preventDefault();
+    this.imageData.sourceID = this.customerData._id;
+    this.imageStore.uploadImage(this.imageData, 0, 5);
     this.customerStore.updateCustomer(
       this.customerData,
       this.customerData._id,
@@ -92,8 +101,33 @@ export class UserProfileComponent implements OnInit, OnDestroy {
 
   onDoctorSubmit = (e: any) => {
     e.preventDefault();
+    this.imageData.sourceID = this.doctorData._id;
+    this.imageStore.uploadImage(this.imageData, 0, 5);
     this.doctorStore.updateDoctor(this.doctorData, this.doctorData._id, 0, 5);
   };
+
+  handleInputChange(e: any) {
+    var file = e.dataTransfer ? e.dataTransfer.files[0] : e.target.files[0];
+    console.log(file);
+    if (file !== undefined) {
+      var pattern = /image-*/;
+      var reader = new FileReader();
+
+      if (!file.type.match(pattern)) {
+        console.log('invalid format');
+        return;
+      }
+      reader.onload = this.handleReaderLoaded.bind(this);
+      reader.readAsDataURL(file);
+    }
+  }
+
+  handleReaderLoaded(e: any) {
+    var reader = e.target;
+    this.imageData.url = reader.result;
+    console.log('SOURCE ID');
+    console.log(this.imageData.sourceID);
+  }
 
   userDataListener() {
     return this.store.$currentUser.subscribe((data: any) => {
@@ -111,13 +145,33 @@ export class UserProfileComponent implements OnInit, OnDestroy {
 
   customerDataListener() {
     return this.customerStore.$customerInstance.subscribe((data: any) => {
-      this.customerData = data;
+      if (data !== undefined) {
+        this.customerData = data;
+        this.imageStore.getImageBySourceID(data._id).then(() => {
+          this.imageDataListener();
+        });
+      }
     });
   }
 
   doctorDataListener() {
     return this.doctorStore.$doctorInstance.subscribe((data: any) => {
-      this.doctorData = data;
+      if (data !== undefined) {
+        this.doctorData = data;
+        this.imageStore.getImageBySourceID(data._id).then(() => {
+          this.imageDataListener();
+        });
+      }
+    });
+  }
+
+  imageDataListener() {
+    return this.imageStore.$imageInstance.subscribe((data: any) => {
+      if (data !== null) {
+        console.log('IMAGE DATA');
+        console.log(data);
+        this.imageData = data;
+      }
     });
   }
 
@@ -162,5 +216,6 @@ export class UserProfileComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.userDataListener().unsubscribe();
     this.userRoleListener().unsubscribe();
+    this.imageDataListener().unsubscribe();
   }
 }
