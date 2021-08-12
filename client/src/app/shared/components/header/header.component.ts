@@ -42,8 +42,8 @@ export class HeaderComponent implements OnInit {
     },
   ];
 
-  isLoadIndicatorVisible: boolean = false;
-  isLoggedIn: boolean = false;
+  isLoadIndicatorVisible!: boolean;
+  isLoggedIn!: boolean ;
   currentUser!: User;
 
   constructor(

@@ -7,6 +7,9 @@ import { StoreService } from 'src/app/shared/services/store.service';
 import { DxScrollViewComponent, DxTextBoxComponent } from 'devextreme-angular';
 import { Doctor } from 'src/app/shared/models/doctor';
 import { DoctorStore } from 'src/app/shared/services/doctor/doctor-store.service';
+import { ImageStore } from 'src/app/shared/services/image/image-store.service';
+import { Image } from 'src/app/shared/models/image';
+import { ImageHttpService } from 'src/app/shared/services/image/image-http.service';
 @Component({
   selector: 'app-condition-detail',
   templateUrl: './condition-detail.component.html',
@@ -21,6 +24,15 @@ export class ConditionDetailComponent implements OnInit, OnDestroy {
   patientData!: any;
   patientID: string;
   customerData: Customer;
+  imageData: Image = {
+    sourceID: '',
+    category: '',
+    title: '',
+    fileName: '',
+    fileSize: 0,
+    fileType: '',
+    url: '../../../../assets/imgs/profile.png',
+  };
   doctorData: Doctor;
   stethoscopeSwitch: Boolean = true;
   thermometerSwitch: Boolean = true;
@@ -64,7 +76,9 @@ export class ConditionDetailComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private customerStore: CustomerStore,
     private doctorStore: DoctorStore,
-    private store: StoreService
+    private store: StoreService,
+    private imageStore: ImageStore,
+    private imageService: ImageHttpService
   ) {}
 
   getCondition(id: string) {
@@ -78,6 +92,13 @@ export class ConditionDetailComponent implements OnInit, OnDestroy {
   getPatientID() {
     return this.route.paramMap.subscribe((param) => {
       this.patientID = param.get('id');
+      this.imageService
+        .getImageBySourceID(param.get('id'))
+        .subscribe((data: any) => {
+          if (data !== null) {
+            this.imageData = data;
+          }
+        });
       this.customerStore.getCustomer(param.get('id')).then(() => {
         this.customerStore.$customerInstance.subscribe((data: any) => {
           if (data !== null) {

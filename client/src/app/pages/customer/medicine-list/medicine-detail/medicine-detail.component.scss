@@ -27,30 +27,3 @@
     box-shadow: rgba(79, 205, 255, 0.25) 0px 25px 50px -12px;
   }
 }
-
-.loading-circle {
-  content: "";
-  width: 150px;
-  height: 150px;
-  border-radius: 150;
-  border: 6px solid #2c3e5081;
-  box-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 15px #9dd7e6,
-    0 0 20px rgb(123, 163, 204), 0 0 25px #0073e6, 0 0 30px #50769c,
-    0 0 35px #45eb8a;
-  transform: translate(-50%, -50%);
-  animation: ring 1.5s infinite ease-out;
-}
-
-@keyframes ring {
-  0% {
-    width: 30px;
-    height: 30px;
-    opacity: 1;
-  }
-
-  100% {
-    width: 320px;
-    height: 320px;
-    opacity: 0;
-  }
-}

@@ -29,6 +29,11 @@ export class UserPanelComponent implements OnInit, OnDestroy {
   currentRole!: string;
   userImage: Image = {
     sourceID: '',
+    category: '',
+    title: '',
+    fileName: '',
+    fileSize: 0,
+    fileType: '',
     url: '../../../../assets/imgs/profile.png',
   };
 

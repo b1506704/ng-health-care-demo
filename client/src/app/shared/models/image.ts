@@ -1,4 +1,9 @@
 export interface Image {
     sourceID: string,
-    url: string
+    category: string,
+    title: string,
+    url: string,
+    fileName: string,
+    fileSize: number,
+    fileType: string
 }

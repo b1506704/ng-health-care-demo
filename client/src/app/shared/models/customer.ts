@@ -1,12 +1,12 @@
 export interface Customer {
   _id: string;
-  userName: String;
-  fullName: String;
-  age: Number;
-  gender: String;
-  occupation: String;
-  address: String;
-  bloodType: String;
-  height: Number;
-  weight: Number;
+  userName: string;
+  fullName: string;
+  age: number;
+  gender: string;
+  occupation: string;
+  address: string;
+  bloodType: string;
+  height: number;
+  weight: number;
 }

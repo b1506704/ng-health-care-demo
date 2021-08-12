@@ -1,12 +1,11 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
-
-import { EditUserProfileComponent } from './edit-user-profile.component';
+import { FileManagementComponent } from './file-management.component';
 
 const routes: Routes = [
   {
     path: '',
-    component: EditUserProfileComponent,
+    component: FileManagementComponent,
   },
 ];
 
@@ -14,4 +13,4 @@ const routes: Routes = [
   imports: [RouterModule.forChild(routes)],
   exports: [RouterModule],
 })
-export class EditUserProfileRoutingModule {}
+export class FileManagementRoutingModule {}

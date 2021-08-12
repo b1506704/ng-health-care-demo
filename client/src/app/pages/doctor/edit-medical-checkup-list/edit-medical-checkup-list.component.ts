@@ -2,7 +2,6 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Doctor } from 'src/app/shared/models/doctor';
 import { MedicalCheckup } from 'src/app/shared/models/medical-checkup';
-import { CustomerStore } from 'src/app/shared/services/customer/customer-store.service';
 import { DoctorStore } from 'src/app/shared/services/doctor/doctor-store.service';
 import { MedicalCheckupStore } from 'src/app/shared/services/medical-checkup/medical-checkup-store.service';
 import { StoreService } from 'src/app/shared/services/store.service';
@@ -17,7 +16,6 @@ export class EditMedicalCheckupListComponent implements OnInit, OnDestroy {
     private router: Router,
     private medicalCheckupStore: MedicalCheckupStore,
     private store: StoreService,
-    private customerStore: CustomerStore,
     private doctorStore: DoctorStore
   ) {}
   isPendingDragging: boolean = false;

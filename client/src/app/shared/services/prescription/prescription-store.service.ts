@@ -38,13 +38,32 @@ export class PrescriptionStore extends StateService<PrescriptionState> {
   ) {
     super(initialState);
   }
-
+  /**
+   * This is a function which fills the items received from pagination in a specific store's state variable.
+   * 
+   * @author Le Bao Anh
+   * @version 1.0.0
+   * @param {number} startIndex - The current page of ss pagination
+   * @param {number} endIndex - The page size of ss pagination
+   * @param {Array<Object>} sourceArray - The source array/state in a specific store service
+   * @param {Array<Object>} addedArray - The array of items received from ss pagination
+   * @return {Array<Object>} Return an array with filled items from ss pagination
+   * @example
+   * this.setState({
+            pendingCheckupList: this.fillEmpty(
+              page,
+              size,
+              this.state.pendingCheckupList,
+              data.items
+            ),
+          });
+   */
   fillEmpty(
     startIndex: number,
     endIndex: number,
     sourceArray: Array<Prescription>,
     addedArray: Array<Prescription>
-  ) {
+  ): Array<Prescription> {
     let result: Array<Prescription> = sourceArray;
     let fillIndex = startIndex * endIndex;
     for (var j = 0; j < addedArray.length; j++) {
@@ -109,6 +128,90 @@ export class PrescriptionStore extends StateService<PrescriptionState> {
         console.log(data);
       },
     });
+  }
+
+  loadDataAsyncByCustomerID(page: number, size: number, customerID: string) {
+    this.setIsLoading(true);
+    this.prescriptionService
+      .fetchPrescriptionByCustomerID(page, size, customerID)
+      .subscribe({
+        next: (data: any) => {
+          this.setState({
+            prescriptionList: this.fillEmpty(
+              page,
+              size,
+              this.state.prescriptionList,
+              data.items
+            ),
+          });
+          console.log('Pure list');
+          console.log(this.state.prescriptionList);
+          console.log('Server response');
+          console.log(data);
+          this.setState({ totalItems: data.totalItems });
+          this.setState({ totalPages: data.totalPages });
+          this.setState({ currentPage: data.currentPage });
+          this.setIsLoading(false);
+        },
+        error: (data: any) => {
+          this.setIsLoading(false);
+          this.store.showNotif(data.error.errorMessage, 'error');
+          console.log(data);
+        },
+      });
+  }
+
+  initInfiniteDataByCustomerID(
+    page: number,
+    size: number,
+    customerID: string
+  ) {
+    return this.prescriptionService
+      .fetchPrescriptionByCustomerID(page, size, customerID)
+      .toPromise()
+      .then((data: any) => {
+        this.setState({
+          prescriptionList: new Array<Prescription>(data.items.length),
+        });
+        console.log('Current flag: infite list');
+        console.log(this.state.prescriptionList);
+        this.setState({ totalItems: data.totalItems });
+        this.setState({ totalPages: data.totalPages });
+        this.setState({ currentPage: data.currentPage });
+      })
+      .then(() => {
+        this.loadDataAsyncByCustomerID(page, size, customerID);
+      });
+  }
+
+  loadInfiniteDataAsyncByCustomerID(
+    page: number,
+    size: number,
+    customerID: string
+  ) {
+    this.setIsLoading(true);
+    this.prescriptionService
+      .fetchPrescriptionByCustomerID(page, size, customerID)
+      .subscribe({
+        next: (data: any) => {
+          this.setState({
+            prescriptionList: this.state.prescriptionList.concat(data.items),
+          });
+          console.log('Infinite list');
+          console.log(this.state.prescriptionList);
+          console.log('Server response');
+          console.log(data);
+          this.setState({ totalItems: data.totalItems });
+          this.setState({ totalPages: data.totalPages });
+          this.setState({ currentPage: data.currentPage });
+          this.setIsLoading(false);
+        },
+        error: (data: any) => {
+          this.setIsLoading(false);
+          this.store.showNotif(data.error.errorMessage, 'error');
+          console.log(data);
+        },
+      });
   }
 
   initData(page: number, size: number) {
@@ -335,7 +438,9 @@ export class PrescriptionStore extends StateService<PrescriptionState> {
     (state) => state.selectedPrescription
   );
 
-  $prescriptionInstance: Observable<Prescription> = this.select((state) => state.prescriptionInstance);
+  $prescriptionInstance: Observable<Prescription> = this.select(
+    (state) => state.prescriptionInstance
+  );
 
   uploadPrescription(prescription: Prescription, page: number, size: number) {
     this.confirmDialog('').then((confirm: boolean) => {

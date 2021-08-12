@@ -73,18 +73,6 @@
           </dx-switch>
         </div>
       </div>
-      <!-- style="
-          display: flex;
-          justify-content: space-evenly;
-          align-items: flex-start;
-          flex-direction: column;
-          padding: 15px;
-          /* height: 55vh; */
-          border-radius: 15px;
-          background-color: rgba(0, 0, 0, 0.404);
-          box-shadow: rgb(253, 253, 255) 0px 30px 60px -12px inset,
-            rgba(0, 0, 0, 0.3) 0px 18px 36px -18px inset;
-        " -->
       <div class="panel-container">
         <ng-container *ngIf="customerData">
           <p
@@ -99,6 +87,9 @@
           >
             Patient Info
           </p>
+          <div class="image-container">
+            <img [src]="imageData?.url" alt="..." />
+          </div>
           <div>Full Name: {{ customerData?.fullName }}</div>
           <div>Age: {{ customerData?.age }}</div>
           <div>Gender: {{ customerData?.gender }}</div>
@@ -209,106 +200,98 @@
       </div>
     </div>
   </ng-container>
-  <dx-speed-dial-action
-    icon="user"
-    label="Message Customer"
-    [index]="1"
-    (onClick)="pmPatient()"
-  >
-  </dx-speed-dial-action>
-  <dx-speed-dial-action
-    icon="upload"
-    label="Command Patient"
-    [index]="2"
-    (onClick)="commandPatient()"
-  >
-  </dx-speed-dial-action>
-  <dx-popup
-    [width]="'90%'"
-    [height]="'80%'"
-    [showTitle]="true"
-    [shading]="true"
-    [title]="customerData ? customerData.fullName : null"
-    [dragEnabled]="true"
-    [closeOnOutsideClick]="false"
-    [showCloseButton]="true"
-    [(visible)]="popupVisible"
-    [position]="'center'"
-    [classList]="['popup']"
-  >
-    <div *dxTemplate="let data of 'content'">
-      <dx-scroll-view
-        width="100%"
-        height="100%"
-        [scrollByContent]="true"
-        [scrollByThumb]="true"
-        bounceEnabled="true"
+</div>
+<dx-speed-dial-action
+  icon="user"
+  label="Message Customer"
+  [index]="1"
+  (onClick)="pmPatient()"
+>
+</dx-speed-dial-action>
+<dx-speed-dial-action
+  icon="upload"
+  label="Command Patient"
+  [index]="2"
+  (onClick)="commandPatient()"
+>
+</dx-speed-dial-action>
+<dx-popup
+  [width]="'90%'"
+  [height]="'80%'"
+  [showTitle]="true"
+  [shading]="true"
+  [title]="customerData ? customerData.fullName : null"
+  [dragEnabled]="true"
+  [closeOnOutsideClick]="false"
+  [showCloseButton]="true"
+  [(visible)]="popupVisible"
+  [position]="'center'"
+  [classList]="['popup']"
+>
+  <div *dxTemplate="let data of 'content'">
+    <dx-scroll-view
+      width="100%"
+      height="100%"
+      [scrollByContent]="true"
+      [scrollByThumb]="true"
+      bounceEnabled="true"
+    >
+      <div
+        style="
+          display: flex;
+          justify-content: flex-end;
+          align-items: flex-end;
+          flex-direction: column;
+          margin-bottom: 15px;
+        "
+        *ngFor="let item of messageList"
       >
+        <div>{{ item?.sender }}</div>
         <div
           style="
-            display: flex;
-            justify-content: flex-end;
-            align-items: flex-end;
-            flex-direction: column;
-            margin-bottom: 15px;
+            text-align: end;
+            font-weight: bold;
+            padding: 15px;
+            border-radius: 10px;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            white-space: normal;
+            width: 100%;
+            background-color: rgba(0, 0, 0, 0.493);
+            color: rgb(255, 249, 249);
           "
-          *ngFor="let item of messageList"
         >
-          <div>{{ item?.sender }}</div>
-          <div
-            style="
-              text-align: end;
-              font-weight: bold;
-              padding: 15px;
-              border-radius: 10px;
-              word-wrap: break-word;
-              overflow-wrap: break-word;
-              white-space: normal;
-              width: 100%;
-              background-color: rgba(0, 0, 0, 0.493);
-              color: rgb(255, 249, 249);
-            "
-          >
-            {{ item?.message }}
-          </div>
-          <div>{{ item?.date }}</div>
+          {{ item?.message }}
         </div>
-      </dx-scroll-view>
-    </div>
-    <!-- <dxi-toolbar-item
-      widget="dxButton"
-      toolbar="bottom"
-      location="after"
-      locateInMenu="auto"
-      [options]="clearMessageButtonOption"
+        <div>{{ item?.date }}</div>
+      </div>
+    </dx-scroll-view>
+  </div>
+  <dxi-toolbar-item toolbar="bottom" location="center">
+    <dx-text-box
+      (onValueChanged)="onTextBoxValueChanged($event)"
+      [showClearButton]="true"
+      (onEnterKey)="onEnterKey()"
+      [placeholder]="'Enter message...'"
     >
-    </dxi-toolbar-item> -->
-    <dxi-toolbar-item toolbar="bottom" location="center">
-      <dx-text-box
-        (onValueChanged)="onTextBoxValueChanged($event)"
-        [showClearButton]="true"
-        (onEnterKey)="onEnterKey()"
-        [placeholder]="'Enter message...'"
-      >
-      </dx-text-box>
-    </dxi-toolbar-item>
-    <dxi-toolbar-item
-      widget="dxButton"
-      toolbar="bottom"
-      location="center"
-      locateInMenu="auto"
-      [options]="sendMessageButtonOption"
-    >
-    </dxi-toolbar-item>
-  </dx-popup>
-  <dx-action-sheet
-    title="Choose action"
-    [items]="commands"
-    [visible]="isCallPatientActionVisible"
-    [showTitle]="true"
-    [showCancelButton]="true"
-    (onItemClick)="sendCommand($event)"
-    (onCancelClick)="closeCommand()"
+    </dx-text-box>
+  </dxi-toolbar-item>
+  <dxi-toolbar-item
+    widget="dxButton"
+    toolbar="bottom"
+    location="center"
+    locateInMenu="auto"
+    [options]="sendMessageButtonOption"
   >
-  </dx-action-sheet>
-</div>
+  </dxi-toolbar-item>
+</dx-popup>
+<dx-action-sheet
+  title="Choose action"
+  [items]="commands"
+  [visible]="isCallPatientActionVisible"
+  [showTitle]="true"
+  [showCancelButton]="true"
+  (onItemClick)="sendCommand($event)"
+  (onCancelClick)="closeCommand()"
+>
+</dx-action-sheet>

@@ -46,13 +46,32 @@ export class MedicalCheckupStore extends StateService<MedicalCheckupState> {
   ) {
     super(initialState);
   }
-
+  /**
+   * This is a function which fills the items received from pagination in a specific store's state variable.
+   * 
+   * @author Le Bao Anh
+   * @version 1.0.0
+   * @param {number} startIndex - The current page of ss pagination
+   * @param {number} endIndex - The page size of ss pagination
+   * @param {Array<Object>} sourceArray - The source array/state in a specific store service
+   * @param {Array<Object>} addedArray - The array of items received from ss pagination
+   * @return {Array<Object>} Return an array with filled items from ss pagination
+   * @example
+   * this.setState({
+            pendingCheckupList: this.fillEmpty(
+              page,
+              size,
+              this.state.pendingCheckupList,
+              data.items
+            ),
+          });
+   */
   fillEmpty(
     startIndex: number,
     endIndex: number,
     sourceArray: Array<MedicalCheckup>,
     addedArray: Array<MedicalCheckup>
-  ) {
+  ): Array<MedicalCheckup> {
     let result: Array<MedicalCheckup> = sourceArray;
     let fillIndex = startIndex * endIndex;
     for (var j = 0; j < addedArray.length; j++) {

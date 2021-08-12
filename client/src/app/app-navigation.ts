@@ -119,6 +119,11 @@ export const navigationAdmin = [
     icon: 'cart',
   },
   {
+    text: 'Image Storage',
+    path: '/file_management',
+    icon: 'file',
+  },
+  {
     text: 'Statistics',
     path: '/statistics',
     icon: 'chart',

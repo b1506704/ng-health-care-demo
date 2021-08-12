@@ -14,7 +14,7 @@
 <div class="checkup-container">
   <div class="box-shadow">
     <p class="sortable-header">Pending</p>
-    <dx-toolbar>
+    <dx-toolbar style="padding-left: 10px; padding-right: 10px">
       <dxi-item
         widget="dxTextBox"
         [options]="searchPendingBoxOptions"
@@ -69,7 +69,7 @@
   </div>
   <div class="box-shadow">
     <p class="sortable-header">Complete</p>
-    <dx-toolbar>
+    <dx-toolbar style="padding-left: 10px; padding-right: 10px">
       <dxi-item
         widget="dxTextBox"
         [options]="searchCompleteBoxOptions"
@@ -119,8 +119,8 @@
                   <dx-button
                     icon="edit"
                     type="normal"
-                    text="Edit"
-                    hint="Edit prescription report"
+                    text="Detail"
+                    hint="View prescription report"
                     (onClick)="selectPrescription(item)"
                   >
                   </dx-button>
@@ -133,9 +133,12 @@
     </div>
   </div>
   <div class="html-editor-container">
-    <app-prescription-view
-      [selectedPrescription]="selectedPrescription"
-    ></app-prescription-view>
+    <ng-container *ngIf="checkUpDetail">
+      <app-prescription-view
+        [selectedPrescription]="selectedPrescription"
+        [customerID]="checkUpDetail?.customerID"
+      ></app-prescription-view>
+    </ng-container>
   </div>
 </div>
 <dx-speed-dial-action
@@ -169,7 +172,7 @@
       <form
         id="form-container"
         (submit)="onSignupSubmit($event)"
-        [classList]="['signupForm']"
+        [classList]="['checkup-form']"
       >
         <dx-form
           id="form"

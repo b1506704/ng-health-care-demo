@@ -114,25 +114,37 @@ export const deleteAllImages = async (req, res) => {
 };
 
 export const createImage = async (req, res) => {
-  const { sourceID, url } = req.body;
+  const { sourceID, url, title, category, fileName, fileSize, fileType } = req.body;
   console.log(req.body);
   try {
     const foundImage = await Image.findOne({ sourceID: sourceID });
     if (foundImage) {
       await Image.findOneAndUpdate(
         { sourceID: sourceID },
-        { url: url },
+        {
+          url: url,
+          title: title,
+          fileName: fileName,
+          fileSize: fileSize,
+          fileType: fileType,
+          category: category,
+        },
         { new: true }
       );
     } else {
       const newImage = new Image({
         sourceID,
         url,
+        title,
+        category,
+        fileName,
+        fileSize,
+        fileType
       });
       await newImage.save();
     }
     res.status(200).json({
-      message: `Image of ${sourceID} created`,
+      message: `Image of ${fileName} created`,
     });
   } catch (error) {
     res.status(404).json({ errorMessage: "Failed to create image!" });
@@ -145,7 +157,7 @@ export const filterImageByCategory = (req, res) => {
   try {
     const { limit, offset } = getPagination(page, size);
     console.log(`Limit: ${limit}  Offset: ${offset}`);
-    const query = { status: value };
+    const query = { category: value };
     const options = {
       sort: { createdAt: "desc" },
       offset: offset,
@@ -180,7 +192,7 @@ export const searchImageByName = (req, res) => {
       fullName: { $regex: value, $options: "i" },
     };
     const options = {
-      sort: { imageID: "desc" },
+      sort: { fileName: "desc" },
       offset: offset,
       limit: limit,
     };
@@ -212,7 +224,7 @@ export const sortByName = (req, res) => {
     const query = {};
     // value = desc || asc
     const options = {
-      sort: { name: value },
+      sort: { fileName: value },
       offset: offset,
       limit: limit,
     };
@@ -244,7 +256,7 @@ export const sortByNumber = (req, res) => {
     const query = {};
     // value = desc || asc
     const options = {
-      sort: { priority: value },
+      sort: { fileSize: value },
       offset: offset,
       limit: limit,
     };

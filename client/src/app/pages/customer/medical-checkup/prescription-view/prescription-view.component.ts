@@ -14,14 +14,13 @@ import { StoreService } from 'src/app/shared/services/store.service';
   templateUrl: './prescription-view.component.html',
   styleUrls: ['./prescription-view.component.scss'],
 })
-export class PrescriptionViewComponent
-  implements OnInit, OnDestroy, OnChanges
-{
+export class PrescriptionViewComponent implements OnInit, OnDestroy, OnChanges {
   constructor(
     private store: StoreService,
     private prescriptionStore: PrescriptionStore
   ) {}
-  @Input() selectedPrescription: any;
+  @Input() selectedPrescription!: any;
+  @Input() customerID!: any;
   pageSize: number = 20;
   currentPrescriptionPage: number;
   currentPrescription: Prescription;
@@ -72,15 +71,6 @@ export class PrescriptionViewComponent
     return this.currentTabList.length === this.prescriptionList.length;
   }
 
-  onTabDragStart(e: any) {
-    e.itemData = e.fromData[e.fromIndex];
-  }
-
-  onTabDrop(e: any) {
-    e.fromData.splice(e.fromIndex, 1);
-    e.toData.splice(e.toIndex, 0, e.itemData);
-  }
-
   htmlEditorValueChanged(e: any) {
     this.currentTabList[this.selectedIndex].htmlMarkUp = e;
     console.log(this.currentTabList[this.selectedIndex].htmlMarkUp);
@@ -128,10 +118,13 @@ export class PrescriptionViewComponent
   }
 
   ngOnInit(): void {
-    this.prescriptionPageListener();
-    this.prescriptionStore.initInfiniteData(0, this.pageSize).then(() => {
-      this.prescriptionDataListener();
-    });
+    // this.prescriptionPageListener();
+    // this.prescriptionDataListener();
+    // this.prescriptionStore
+    //   .initInfiniteDataByCustomerID(0, this.pageSize, this.customerID)
+    //   .then(() => {
+    //     this.prescriptionDataListener();
+    //   });
   }
 
   ngOnChanges(): void {
@@ -148,8 +141,8 @@ export class PrescriptionViewComponent
   }
 
   ngOnDestroy(): void {
-    this.prescriptionPageListener().unsubscribe();
-    this.prescriptionDataListener().unsubscribe();
+    // this.prescriptionPageListener().unsubscribe();
+    // this.prescriptionDataListener().unsubscribe();
     this.prescriptionInstanceListener().unsubscribe();
   }
 }

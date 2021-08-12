@@ -36,7 +36,7 @@
           align-items: flex-start;
           flex-direction: column;
           padding: 15px;
-          height: 55vh;
+          height: 100%;
           border-radius: 15px;
           background-color: rgba(0, 0, 0, 0.404);
           box-shadow: rgb(253, 253, 255) 0px 30px 60px -12px inset,
@@ -56,6 +56,9 @@
           >
             Your Info
           </p>
+          <div class="image-container">
+            <img [src]="imageData?.url" alt="..." />
+          </div>
           <div>Full Name: {{ customerData?.fullName }}</div>
           <div>Age: {{ customerData?.age }}</div>
           <div>Gender: {{ customerData?.gender }}</div>

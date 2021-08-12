@@ -67,6 +67,11 @@ export class UserProfileComponent implements OnInit, OnDestroy {
   currentRole!: string;
   imageData: Image = {
     sourceID: '',
+    category: '',
+    title: '',
+    fileName: '',
+    fileSize: 0,
+    fileType: '',
     url: '../../../../assets/imgs/profile.png',
   };
 
@@ -90,6 +95,8 @@ export class UserProfileComponent implements OnInit, OnDestroy {
   onCustomerSubmit = (e: any) => {
     e.preventDefault();
     this.imageData.sourceID = this.customerData._id;
+    this.imageData.category = 'customer';
+    this.imageData.title = this.customerData.fullName;
     this.imageStore.uploadImage(this.imageData, 0, 5);
     this.customerStore.updateCustomer(
       this.customerData,
@@ -102,6 +109,8 @@ export class UserProfileComponent implements OnInit, OnDestroy {
   onDoctorSubmit = (e: any) => {
     e.preventDefault();
     this.imageData.sourceID = this.doctorData._id;
+    this.imageData.category = 'doctor';
+    this.imageData.title = this.doctorData.fullName;
     this.imageStore.uploadImage(this.imageData, 0, 5);
     this.doctorStore.updateDoctor(this.doctorData, this.doctorData._id, 0, 5);
   };
@@ -110,6 +119,9 @@ export class UserProfileComponent implements OnInit, OnDestroy {
     var file = e.dataTransfer ? e.dataTransfer.files[0] : e.target.files[0];
     console.log(file);
     if (file !== undefined) {
+      this.imageData.fileSize = file.size;
+      this.imageData.fileType = file.type;
+      this.imageData.fileName = file.name;
       var pattern = /image-*/;
       var reader = new FileReader();
 
@@ -124,6 +136,8 @@ export class UserProfileComponent implements OnInit, OnDestroy {
 
   handleReaderLoaded(e: any) {
     var reader = e.target;
+    console.log('READER');
+    console.log(reader);
     this.imageData.url = reader.result;
     console.log('SOURCE ID');
     console.log(this.imageData.sourceID);

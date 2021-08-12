@@ -15,12 +15,14 @@ import {
   sortByName,
   sortByNumber,
   fetchAll,
+  getPrescriptionsByCustomerID,
 } from "../controllers/prescriptions.js";
 
 const router = express.Router();
 
 router.get("/", getPrescriptions);
 router.get("/:_id", getPrescription);
+router.get("/byCustomerID", getPrescriptionsByCustomerID);
 router.post("/byCustomerID", getPrescriptionByCustomerID);
 router.post("/byMedicalCheckupID", getPrescriptionByMedicalCheckupID);
 router.post("/deleteAll", deleteAllPrescriptions);

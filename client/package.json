@@ -4,6 +4,7 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
+    "aot": "node --max-old-space-size=8192 ./node_modules/@angular/cli/bin/ng serve --aot",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",

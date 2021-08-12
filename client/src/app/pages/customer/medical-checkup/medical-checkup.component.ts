@@ -38,7 +38,7 @@ export class MedicalCheckupComponent implements OnInit, OnDestroy {
     onKeyUp: this.onPendingSearchKeyupHandler.bind(this),
     onValueChanged: this.onPendingSearchValueChanged.bind(this),
     mode: 'search',
-    placeholder: 'Search with purpose',
+    placeholder: 'Search purpose',
   };
   refreshPendingButtonOptions: any = {
     type: 'normal',
@@ -52,7 +52,7 @@ export class MedicalCheckupComponent implements OnInit, OnDestroy {
     onKeyUp: this.onCompleteSearchKeyupHandler.bind(this),
     onValueChanged: this.onCompleteSearchValueChanged.bind(this),
     mode: 'search',
-    placeholder: 'Search with purpose',
+    placeholder: 'Search purpose',
   };
   refreshCompleteButtonOptions: any = {
     type: 'normal',

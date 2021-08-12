@@ -1,0 +1,37 @@
+<dx-file-manager
+  id="fileManager"
+  [fileSystemProvider]="fileItems"
+  height="'100%'"
+  currentPath="Documents"
+  (onSelectedFileOpened)="displayImagePopup($event)"
+  (onSelectionChanged)="onSelectionChanged($event)"
+  (onToolbarItemClick)="onToolbarItemClick($event)"
+  (onOptionChanged)="onOptionChanged($event)" 
+>
+  <!-- <dxo-toolbar>
+    <dxi-item widget="dxButton" [options]="uploadButtonOption"></dxi-item>
+  </dxo-toolbar> -->
+  <dxo-permissions
+    create="true"
+    copy="true"
+    move="true"
+    delete="true"
+    rename="true"
+    upload="true"
+    download="true"
+  >
+  </dxo-permissions>
+</dx-file-manager>
+<dx-popup
+  id="photo-popup"
+  [height]="'85%'"
+  [width]="'85%'"
+  closeOnOutsideClick="true"
+  [showTitle]="true"
+  [title]="currentFile?.name"
+  [(visible)]="isPopupVisible"
+>
+  <div *dxTemplate="let data of 'content'" class="photo-popup-content">
+    <div>{{ currentFile?.name }}</div>
+  </div>
+</dx-popup>

@@ -21,6 +21,26 @@ export class PrescriptionHttpService {
     });
   }
 
+  fetchPrescriptionByCustomerID(
+    page: number,
+    size: number,
+    customerID: string
+  ): Observable<Prescription> {
+    const params = new HttpParams()
+      .set('page', page)
+      .set('size', size)
+      .set('customerID', customerID);
+    console.log(params.toString());
+    return this.http.get<Prescription>(
+      this.apiPrescriptionUrl + '/byCustomerID',
+      {
+        params: params,
+        reportProgress: true,
+        observe: 'body',
+      }
+    );
+  }
+
   searchPrescriptionByName(
     value: string,
     page: number,

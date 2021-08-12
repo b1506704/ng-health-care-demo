@@ -4,6 +4,8 @@ import { Socket } from 'ngx-socket-io';
 import { CustomerStore } from 'src/app/shared/services/customer/customer-store.service';
 import { StoreService } from 'src/app/shared/services/store.service';
 import { DxScrollViewComponent, DxTextBoxComponent } from 'devextreme-angular';
+import { Image } from 'src/app/shared/models/image';
+import { ImageHttpService } from 'src/app/shared/services/image/image-http.service';
 @Component({
   selector: 'app-health-condition',
   templateUrl: './health-condition.component.html',
@@ -18,6 +20,15 @@ export class HealthConditionComponent implements OnInit, OnDestroy {
   patientData!: any;
   patientID: string;
   customerData: Customer;
+  imageData: Image = {
+    sourceID: '',
+    category: '',
+    title: '',
+    fileName: '',
+    fileSize: 0,
+    fileType: '',
+    url: '../../../../assets/imgs/profile.png',
+  };
   co2Interval: any;
   stethoscopeInterval: any;
   aneroidInterval: any;
@@ -53,7 +64,8 @@ export class HealthConditionComponent implements OnInit, OnDestroy {
   constructor(
     private socket: Socket,
     private customerStore: CustomerStore,
-    private store: StoreService
+    private store: StoreService,
+    private imageService: ImageHttpService
   ) {}
 
   getCondition(id: string) {
@@ -73,6 +85,13 @@ export class HealthConditionComponent implements OnInit, OnDestroy {
           this.customerStore.$customerInstance.subscribe((data: any) => {
             this.customerData = data;
             this.patientID = data._id;
+            this.imageService
+              .getImageBySourceID(data._id)
+              .subscribe((data: any) => {
+                if (data !== null) {
+                  this.imageData = data;
+                }
+              });
             this.newCondition(data._id);
             this.patientDataInterval = setInterval(() => {
               this.getCondition(data._id);

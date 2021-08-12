@@ -35,6 +35,41 @@ export const getPrescriptions = (req, res) => {
   }
 };
 
+export const getPrescriptionsByCustomerID = (req, res) => {
+  const { page, size, customerID } = req.query;
+  console.log(`Page: ${page}  Size: ${size}`);
+  try {
+    const { limit, offset } = getPagination(page, size);
+    console.log(`Limit: ${limit}  Offset: ${offset}`);
+    const options = {
+      sort: { createdAt: "desc" },
+      offset: offset,
+      limit: limit,
+    };
+    Prescription.paginate(
+      {
+        customerID: customerID,
+      },
+      options
+    )
+      .then((data) => {
+        res.status(200).json({
+          totalItems: data.totalDocs,
+          items: data.docs,
+          totalPages: data.totalPages,
+          currentPage: data.page - 1,
+          nextPage: data.nextPage,
+          prevPage: data.prevPage,
+        });
+      })
+      .catch((error) => {
+        res.status(404).json({ errorMessage: error.message });
+      });
+  } catch (error) {
+    res.status(404).json({ errorMessage: "Failed to get data!" });
+  }
+};
+
 export const fetchAll = async (req, res) => {
   try {
     const prescription = await Prescription.find();
