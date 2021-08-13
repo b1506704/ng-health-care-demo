@@ -4,7 +4,10 @@ import { Doctor } from 'src/app/shared/models/doctor';
 import { DoctorStore } from 'src/app/shared/services/doctor/doctor-store.service';
 import { StoreService } from 'src/app/shared/services/store.service';
 import { DxScrollViewComponent } from 'devextreme-angular';
+import { Image } from 'src/app/shared/models/image';
+import { ImageHttpService } from 'src/app/shared/services/image/image-http.service';
 import departmentList from 'src/app/shared/services/doctor/mock-department';
+import { ImageStore } from 'src/app/shared/services/image/image-store.service';
 
 @Component({
   selector: 'app-doctor-list',
@@ -74,10 +77,22 @@ export class DoctorListComponent implements OnInit, OnDestroy {
     onValueChanged: this.onSortValueChanged.bind(this),
   };
 
+  imageData: Image = {
+    sourceID: '',
+    category: '',
+    title: '',
+    fileName: '',
+    fileSize: 0,
+    fileType: '',
+    url: '../../../../assets/imgs/profile.png',
+  };
+  imageList: Array<Image> = [];
+
   constructor(
     private doctorStore: DoctorStore,
     private store: StoreService,
-    private router: Router
+    private router: Router,
+    private imageStore: ImageStore
   ) {}
 
   selectDoctor(_id: string) {
@@ -237,6 +252,29 @@ export class DoctorListComponent implements OnInit, OnDestroy {
     });
   }
 
+  mapImageListToUrl(_id: string) {
+    if (this.imageList.length !== 0) {
+      const fetchedImage = this.imageList.find(
+        (e: any) => e.sourceID === _id
+      )?.url;
+      if (fetchedImage) {
+        return fetchedImage;
+      } else {
+        return this.imageData.url;
+      }
+    }
+  }
+
+  imageDataListener() {
+    return this.imageStore.$imageList.subscribe((data: any) => {
+      if (data.length !== 0) {
+        this.imageList = data;
+        console.log('IMAGE LIST OF DOCTOR');
+        console.log(this.imageList);
+      }
+    });
+  }
+
   currentPageListener() {
     return this.doctorStore.$currentPage.subscribe((data: any) => {
       this.currentIndexFromServer = data;
@@ -251,11 +289,13 @@ export class DoctorListComponent implements OnInit, OnDestroy {
     this.currentPageListener();
     this.doctorStore.initInfiniteData(0, this.pageSize).then(() => {
       this.sourceDataListener();
+      this.imageDataListener();
     });
   }
 
   ngOnDestroy(): void {
     this.sourceDataListener().unsubscribe();
     this.currentPageListener().unsubscribe();
+    this.imageDataListener().unsubscribe();
   }
 }

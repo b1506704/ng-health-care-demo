@@ -21,6 +21,19 @@ export class ImageHttpService {
     });
   }
 
+  fetchSelectedImages(
+    selectedItems: Array<string>
+  ): Observable<Array<Image>> {
+    return this.http.post<Array<Image>>(
+      this.apiImageUrl + '/fetchBatch',
+      selectedItems,
+      {
+        reportProgress: true,
+        observe: 'body',
+      }
+    );
+  }
+
   searchImageByName(
     value: string,
     page: number,

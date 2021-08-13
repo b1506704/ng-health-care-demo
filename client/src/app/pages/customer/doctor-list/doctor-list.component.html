@@ -5,11 +5,7 @@
   }"
 >
   <dxi-item [location]="'before'" [text]="'Doctor List'"> </dxi-item>
-  <dxi-item
-    widget="dxTextBox"
-    [options]="searchBoxOptions"
-    location="before"
-  >
+  <dxi-item widget="dxTextBox" [options]="searchBoxOptions" location="before">
   </dxi-item>
   <dxi-item
     widget="dxButton"
@@ -68,8 +64,8 @@
         </div>
         <div class="card-img">
           <img
-            src="../../../../assets/imgs/elon_musk.jpeg"
-            alt="favipiravir_1"
+            [src]="mapImageListToUrl(item?._id)"
+            alt="..."
             style="height: 100%; width: 100%"
           />
         </div>

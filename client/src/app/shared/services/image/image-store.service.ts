@@ -81,20 +81,28 @@ export class ImageStore extends StateService<ImageState> {
     return result;
   }
 
+  fetchSelectedImages(source: Array<any>) {
+    const sourceIDs = source.map((e) => e._id);
+    console.log('ARRAY OF IDs');
+    console.log(sourceIDs);
+    this.store.setIsLoading(true);
+    this.imageService.fetchSelectedImages(sourceIDs).subscribe((data: any) => {
+      if (data !== null) {
+        this.setState({ imageList: this.state.imageList.concat(data) });
+        console.log('FETCHED IMAGES');
+        console.log(data);
+      }
+    });
+  }
+
   initInfiniteData(page: number, size: number) {
     return this.imageService
       .fetchImage(page, size)
       .toPromise()
       .then((data: any) => {
-        if (page === 0) {
-          this.setState({
-            imageList: new Array<Image>(size),
-          });
-        } else {
-          this.setState({
-            imageList: new Array<Image>(page * size),
-          });
-        }
+        this.setState({
+          imageList: new Array<Image>(data.items.length),
+        });
         console.log('Current flag: infite list');
         console.log(this.state.imageList);
         this.setState({ totalItems: data.totalItems });
@@ -361,23 +369,23 @@ export class ImageStore extends StateService<ImageState> {
   uploadImage(image: Image, page: number, size: number) {
     // this.confirmDialog('').then((confirm: boolean) => {
     //   if (confirm) {
-        this.setIsLoading(true);
-        this.imageService.uploadImage(image).subscribe({
-          next: (data: any) => {
-            this.setState({ responseMsg: data });
-            this.setTotalItems(this.state.totalItems + 1);
-            console.log(data);
-            this.loadDataAsync(page, size);
-            this.getImageBySourceID(image?.sourceID);
-            this.setIsLoading(false);
-            // this.store.showNotif(data.message, 'custom');
-          },
-          error: (data: any) => {
-            this.setIsLoading(false);
-            // this.store.showNotif(data.error.errorMessage, 'error');
-            console.log(data);
-          },
-        });
+    this.setIsLoading(true);
+    this.imageService.uploadImage(image).subscribe({
+      next: (data: any) => {
+        this.setState({ responseMsg: data });
+        this.setTotalItems(this.state.totalItems + 1);
+        console.log(data);
+        this.loadDataAsync(page, size);
+        this.getImageBySourceID(image?.sourceID);
+        this.setIsLoading(false);
+        // this.store.showNotif(data.message, 'custom');
+      },
+      error: (data: any) => {
+        this.setIsLoading(false);
+        // this.store.showNotif(data.error.errorMessage, 'error');
+        console.log(data);
+      },
+    });
     //   }
     // });
   }

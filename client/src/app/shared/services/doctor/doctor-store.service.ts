@@ -5,6 +5,7 @@ import { StateService } from '../state.service';
 import { StoreService } from '../store.service';
 import { DoctorHttpService } from './doctor-http.service';
 import { confirm } from 'devextreme/ui/dialog';
+import { ImageStore } from '../image/image-store.service';
 
 interface DoctorState {
   doctorList: Array<Doctor>;
@@ -38,7 +39,8 @@ const initialState: DoctorState = {
 export class DoctorStore extends StateService<DoctorState> {
   constructor(
     private doctorService: DoctorHttpService,
-    private store: StoreService
+    private store: StoreService,
+    private imageStore: ImageStore
   ) {
     super(initialState);
   }
@@ -109,15 +111,10 @@ export class DoctorStore extends StateService<DoctorState> {
       .fetchDoctor(page, size)
       .toPromise()
       .then((data: any) => {
-        if (page === 0) {
-          this.setState({
-            doctorList: new Array<Doctor>(data.items.length),
-          });
-        } else {
-          this.setState({
-            doctorList: new Array<Doctor>(data.items.length),
-          });
-        }
+        this.setState({
+          doctorList: new Array<Doctor>(data.items.length),
+        });
+        this.imageStore.fetchSelectedImages(data.items);
         console.log('Current flag: infite list');
         console.log(this.state.doctorList);
         this.setState({ totalItems: data.totalItems });
@@ -136,6 +133,7 @@ export class DoctorStore extends StateService<DoctorState> {
         this.setState({
           doctorList: this.state.doctorList.concat(data.items),
         });
+        this.imageStore.fetchSelectedImages(data.items);
         console.log('Infinite list');
         console.log(this.state.doctorList);
         console.log('Server response');

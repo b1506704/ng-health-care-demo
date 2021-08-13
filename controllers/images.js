@@ -33,6 +33,28 @@ export const getImages = (req, res) => {
   }
 };
 
+export const fetchSelectedImages = async (req, res) => {
+  const selectedItems = req.body;
+  console.log(selectedItems);
+  try {
+    let selectedImages = [];
+    for (let i = 0; i < selectedItems.length; i++) {
+      const foundImage = await Image.findOne({
+        sourceID: selectedItems[i],
+      });
+      if (foundImage) {
+        selectedImages = selectedImages.concat(foundImage);
+      }
+      if (i === selectedItems.length - 1) {
+        console.log(`${i + 1} image fetched: ${selectedImages}`);
+      }
+    }
+    res.status(200).json(selectedImages);
+  } catch (error) {
+    res.status(404).json({ errorMessage: "Medical checkup not found!" });
+  }
+};
+
 export const fetchAll = async (req, res) => {
   try {
     const image = await Image.find();
@@ -114,7 +136,8 @@ export const deleteAllImages = async (req, res) => {
 };
 
 export const createImage = async (req, res) => {
-  const { sourceID, url, title, category, fileName, fileSize, fileType } = req.body;
+  const { sourceID, url, title, category, fileName, fileSize, fileType } =
+    req.body;
   console.log(req.body);
   try {
     const foundImage = await Image.findOne({ sourceID: sourceID });
@@ -139,7 +162,7 @@ export const createImage = async (req, res) => {
         category,
         fileName,
         fileSize,
-        fileType
+        fileType,
       });
       await newImage.save();
     }

@@ -4,7 +4,7 @@
   [scrollByThumb]="true"
 >
   <div class="img-container">
-    <img src="../../../../../assets/imgs/elon_musk.jpeg" alt="..." />
+    <img [src]="imageData?.url" alt="..." />
   </div>
   <form id="doctor-form-container" [classList]="['doctor-form']">
     <dx-form id="doctor-form" [formData]="doctorData" [readOnly]="true">

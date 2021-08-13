@@ -117,15 +117,7 @@ export class PrescriptionViewComponent implements OnInit, OnDestroy, OnChanges {
     );
   }
 
-  ngOnInit(): void {
-    // this.prescriptionPageListener();
-    // this.prescriptionDataListener();
-    // this.prescriptionStore
-    //   .initInfiniteDataByCustomerID(0, this.pageSize, this.customerID)
-    //   .then(() => {
-    //     this.prescriptionDataListener();
-    //   });
-  }
+  ngOnInit(): void {}
 
   ngOnChanges(): void {
     if (this.selectedPrescription) {
@@ -141,8 +133,6 @@ export class PrescriptionViewComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   ngOnDestroy(): void {
-    // this.prescriptionPageListener().unsubscribe();
-    // this.prescriptionDataListener().unsubscribe();
     this.prescriptionInstanceListener().unsubscribe();
   }
 }

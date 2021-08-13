@@ -14,6 +14,7 @@ import {
   sortByNumber,
   fetchAll,
   getImageBySourceID,
+  fetchSelectedImages,
 } from "../controllers/images.js";
 
 const router = express.Router();
@@ -25,6 +26,7 @@ router.post("/deleteAll", deleteAllImages);
 router.post("/", createImage);
 router.delete("/:_id", deleteImage);
 router.post("/batch", deleteSelectedImages);
+router.post("/fetchBatch", fetchSelectedImages);
 router.post("/updateImage/:_id", updateImage);
 router.post("/filterByCategory", filterImageByCategory);
 router.post("/searchByName", searchImageByName);

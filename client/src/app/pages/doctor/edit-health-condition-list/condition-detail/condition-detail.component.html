@@ -1,23 +1,24 @@
-<div style="height: 60vh">
-  <div
-    *ngIf="patientData"
-    style="
-      display: flex;
-      justify-content: space-around;
-      align-items: center;
-      flex-wrap: wrap;
-    "
-  >
-    <h2 style="text-align: center">Patient {{ customerData?.fullName }}</h2>
-    <div>
-      HR: {{ patientData?.heartRate }}. RR: {{ patientData?.respiratoryRate }}.
-      BT: {{ patientData?.bodyTemperature }}. BP:
-      {{ patientData?.bloodPressure }}.
-    </div>
+<div class="overlay" *ngIf="!patientData">
+  <div class="bar_loader"></div>
+</div>
+<div
+  *ngIf="patientData"
+  style="
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    flex-wrap: wrap;
+  "
+>
+  <h2 style="text-align: center">Patient {{ customerData?.fullName }}</h2>
+  <div>
+    HR: {{ patientData?.heartRate }}. RR: {{ patientData?.respiratoryRate }}.
+    BT: {{ patientData?.bodyTemperature }}. BP:
+    {{ patientData?.bloodPressure }}.
   </div>
-  <div class="overlay" *ngIf="!patientData">
-    <div class="bar_loader"></div>
-  </div>
+</div>
+<div style="height: 100%; display: flex; flex-wrap: nowrap;">
+  
   <ng-container *ngIf="patientData">
     <div
       style="
