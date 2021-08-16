@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FileManagementRoutingModule } from './file-management-routing.module';
 import { FileManagementComponent } from './file-management.component';
-import { DxFileManagerModule, DxPopupModule } from 'devextreme-angular';
+import { DxFileManagerModule, DxPopupModule, DxScrollViewModule } from 'devextreme-angular';
 
 @NgModule({
   imports: [
@@ -10,6 +10,7 @@ import { DxFileManagerModule, DxPopupModule } from 'devextreme-angular';
     FileManagementRoutingModule,
     DxFileManagerModule,
     DxPopupModule,
+    DxScrollViewModule
   ],
   declarations: [FileManagementComponent],
 })

@@ -5,7 +5,6 @@ import { DoctorStore } from 'src/app/shared/services/doctor/doctor-store.service
 import { StoreService } from 'src/app/shared/services/store.service';
 import { DxScrollViewComponent } from 'devextreme-angular';
 import { Image } from 'src/app/shared/models/image';
-import { ImageHttpService } from 'src/app/shared/services/image/image-http.service';
 import departmentList from 'src/app/shared/services/doctor/mock-department';
 import { ImageStore } from 'src/app/shared/services/image/image-store.service';
 
@@ -262,7 +261,8 @@ export class DoctorListComponent implements OnInit, OnDestroy {
       } else {
         return this.imageData.url;
       }
-    }
+    } 
+    return this.imageData.url;
   }
 
   imageDataListener() {

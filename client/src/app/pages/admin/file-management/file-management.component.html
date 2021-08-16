@@ -1,37 +1,58 @@
-<dx-file-manager
-  id="fileManager"
-  [fileSystemProvider]="fileItems"
-  height="'100%'"
-  currentPath="Documents"
-  (onSelectedFileOpened)="displayImagePopup($event)"
-  (onSelectionChanged)="onSelectionChanged($event)"
-  (onToolbarItemClick)="onToolbarItemClick($event)"
-  (onOptionChanged)="onOptionChanged($event)" 
->
-  <!-- <dxo-toolbar>
-    <dxi-item widget="dxButton" [options]="uploadButtonOption"></dxi-item>
-  </dxo-toolbar> -->
-  <dxo-permissions
-    create="true"
-    copy="true"
-    move="true"
-    delete="true"
-    rename="true"
-    upload="true"
-    download="true"
+<ng-container *ngIf="fileItems">
+  <dx-file-manager
+    id="fileManager"
+    [fileSystemProvider]="fileItems"
+    height="'100%'"
+    currentPath="Images"
+    (onSelectedFileOpened)="displayImagePopup($event)"
+    (onSelectionChanged)="onSelectionChanged($event)"
+    (onToolbarItemClick)="onToolbarItemClick($event)"
+    (onOptionChanged)="onOptionChanged($event)"
+    [selectionMode]="single"
   >
-  </dxo-permissions>
-</dx-file-manager>
-<dx-popup
-  id="photo-popup"
-  [height]="'85%'"
-  [width]="'85%'"
-  closeOnOutsideClick="true"
-  [showTitle]="true"
-  [title]="currentFile?.name"
-  [(visible)]="isPopupVisible"
->
-  <div *dxTemplate="let data of 'content'" class="photo-popup-content">
-    <div>{{ currentFile?.name }}</div>
-  </div>
-</dx-popup>
+    <!-- <dxo-permissions
+      create="true"
+      copy="true"
+      move="true"
+      delete="true"
+      rename="true"
+      upload="true"
+      download="true"
+    >
+    </dxo-permissions> -->
+  </dx-file-manager>
+  <dx-popup
+    id="photo-popup"
+    [height]="'90%'"
+    [width]="'70%'"
+    closeOnOutsideClick="true"
+    [showTitle]="true"
+    [shading]="true"
+    [showCloseButton]="true"
+    [title]="currentFile?.dataItem.name"
+    [(visible)]="isPopupVisible"
+  >
+    <div *dxTemplate="let data of 'content'">
+      <dx-scroll-view
+        [bounceEnabled]="true"
+        [scrollByContent]="true"
+        [scrollByThumb]="true"
+        [height]="'100%'"
+        [width]="'100%'"
+      >
+        <div class="photo-popup-content">
+          <div class="img-container">
+            <img [src]="currentFile?.thumbnail" alt="..." />
+          </div>
+          <div class="info-container">
+            <p>Detail Information</p>
+            <div>Title: {{ currentFile?.dataItem.name }}</div>
+            <div>Category: {{ currentFile?.dataItem.category }}</div>
+            <div>Type: {{ currentFile?.dataItem.type }}</div>
+            <div>Size: {{ currentFile?.dataItem.size }} byte</div>
+          </div>
+        </div>
+      </dx-scroll-view>
+    </div>
+  </dx-popup>
+</ng-container>

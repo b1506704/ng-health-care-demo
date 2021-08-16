@@ -87,10 +87,12 @@ export class ImageStore extends StateService<ImageState> {
     console.log(sourceIDs);
     this.store.setIsLoading(true);
     this.imageService.fetchSelectedImages(sourceIDs).subscribe((data: any) => {
+      this.store.setIsLoading(false);
       if (data !== null) {
         this.setState({ imageList: this.state.imageList.concat(data) });
         console.log('FETCHED IMAGES');
         console.log(data);
+        // this.store.setIsLoading(false);
       }
     });
   }
@@ -179,22 +181,25 @@ export class ImageStore extends StateService<ImageState> {
 
   initInfiniteFilterByCategoryData(value: string, page: number, size: number) {
     this.store.showNotif('Filtered Mode On', 'custom');
-    this.imageService
+    this.setState({ imageList: [] });
+    this.store.setIsLoading(true);
+    return this.imageService
       .filterImageByCategory(value, page, size)
       .toPromise()
       .then((data: any) => {
         this.setState({
-          imageList: new Array<Image>(size),
+          imageList: this.state.imageList.concat(data.items),
         });
         console.log('Current flag: infinite filtered list');
         console.log(this.state.imageList);
+        this.store.setIsLoading(false);
         this.setState({ totalItems: data.totalItems });
         this.setState({ totalPages: data.totalPages });
         this.setState({ currentPage: data.currentPage });
-      })
-      .then(() => {
-        this.filterImageByCategory(value, page, size);
       });
+    // .then(() => {
+    //   this.filterImageByCategory(value, page, size);
+    // });
   }
 
   initSearchByNameData(value: string, page: number, size: number) {

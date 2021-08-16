@@ -107,6 +107,7 @@ export class DoctorStore extends StateService<DoctorState> {
   }
 
   initInfiniteData(page: number, size: number) {
+    this.store.setIsLoading(true);
     return this.doctorService
       .fetchDoctor(page, size)
       .toPromise()
@@ -123,6 +124,7 @@ export class DoctorStore extends StateService<DoctorState> {
       })
       .then(() => {
         this.loadDataAsync(page, size);
+
       });
   }
 
@@ -141,7 +143,7 @@ export class DoctorStore extends StateService<DoctorState> {
         this.setState({ totalItems: data.totalItems });
         this.setState({ totalPages: data.totalPages });
         this.setState({ currentPage: data.currentPage });
-        this.setIsLoading(false);
+        // this.setIsLoading(false);
       },
       error: (data: any) => {
         this.setIsLoading(false);
