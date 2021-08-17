@@ -9,6 +9,7 @@ import { MedicalCheckupStore } from '../medical-checkup/medical-checkup-store.se
 
 interface ImageState {
   imageList: Array<Image>;
+  isUploadingImage: boolean;
   exportData: Array<Image>;
   selectedImage: Object;
   imageInstance: Image;
@@ -19,6 +20,7 @@ interface ImageState {
 }
 const initialState: ImageState = {
   imageList: [],
+  isUploadingImage: false,
   selectedImage: {},
   imageInstance: undefined,
   exportData: [],
@@ -180,7 +182,7 @@ export class ImageStore extends StateService<ImageState> {
   }
 
   initInfiniteFilterByCategoryData(value: string, page: number, size: number) {
-    this.store.showNotif('Filtered Mode On', 'custom');
+    // this.store.showNotif('Filtered Mode On', 'custom');
     this.setState({ imageList: [] });
     this.store.setIsLoading(true);
     return this.imageService
@@ -371,10 +373,15 @@ export class ImageStore extends StateService<ImageState> {
     (state) => state.imageInstance
   );
 
+  $isUploadingImage: Observable<boolean> = this.select(
+    (state) => state.isUploadingImage
+  );
+
   uploadImage(image: Image, page: number, size: number) {
     // this.confirmDialog('').then((confirm: boolean) => {
     //   if (confirm) {
     this.setIsLoading(true);
+    this.setisUploadingImage(true);
     this.imageService.uploadImage(image).subscribe({
       next: (data: any) => {
         this.setState({ responseMsg: data });
@@ -383,6 +390,7 @@ export class ImageStore extends StateService<ImageState> {
         this.loadDataAsync(page, size);
         this.getImageBySourceID(image?.sourceID);
         this.setIsLoading(false);
+        this.setisUploadingImage(false);
         // this.store.showNotif(data.message, 'custom');
       },
       error: (data: any) => {
@@ -769,6 +777,10 @@ export class ImageStore extends StateService<ImageState> {
         console.log(data);
         this.setIsLoading(false);
       });
+  }
+
+  setisUploadingImage(isFetching: boolean) {
+    this.setState({ isUploadingImage: isFetching });
   }
 
   setExportData(array: Array<Image>) {

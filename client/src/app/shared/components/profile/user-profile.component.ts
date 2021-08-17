@@ -43,6 +43,7 @@ export class UserProfileComponent implements OnInit, OnDestroy {
     useSubmitBehavior: false,
     onClick: () => {
       this.renderSourceData();
+      this.imageData.url = '../../../../assets/imgs/profile.png';
     },
   };
   submitDoctorButtonOptions: any = {
@@ -58,6 +59,7 @@ export class UserProfileComponent implements OnInit, OnDestroy {
     useSubmitBehavior: false,
     onClick: () => {
       this.renderSourceData();
+      this.imageData.url = '../../../../assets/imgs/profile.png';
     },
   };
   user!: any;

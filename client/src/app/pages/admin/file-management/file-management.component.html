@@ -7,25 +7,83 @@
     (onSelectedFileOpened)="displayImagePopup($event)"
     (onSelectionChanged)="onSelectionChanged($event)"
     (onToolbarItemClick)="onToolbarItemClick($event)"
+    (onContextMenuItemClick)="onContextItemClick($event)"
     (onOptionChanged)="onOptionChanged($event)"
-    [selectionMode]="single"
   >
-    <!-- <dxo-permissions
-      create="true"
-      copy="true"
-      move="true"
-      delete="true"
-      rename="true"
-      upload="true"
-      download="true"
-    >
-    </dxo-permissions> -->
+    <!-- [selectionMode]="multiple" -->
+    <dxo-permissions delete="false" rename="true" download="true">
+    </dxo-permissions>
+    <ng-container *ngIf="isDirectory === false">
+      <dxo-item-view [showParentFolder]="false">
+        <dxo-details>
+          <dxi-column
+            dataField="thumbnail"
+            caption="Preview"
+            [width]="150"
+          ></dxi-column>
+          <dxi-column dataField="name" caption="Title"></dxi-column>
+          <dxi-column
+            dataField="category"
+            caption="Category"
+            width="95"
+          ></dxi-column>
+          <dxi-column dataField="type" caption="Type"></dxi-column>
+          <dxi-column
+            dataField="dateModified"
+            caption="Date Modified"
+          ></dxi-column>
+          <dxi-column dataField="size" caption="Size"></dxi-column>
+        </dxo-details>
+      </dxo-item-view>
+    </ng-container>
+    <dxo-toolbar>
+      <dxi-item name="showNavPane" visible="true"></dxi-item>
+      <dxi-item name="separator"></dxi-item>
+      <dxi-item
+        widget="dxMenu"
+        location="before"
+        [options]="newFileMenuOptions"
+      ></dxi-item>
+      <dxi-item
+        widget="dxMenu"
+        location="after"
+        [options]="refreshMenuOptions"
+      ></dxi-item>
+      <dxi-item name="separator" location="after"></dxi-item>
+      <dxi-item name="switchView"></dxi-item>
+      <dxi-file-selection-item name="separator"></dxi-file-selection-item>
+      <dxi-file-selection-item
+        widget="dxMenu"
+        location="before"
+        [options]="deleteMenuOptions"
+      ></dxi-file-selection-item>
+      <dxi-file-selection-item
+        widget="dxMenu"
+        location="before"
+        [options]="renameMenuOptions"
+      ></dxi-file-selection-item>
+      <dxi-file-selection-item name="clearSelection"></dxi-file-selection-item>
+    </dxo-toolbar>
+    <dxo-context-menu>
+      <dxi-item
+        name="newImage"
+        text="New image"
+        icon="plus"
+        beginGroup="true"
+      ></dxi-item>
+      <dxi-item name="deleteImage" text="Delete image" icon="trash"></dxi-item>
+      <dxi-item
+        name="renameImage"
+        text="Rename image"
+        icon="file"
+        beginGroup="true"
+      ></dxi-item>
+    </dxo-context-menu>
   </dx-file-manager>
   <dx-popup
     id="photo-popup"
     [height]="'90%'"
     [width]="'70%'"
-    closeOnOutsideClick="true"
     [showTitle]="true"
     [shading]="true"
     [showCloseButton]="true"
@@ -52,6 +110,28 @@
             <div>Size: {{ currentFile?.dataItem.size }} byte</div>
           </div>
         </div>
+      </dx-scroll-view>
+    </div>
+  </dx-popup>
+  <dx-popup
+    id="upload-popup"
+    [height]="'90%'"
+    [width]="'90%'"
+    [showTitle]="true"
+    [shading]="true"
+    [showCloseButton]="true"
+    [title]="'Upload Tool'"
+    [(visible)]="isUploadPopupVisible"
+  >
+    <div *dxTemplate="let data of 'content'">
+      <dx-scroll-view
+        [bounceEnabled]="true"
+        [scrollByContent]="true"
+        [scrollByThumb]="true"
+        [height]="'100%'"
+        [width]="'100%'"
+      >
+        <app-upload-tool [directory]="currentDirectory"></app-upload-tool>
       </dx-scroll-view>
     </div>
   </dx-popup>

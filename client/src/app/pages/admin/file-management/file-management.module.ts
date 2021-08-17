@@ -2,7 +2,13 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FileManagementRoutingModule } from './file-management-routing.module';
 import { FileManagementComponent } from './file-management.component';
-import { DxFileManagerModule, DxPopupModule, DxScrollViewModule } from 'devextreme-angular';
+import {
+  DxFileManagerModule,
+  DxFormModule,
+  DxPopupModule,
+  DxScrollViewModule,
+} from 'devextreme-angular';
+import { UploadToolComponent } from './upload-tool/upload-tool.component';
 
 @NgModule({
   imports: [
@@ -10,8 +16,9 @@ import { DxFileManagerModule, DxPopupModule, DxScrollViewModule } from 'devextre
     FileManagementRoutingModule,
     DxFileManagerModule,
     DxPopupModule,
-    DxScrollViewModule
+    DxScrollViewModule,
+    DxFormModule,
   ],
-  declarations: [FileManagementComponent],
+  declarations: [FileManagementComponent, UploadToolComponent],
 })
 export class FileManagementModule {}

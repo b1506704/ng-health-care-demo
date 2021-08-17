@@ -1,0 +1,100 @@
+<div
+  [ngClass]="{
+    'photo-popup-content': isUploadingImage === false,
+    'photo-popup-loading': isUploadingImage === true
+  }"
+>
+  <div class="img-container">
+    <img [src]="imageData?.url" alt="..." />
+  </div>
+  <div class="container">
+    <form
+      id="form-container"
+      (submit)="onSubmit($event)"
+      [classList]="['upload-form']"
+    >
+      <div class="long-title">
+        <h3>Image Detail</h3>
+      </div>
+      <dx-form
+        id="form"
+        [formData]="imageData"
+        [showValidationSummary]="true"
+        validationGroup="imageData"
+      >
+        <dxi-item itemType="group">
+          <dxi-item itemType="group" caption="Image Meta Data">
+            <dxi-item name="avatar">
+              <dxo-label text="Image url"> </dxo-label>
+              <div *dxTemplate>
+                <div class="image-container">
+                  <input
+                    class="img-input"
+                    type="file"
+                    id="img"
+                    accept="image/*"
+                    (change)="handleInputChange($event)"
+                  />
+                </div>
+              </div>
+            </dxi-item>
+
+            <dxi-item
+              dataField="title"
+              [label]="{ text: 'Title' }"
+              editorType="dxTextBox"
+            >
+              <dxi-validation-rule type="required" message="Title is required">
+              </dxi-validation-rule>
+            </dxi-item>
+
+            <dxi-item
+              dataField="category"
+              [label]="{ text: 'Category' }"
+              editorType="dxSelectBox"
+              [editorOptions]="{
+                items: ['customer', 'doctor', 'medicine'],
+                value: imageData?.category
+              }"
+            >
+              <dxi-validation-rule
+                type="required"
+                message="Category is required"
+              >
+              </dxi-validation-rule>
+            </dxi-item>
+            <dxi-item
+              dataField="sourceID"
+              [label]="{ text: 'Source ID' }"
+              editorType="dxTextBox"
+            >
+              <dxi-validation-rule
+                type="required"
+                message="Source id is required"
+              >
+              </dxi-validation-rule>
+            </dxi-item>
+            <dxi-item
+              itemType="group"
+              [colCount]="2"
+              [cssClass]="'buttonGroup'"
+            >
+              <dxi-item
+                itemType="button"
+                horizontalAlignment="center"
+                [buttonOptions]="submitButtonOptions"
+              >
+              </dxi-item>
+              <dxi-item
+                itemType="button"
+                horizontalAlignment="center"
+                [buttonOptions]="resetButtonOptions"
+              >
+              </dxi-item>
+            </dxi-item>
+          </dxi-item>
+        </dxi-item>
+      </dx-form>
+    </form>
+  </div>
+</div>

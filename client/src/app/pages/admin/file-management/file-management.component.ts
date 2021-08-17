@@ -9,9 +9,10 @@ import { DxFileManagerComponent } from 'devextreme-angular';
   styleUrls: ['./file-management.component.scss'],
 })
 export class FileManagementComponent implements OnInit {
-  @ViewChild(DxFileManagerComponent, { static: false })
+  @ViewChild(DxFileManagerComponent)
   dxFileManager: DxFileManagerComponent;
-  //todo: implement CRUD apis
+  isDirectory: boolean = true;
+  currentDirectory: string = 'Images';
   fileItems: Array<any> = [
     {
       name: 'Images',
@@ -36,13 +37,91 @@ export class FileManagementComponent implements OnInit {
     },
   ];
   isPopupVisible!: boolean;
+  isUploadPopupVisible!: boolean;
+  isUploadingImage!: boolean;
   currentFile!: any;
   uploadButtonOption: any = {};
   imageList: Array<Image> = [];
   currentIndexFromServer!: number;
   pageSize: number = 10;
+  newFileMenuOptions = {
+    items: [
+      {
+        text: 'Create',
+        icon: 'image',
+      },
+    ],
+    onItemClick: this.uploadImage.bind(this),
+  };
+  refreshMenuOptions = {
+    items: [
+      {
+        text: 'Refresh',
+        icon: 'refresh',
+      },
+    ],
+    onItemClick: this.refresh.bind(this),
+  };
+  deleteMenuOptions = {
+    items: [
+      {
+        text: 'Delete',
+        icon: 'trash',
+      },
+    ],
+    onItemClick: this.deleteImage.bind(this),
+  };
+  renameMenuOptions = {
+    items: [
+      {
+        text: 'Rename',
+        icon: 'file',
+      },
+    ],
+    onItemClick: this.renameImage.bind(this),
+  };
 
   constructor(private router: Router, private imageStore: ImageStore) {}
+
+  uploadImage() {
+    this.isUploadPopupVisible = true;
+  }
+
+  deleteImage() {}
+
+  renameImage() {}
+
+  refresh() {
+    switch (this.currentDirectory) {
+      case 'Images/Doctors':
+        this.isDirectory = false;
+        this.imageStore
+          .initInfiniteFilterByCategoryData('doctor', 0, this.pageSize)
+          .then(() => {
+            this.mapImageByCategory();
+          });
+        break;
+      case 'Images/Customers':
+        this.isDirectory = false;
+        this.imageStore
+          .initInfiniteFilterByCategoryData('customer', 0, this.pageSize)
+          .then(() => {
+            this.mapImageByCategory();
+          });
+        break;
+      case 'Images/Medicines':
+        this.isDirectory = false;
+        this.imageStore
+          .initInfiniteFilterByCategoryData('medicine', 0, this.pageSize)
+          .then(() => {
+            this.mapImageByCategory();
+          });
+        break;
+      default:
+        this.isDirectory = true;
+        break;
+    }
+  }
 
   onSelectionChanged(e: any) {
     console.log('SELECTION CHANGED');
@@ -54,38 +133,30 @@ export class FileManagementComponent implements OnInit {
     console.log(e);
   }
 
+  onContextItemClick(e: any) {
+    console.log('CONTEXT MENU ITEM');
+    console.log(e);
+    switch (e.itemData.name) {
+      case 'newImage':
+        this.uploadImage();
+        break;
+      case 'deleteImage':
+        this.deleteImage();
+        break;
+      case 'renameImage':
+        this.renameImage();
+        break;
+      default:
+        break;
+    }
+  }
+
   onOptionChanged(e: any) {
     console.log('OPTION CHANGED');
     console.log(e);
     if (e.fullName === 'currentPath') {
-      switch (e.value) {
-        case 'Images/Doctors':
-          this.imageStore
-            .initInfiniteFilterByCategoryData('doctor', 0, this.pageSize)
-            .then(() => {
-              this.fileItems[0].items[1].items = [];
-              this.mapImageByCategory();
-            });
-          break;
-        case 'Images/Customers':
-          this.imageStore
-            .initInfiniteFilterByCategoryData('customer', 0, this.pageSize)
-            .then(() => {
-              this.fileItems[0].items[0].items = [];
-              this.mapImageByCategory();
-            });
-          break;
-        case 'Images/Medicines':
-          this.imageStore
-            .initInfiniteFilterByCategoryData('medicine', 0, this.pageSize)
-            .then(() => {
-              this.fileItems[0].items[2].items = [];
-              this.mapImageByCategory();
-            });
-          break;
-        default:
-          break;
-      }
+      this.currentDirectory = e.value;
+      this.refresh();
     }
   }
 
@@ -106,7 +177,6 @@ export class FileManagementComponent implements OnInit {
         this.imageList = data;
         console.log('IMAGE LIST OF FILE MANAGEMENT');
         console.log(this.imageList);
-        this.mapImageByCategory();
       }
     });
   }
@@ -117,7 +187,16 @@ export class FileManagementComponent implements OnInit {
     });
   }
 
+  isUploadingImageListener() {
+    return this.imageStore.$isUploadingImage.subscribe((data: boolean) => {
+      this.isUploadPopupVisible = data;
+    });
+  }
+
   mapImageByCategory() {
+    this.fileItems[0].items[0].items = [];
+    this.fileItems[0].items[1].items = [];
+    this.fileItems[0].items[2].items = [];
     if (this.imageList.length !== 0) {
       for (let i = 0; i < this.imageList.length; i++) {
         const image = this.imageList[i];
@@ -168,10 +247,12 @@ export class FileManagementComponent implements OnInit {
   ngOnInit(): void {
     this.currentPageListener();
     this.imageDataListener();
+    this.isUploadingImageListener();
   }
 
   ngOnDestroy(): void {
     this.currentPageListener().unsubscribe();
     this.imageDataListener().unsubscribe();
+    this.isUploadingImageListener().unsubscribe();
   }
 }
