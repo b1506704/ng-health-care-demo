@@ -24,7 +24,7 @@ router.get("/:_id", getImage);
 router.post("/bySourceID", getImageBySourceID);
 router.post("/deleteAll", deleteAllImages);
 router.post("/", createImage);
-router.delete("/:_id", deleteImage);
+router.delete("/:sourceID", deleteImage);
 router.post("/batch", deleteSelectedImages);
 router.post("/fetchBatch", fetchSelectedImages);
 router.post("/updateImage/:_id", updateImage);

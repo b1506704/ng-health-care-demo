@@ -378,8 +378,6 @@ export class ImageStore extends StateService<ImageState> {
   );
 
   uploadImage(image: Image, page: number, size: number) {
-    // this.confirmDialog('').then((confirm: boolean) => {
-    //   if (confirm) {
     this.setIsLoading(true);
     this.setisUploadingImage(true);
     this.imageService.uploadImage(image).subscribe({
@@ -391,16 +389,12 @@ export class ImageStore extends StateService<ImageState> {
         this.getImageBySourceID(image?.sourceID);
         this.setIsLoading(false);
         this.setisUploadingImage(false);
-        // this.store.showNotif(data.message, 'custom');
       },
       error: (data: any) => {
         this.setIsLoading(false);
-        // this.store.showNotif(data.error.errorMessage, 'error');
         console.log(data);
       },
     });
-    //   }
-    // });
   }
 
   updateImage(image: Image, key: string, page: number, size: number) {
@@ -433,31 +427,9 @@ export class ImageStore extends StateService<ImageState> {
     return confirm(`<b>Are you sure?</b>`, 'Confirm changes');
   }
 
-  deleteSelectedImages(
-    selectedImages: Array<string>,
-    page: number,
-    size: number
-  ) {
-    this.confirmDialog('').then((confirm: boolean) => {
-      if (confirm) {
-        this.setIsLoading(true);
-        this.imageService.deleteSelectedImages(selectedImages).subscribe({
-          next: (data: any) => {
-            this.setState({ responseMsg: data });
-            console.log(data);
-            this.loadDataAsync(page, size);
-            console.log(this.state.imageList);
-            this.setIsLoading(false);
-            this.store.showNotif(data.message, 'custom');
-          },
-          error: (data: any) => {
-            this.setIsLoading(false);
-            this.store.showNotif(data.error.errorMessage, 'error');
-            console.log(data);
-          },
-        });
-      }
-    });
+  deleteSelectedImages(selectedImages: Array<string>) {
+    this.setIsLoading(true);
+    return this.imageService.deleteSelectedImages(selectedImages).toPromise();
   }
 
   deleteAllImages() {
@@ -485,27 +457,9 @@ export class ImageStore extends StateService<ImageState> {
     });
   }
 
-  deleteImage(id: string, page: number, size: number) {
-    this.confirmDialog('').then((confirm: boolean) => {
-      if (confirm) {
-        this.setIsLoading(true);
-        this.imageService.deleteImage(id).subscribe({
-          next: (data: any) => {
-            this.setState({ responseMsg: data });
-            this.setTotalItems(this.state.totalItems - 1);
-            console.log(data);
-            this.loadDataAsync(page, size);
-            this.setIsLoading(false);
-            this.store.showNotif(data.message, 'custom');
-          },
-          error: (data: any) => {
-            this.setIsLoading(false);
-            this.store.showNotif(data.error.errorMessage, 'error');
-            console.log(data);
-          },
-        });
-      }
-    });
+  deleteImage(id: string) {
+    this.setIsLoading(true);
+    return this.imageService.deleteImage(id).toPromise();
   }
 
   selectImage(_image: Image) {

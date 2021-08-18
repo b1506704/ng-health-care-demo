@@ -3,13 +3,14 @@ import { Router } from '@angular/router';
 import { ImageStore } from 'src/app/shared/services/image/image-store.service';
 import { Image } from 'src/app/shared/models/image';
 import { DxFileManagerComponent } from 'devextreme-angular';
+import { StoreService } from 'src/app/shared/services/store.service';
 @Component({
   selector: 'app-file-management',
   templateUrl: './file-management.component.html',
   styleUrls: ['./file-management.component.scss'],
 })
 export class FileManagementComponent implements OnInit {
-  @ViewChild(DxFileManagerComponent)
+  @ViewChild(DxFileManagerComponent, { static: false })
   dxFileManager: DxFileManagerComponent;
   isDirectory: boolean = true;
   currentDirectory: string = 'Images';
@@ -42,8 +43,11 @@ export class FileManagementComponent implements OnInit {
   currentFile!: any;
   uploadButtonOption: any = {};
   imageList: Array<Image> = [];
+  selectedKeys: Array<string> = [];
+  selectedItemKey: string;
+  selectedItem: any;
   currentIndexFromServer!: number;
-  pageSize: number = 10;
+  pageSize: number = 100;
   newFileMenuOptions = {
     items: [
       {
@@ -69,27 +73,64 @@ export class FileManagementComponent implements OnInit {
         icon: 'trash',
       },
     ],
-    onItemClick: this.deleteImage.bind(this),
+    onItemClick: this.deleteImages.bind(this),
   };
-  renameMenuOptions = {
+  updateMenuOptions = {
     items: [
       {
-        text: 'Rename',
-        icon: 'file',
+        text: 'Update',
+        icon: 'edit',
       },
     ],
-    onItemClick: this.renameImage.bind(this),
+    onItemClick: this.updateImage.bind(this),
   };
 
-  constructor(private router: Router, private imageStore: ImageStore) {}
+  constructor(
+    private router: Router,
+    private imageStore: ImageStore,
+    private store: StoreService
+  ) {}
 
   uploadImage() {
     this.isUploadPopupVisible = true;
   }
 
-  deleteImage() {}
+  deleteImages() {
+    if (this.selectedKeys.length !== 0) {
+      this.imageStore
+        .confirmDialog('Delete selected items?')
+        .then((confirm: boolean) => {
+          if (confirm) {
+            this.imageStore.deleteSelectedImages(this.selectedKeys).then(() => {
+              this.refresh();
+              this.store.showNotif(
+                `${this.selectedItemKey.length} item deleted`,
+                'custom'
+              );
+            });
+          }
+        });
+    }
+  }
 
-  renameImage() {}
+  deleteSelectedImage() {
+    if (this.selectedItemKey.length !== 0) {
+      this.imageStore
+        .confirmDialog('Delete this item?')
+        .then((confirm: boolean) => {
+          if (confirm) {
+            this.imageStore.deleteImage(this.selectedItemKey).then(() => {
+              this.refresh();
+              this.store.showNotif('1 item deleted', 'custom');
+            });
+          }
+        });
+    }
+  }
+
+  updateImage() {
+    this.isUploadPopupVisible = true;
+  }
 
   refresh() {
     switch (this.currentDirectory) {
@@ -126,6 +167,9 @@ export class FileManagementComponent implements OnInit {
   onSelectionChanged(e: any) {
     console.log('SELECTION CHANGED');
     console.log(e);
+    this.selectedKeys = e.selectedItemKeys;
+    this.selectedItemKey = e.currentSelectedItemKeys[0];
+    this.selectedItem = e.selectedItems[0]?.dataItem;
   }
 
   onToolbarItemClick(e: any) {
@@ -141,10 +185,10 @@ export class FileManagementComponent implements OnInit {
         this.uploadImage();
         break;
       case 'deleteImage':
-        this.deleteImage();
+        this.deleteSelectedImage();
         break;
-      case 'renameImage':
-        this.renameImage();
+      case 'updateImage':
+        this.updateImage();
         break;
       default:
         break;
@@ -190,6 +234,9 @@ export class FileManagementComponent implements OnInit {
   isUploadingImageListener() {
     return this.imageStore.$isUploadingImage.subscribe((data: boolean) => {
       this.isUploadPopupVisible = data;
+      if (this.isUploadPopupVisible === false) {
+        this.refresh();
+      }
     });
   }
 
@@ -205,6 +252,7 @@ export class FileManagementComponent implements OnInit {
             this.fileItems[0].items[0].items.push({
               type: image.fileType,
               category: image.category,
+              __KEY__: image.sourceID,
               sourceID: image.sourceID,
               name: image.title,
               isDirectory: false,
@@ -216,6 +264,7 @@ export class FileManagementComponent implements OnInit {
             this.fileItems[0].items[1].items.push({
               type: image.fileType,
               category: image.category,
+              __KEY__: image.sourceID,
               sourceID: image.sourceID,
               name: image.title,
               isDirectory: false,
@@ -227,6 +276,7 @@ export class FileManagementComponent implements OnInit {
             this.fileItems[0].items[2].items.push({
               type: image.fileType,
               category: image.category,
+              __KEY__: image.sourceID,
               sourceID: image.sourceID,
               name: image.title,
               isDirectory: false,

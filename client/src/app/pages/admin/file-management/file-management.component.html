@@ -11,7 +11,7 @@
     (onOptionChanged)="onOptionChanged($event)"
   >
     <!-- [selectionMode]="multiple" -->
-    <dxo-permissions delete="false" rename="true" download="true">
+    <dxo-permissions delete="true" rename="true" download="true" create="true">
     </dxo-permissions>
     <ng-container *ngIf="isDirectory === false">
       <dxo-item-view [showParentFolder]="false">
@@ -60,7 +60,7 @@
       <dxi-file-selection-item
         widget="dxMenu"
         location="before"
-        [options]="renameMenuOptions"
+        [options]="updateMenuOptions"
       ></dxi-file-selection-item>
       <dxi-file-selection-item name="clearSelection"></dxi-file-selection-item>
     </dxo-toolbar>
@@ -73,9 +73,9 @@
       ></dxi-item>
       <dxi-item name="deleteImage" text="Delete image" icon="trash"></dxi-item>
       <dxi-item
-        name="renameImage"
-        text="Rename image"
-        icon="file"
+        name="updateImage"
+        text="Update image"
+        icon="edit"
         beginGroup="true"
       ></dxi-item>
     </dxo-context-menu>
@@ -131,7 +131,10 @@
         [height]="'100%'"
         [width]="'100%'"
       >
-        <app-upload-tool [directory]="currentDirectory"></app-upload-tool>
+        <app-upload-tool
+          [directory]="currentDirectory"
+          [selectedItem]="selectedItem"
+        ></app-upload-tool>
       </dx-scroll-view>
     </div>
   </dx-popup>

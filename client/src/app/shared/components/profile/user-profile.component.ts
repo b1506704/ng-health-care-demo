@@ -121,18 +121,22 @@ export class UserProfileComponent implements OnInit, OnDestroy {
     var file = e.dataTransfer ? e.dataTransfer.files[0] : e.target.files[0];
     console.log(file);
     if (file !== undefined) {
-      this.imageData.fileSize = file.size;
-      this.imageData.fileType = file.type;
-      this.imageData.fileName = file.name;
-      var pattern = /image-*/;
-      var reader = new FileReader();
+      if (file.size <= 2000000) {
+        this.imageData.fileSize = file.size;
+        this.imageData.fileType = file.type;
+        this.imageData.fileName = file.name;
+        var pattern = /image-*/;
+        var reader = new FileReader();
 
-      if (!file.type.match(pattern)) {
-        console.log('invalid format');
-        return;
+        if (!file.type.match(pattern)) {
+          this.store.showNotif('Invalid format!', 'custom');
+          return;
+        }
+        reader.onload = this.handleReaderLoaded.bind(this);
+        reader.readAsDataURL(file);
+      } else {
+        this.store.showNotif('Image cannot exceed 2MB', 'custom');
       }
-      reader.onload = this.handleReaderLoaded.bind(this);
-      reader.readAsDataURL(file);
     }
   }
 

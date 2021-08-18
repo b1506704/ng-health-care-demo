@@ -162,8 +162,8 @@ export class ImageHttpService {
     });
   }
 
-  deleteImage(id: string): Observable<ArrayBuffer> {
-    return this.http.delete<ArrayBuffer>(this.apiImageUrl + `/${id}`, {
+  deleteImage(sourceID: string): Observable<ArrayBuffer> {
+    return this.http.delete<ArrayBuffer>(this.apiImageUrl + `/${sourceID}`, {
       reportProgress: true,
       observe: 'body',
     });

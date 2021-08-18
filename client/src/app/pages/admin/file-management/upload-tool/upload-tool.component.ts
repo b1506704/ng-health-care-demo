@@ -18,6 +18,7 @@ import { StoreService } from 'src/app/shared/services/store.service';
 export class UploadToolComponent implements OnInit, OnDestroy, OnChanges {
   @ViewChild(DxFormComponent, { static: false }) dxForm: DxFormComponent;
   @Input() directory!: string;
+  @Input() selectedItem!: any;
   submitButtonOptions: any = {
     text: 'Submit',
     icon: 'save',
@@ -120,8 +121,23 @@ export class UploadToolComponent implements OnInit, OnDestroy, OnChanges {
     }
   }
 
+  renderSelectedImage() {
+    if (this.selectedItem) {
+      console.log('SELECTED IMAGE');
+      console.log(this.selectedItem);
+      this.imageData.fileName = this.selectedItem.name;
+      this.imageData.title = this.selectedItem.name;
+      this.imageData.fileType = this.selectedItem.type;
+      this.imageData.fileSize = this.selectedItem.size;
+      this.imageData.category = this.selectedItem.category;
+      this.imageData.url = this.selectedItem.thumbnail;
+      this.imageData.sourceID = this.selectedItem.sourceID;
+    }
+  }
+
   ngOnChanges(): void {
     this.resetValues();
+    this.renderSelectedImage();
     this.setImageCategory();
   }
 

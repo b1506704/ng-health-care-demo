@@ -103,7 +103,7 @@ export const deleteSelectedImages = async (req, res) => {
   try {
     for (let i = 0; i < selectedItems.length; i++) {
       const deletedImage = await Image.findOneAndDelete({
-        _id: selectedItems[i],
+        sourceID: selectedItems[i],
       });
       if (i === selectedItems.length - 1) {
         res.status(200).json({
@@ -117,9 +117,9 @@ export const deleteSelectedImages = async (req, res) => {
 };
 
 export const deleteImage = async (req, res) => {
-  const { _id } = req.params;
+  const { sourceID } = req.params;
   try {
-    const image = await Image.findOneAndDelete({ _id: _id });
+    const image = await Image.findOneAndDelete({ sourceID: sourceID });
     res.status(200).json({ message: `1 image deleted` });
   } catch (error) {
     res.status(404).json({ errorMessage: "Medical checkup not found!" });
