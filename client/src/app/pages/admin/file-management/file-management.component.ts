@@ -104,7 +104,7 @@ export class FileManagementComponent implements OnInit {
             this.imageStore.deleteSelectedImages(this.selectedKeys).then(() => {
               this.refresh();
               this.store.showNotif(
-                `${this.selectedItemKey.length} item deleted`,
+                `${this.selectedKeys.length} item deleted`,
                 'custom'
               );
             });

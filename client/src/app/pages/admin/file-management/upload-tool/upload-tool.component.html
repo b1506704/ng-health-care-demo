@@ -24,6 +24,50 @@
       >
         <dxi-item itemType="group">
           <dxi-item itemType="group" caption="Image Meta Data">
+            <dxi-item name="category">
+              <dxo-label text="Category"> </dxo-label>
+              <div *dxTemplate>
+                <dx-select-box
+                  [dataSource]="[
+                    { name: 'customer' },
+                    { name: 'doctor' },
+                    { name: 'medicine' }
+                  ]"
+                  [value]="imageData?.category"
+                  valueExpr="name"
+                  displayExpr="name"
+                  placeholder="Select a category"
+                  (onValueChanged)="onCategoryValueChanged($event)"
+                >
+                </dx-select-box>
+              </div>
+            </dxi-item>
+            <dxi-item name="auto-complete">
+              <dxo-label [text]="searchCategory"></dxo-label>
+              <div *dxTemplate>
+                <dx-autocomplete
+                  [placeholder]="searchPlaceholder"
+                  [(value)]="searchValue"
+                  (onKeyUp)="onSearchKeyUpHandler($event)"
+                  [dataSource]="searchData"
+                  [opened]="isOpenSuggestion"
+                  [valueExpr]="valueExpr"
+                  (onItemClick)="onItemClick($event)"
+                >
+                </dx-autocomplete>
+              </div>
+            </dxi-item>
+            <dxi-item
+              dataField="sourceID"
+              [label]="{ text: 'Source ID' }"
+              editorType="dxTextBox"
+            >
+              <dxi-validation-rule
+                type="required"
+                message="Source id is required"
+              >
+              </dxi-validation-rule>
+            </dxi-item>
             <dxi-item name="avatar">
               <dxo-label text="Image url"> </dxo-label>
               <div *dxTemplate>
@@ -48,32 +92,6 @@
               </dxi-validation-rule>
             </dxi-item>
 
-            <dxi-item
-              dataField="category"
-              [label]="{ text: 'Category' }"
-              editorType="dxSelectBox"
-              [editorOptions]="{
-                items: ['customer', 'doctor', 'medicine'],
-                value: imageData?.category
-              }"
-            >
-              <dxi-validation-rule
-                type="required"
-                message="Category is required"
-              >
-              </dxi-validation-rule>
-            </dxi-item>
-            <dxi-item
-              dataField="sourceID"
-              [label]="{ text: 'Source ID' }"
-              editorType="dxTextBox"
-            >
-              <dxi-validation-rule
-                type="required"
-                message="Source id is required"
-              >
-              </dxi-validation-rule>
-            </dxi-item>
             <dxi-item
               itemType="group"
               [colCount]="2"

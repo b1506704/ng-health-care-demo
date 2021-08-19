@@ -215,7 +215,7 @@ export class DoctorStore extends StateService<DoctorState> {
 
   initInfiniteSearchByNameData(value: string, page: number, size: number) {
     this.store.showNotif('Searched Mode On', 'custom');
-    this.doctorService
+    return this.doctorService
       .searchDoctorByName(value, page, size)
       .toPromise()
       .then((data: any) => {
