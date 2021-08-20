@@ -16,6 +16,7 @@ import imageRoutes from "./routes/images.js";
 import scheduleRoutes from "./routes/schedules.js";
 import medicalCheckupRoutes from "./routes/medical_checkups.js";
 import customerRoutes from "./routes/customers.js";
+import fileRoutes from "./routes/file.js";
 
 dotenv.config();
 
@@ -38,6 +39,7 @@ app.use("/images", imageRoutes);
 app.use("/prescriptions", prescriptionRoutes);
 app.use("/schedules", scheduleRoutes);
 app.use("/diseases", diseaseRoutes);
+app.use("/files", fileRoutes);
 
 mongoose
   .connect(dbUri, { useNewUrlParser: true, useUnifiedTopology: true })

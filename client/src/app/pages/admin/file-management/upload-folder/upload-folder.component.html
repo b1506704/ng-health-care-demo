@@ -1,0 +1,58 @@
+<div
+  [ngClass]="{
+    'folder-popup-content': isUploading === false,
+    'folder-popup-loading': isUploading === true
+  }"
+>
+  <div class="container">
+    <form
+      id="form-container"
+      (submit)="onSubmit($event)"
+      [classList]="['upload-form']"
+    >
+      <div class="long-title">
+        <h3>To {{ directory }}/</h3>
+      </div>
+      <dx-form
+        id="form"
+        [formData]="containerData"
+        [showValidationSummary]="true"
+        validationGroup="containerData"
+      >
+        <dxi-item itemType="group">
+          <dxi-item itemType="group" caption="Folder Name">
+            <dxi-item
+              dataField="name"
+              [label]="{ text: 'Folder Name' }"
+              editorType="dxTextBox"
+            >
+              <dxi-validation-rule
+                type="required"
+                message="Folder name is required"
+              >
+              </dxi-validation-rule>
+            </dxi-item>
+            <dxi-item
+              itemType="group"
+              [colCount]="2"
+              [cssClass]="'buttonGroup'"
+            >
+              <dxi-item
+                itemType="button"
+                horizontalAlignment="center"
+                [buttonOptions]="submitButtonOptions"
+              >
+              </dxi-item>
+              <dxi-item
+                itemType="button"
+                horizontalAlignment="center"
+                [buttonOptions]="resetButtonOptions"
+              >
+              </dxi-item>
+            </dxi-item>
+          </dxi-item>
+        </dxi-item>
+      </dx-form>
+    </form>
+  </div>
+</div>

@@ -11,6 +11,7 @@ import {
   DxSelectBoxModule,
 } from 'devextreme-angular';
 import { UploadToolComponent } from './upload-tool/upload-tool.component';
+import { UploadFolderComponent } from './upload-folder/upload-folder.component';
 
 @NgModule({
   imports: [
@@ -23,6 +24,10 @@ import { UploadToolComponent } from './upload-tool/upload-tool.component';
     DxAutocompleteModule,
     DxSelectBoxModule,
   ],
-  declarations: [FileManagementComponent, UploadToolComponent],
+  declarations: [
+    FileManagementComponent,
+    UploadToolComponent,
+    UploadFolderComponent,
+  ],
 })
 export class FileManagementModule {}

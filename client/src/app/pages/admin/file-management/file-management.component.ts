@@ -4,6 +4,8 @@ import { ImageStore } from 'src/app/shared/services/image/image-store.service';
 import { Image } from 'src/app/shared/models/image';
 import { DxFileManagerComponent } from 'devextreme-angular';
 import { StoreService } from 'src/app/shared/services/store.service';
+import { FileStore } from 'src/app/shared/services/file/file-store.service';
+import { Container } from 'src/app/shared/models/container';
 @Component({
   selector: 'app-file-management',
   templateUrl: './file-management.component.html',
@@ -39,7 +41,8 @@ export class FileManagementComponent implements OnInit {
   ];
   isPopupVisible!: boolean;
   isUploadPopupVisible!: boolean;
-  isUploadingImage!: boolean;
+  isUploadContainerPopupVisible!: boolean;
+  isUploading!: boolean;
   currentFile!: any;
   uploadButtonOption: any = {};
   imageList: Array<Image> = [];
@@ -56,6 +59,15 @@ export class FileManagementComponent implements OnInit {
       },
     ],
     onItemClick: this.uploadImage.bind(this),
+  };
+  newContainerMenuOptions = {
+    items: [
+      {
+        text: 'Create Folder',
+        icon: 'folder',
+      },
+    ],
+    onItemClick: this.uploadContainer.bind(this),
   };
   refreshMenuOptions = {
     items: [
@@ -84,12 +96,18 @@ export class FileManagementComponent implements OnInit {
     ],
     onItemClick: this.updateImage.bind(this),
   };
+  containerList: Array<Container> = [];
 
   constructor(
     private router: Router,
     private imageStore: ImageStore,
-    private store: StoreService
+    private store: StoreService,
+    private fileStore: FileStore
   ) {}
+
+  uploadContainer() {
+    this.isUploadContainerPopupVisible = true;
+  }
 
   uploadImage() {
     this.isUploadPopupVisible = true;
@@ -132,7 +150,14 @@ export class FileManagementComponent implements OnInit {
     this.isUploadPopupVisible = true;
   }
 
+  refreshFolder() {
+    this.fileStore.initInfiniteContainer(0, this.pageSize).then(() => {
+      this.containerDataListener();
+    });
+  }
+
   refresh() {
+    this.mapContainerToFolder();
     switch (this.currentDirectory) {
       case 'Images/Doctors':
         this.isDirectory = false;
@@ -231,13 +256,42 @@ export class FileManagementComponent implements OnInit {
     });
   }
 
-  isUploadingImageListener() {
-    return this.imageStore.$isUploadingImage.subscribe((data: boolean) => {
+  isUploadingListener() {
+    return this.imageStore.$isUploading.subscribe((data: boolean) => {
       this.isUploadPopupVisible = data;
       if (this.isUploadPopupVisible === false) {
         this.refresh();
       }
     });
+  }
+
+  isUploadingFolderListener() {
+    return this.fileStore.$isUploading.subscribe((data: boolean) => {
+      this.isUploadContainerPopupVisible = data;
+      if (this.isUploadContainerPopupVisible === false) {
+        this.refreshFolder();
+      }
+    });
+  }
+
+  mapContainerToFolder() {
+    this.fileItems = [];
+    if (this.containerList.length !== 0) {
+      for (let i = 0; i < this.containerList.length; i++) {
+        const container = this.containerList[i];
+        console.log(container);
+        if (container.name) {
+          this.fileItems.push({
+            name: container.name,
+            isDirectory: true,
+            items: [],
+          });
+        }
+      }
+      // setTimeout(() => {
+      this.dxFileManager.instance.refresh();
+      // }, 500);
+    }
   }
 
   mapImageByCategory() {
@@ -291,18 +345,36 @@ export class FileManagementComponent implements OnInit {
     }
     console.log('CURRENT FILES');
     console.log(this.fileItems);
-    this.dxFileManager.instance.refresh();
+    setTimeout(() => {
+      this.dxFileManager.instance.refresh();
+    }, 500);
+  }
+
+  containerDataListener() {
+    return this.fileStore.$containerList.subscribe((data: any) => {
+      if (data.length !== 0) {
+        this.containerList = data;
+        // setTimeout(() => {
+        this.mapContainerToFolder();
+        // }, 500);
+      }
+    });
   }
 
   ngOnInit(): void {
+    // this.refreshFolder();
+    this.refreshFolder();
     this.currentPageListener();
     this.imageDataListener();
-    this.isUploadingImageListener();
+    this.isUploadingListener();
+    this.isUploadingFolderListener();
   }
 
   ngOnDestroy(): void {
+    this.containerDataListener().unsubscribe();
     this.currentPageListener().unsubscribe();
     this.imageDataListener().unsubscribe();
-    this.isUploadingImageListener().unsubscribe();
+    this.isUploadingListener().unsubscribe();
+    this.isUploadingFolderListener().unsubscribe();
   }
 }

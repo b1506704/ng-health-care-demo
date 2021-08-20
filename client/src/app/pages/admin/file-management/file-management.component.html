@@ -1,17 +1,15 @@
 <ng-container *ngIf="fileItems">
   <dx-file-manager
+    currentPath="Images"
     id="fileManager"
     [fileSystemProvider]="fileItems"
     height="'100%'"
-    currentPath="Images"
     (onSelectedFileOpened)="displayImagePopup($event)"
     (onSelectionChanged)="onSelectionChanged($event)"
     (onToolbarItemClick)="onToolbarItemClick($event)"
     (onContextMenuItemClick)="onContextItemClick($event)"
     (onOptionChanged)="onOptionChanged($event)"
   >
-    <dxo-permissions delete="true" rename="true" download="true" create="true">
-    </dxo-permissions>
     <ng-container *ngIf="isDirectory === false">
       <dxo-item-view [showParentFolder]="false">
         <dxo-details>
@@ -38,6 +36,11 @@
     <dxo-toolbar>
       <dxi-item name="showNavPane" visible="true"></dxi-item>
       <dxi-item name="separator"></dxi-item>
+      <dxi-item
+        widget="dxMenu"
+        location="before"
+        [options]="newContainerMenuOptions"
+      ></dxi-item>
       <dxi-item
         widget="dxMenu"
         location="before"
@@ -134,6 +137,31 @@
           [directory]="currentDirectory"
           [selectedItem]="selectedItem"
         ></app-upload-tool>
+      </dx-scroll-view>
+    </div>
+  </dx-popup>
+  <dx-popup
+    id="upload-folder-popup"
+    [height]="'70%'"
+    [width]="'70%'"
+    [showTitle]="true"
+    [shading]="true"
+    [showCloseButton]="true"
+    [title]="'Upload Folder'"
+    [(visible)]="isUploadContainerPopupVisible"
+  >
+    <div *dxTemplate="let data of 'content'">
+      <dx-scroll-view
+        [bounceEnabled]="true"
+        [scrollByContent]="true"
+        [scrollByThumb]="true"
+        [height]="'100%'"
+        [width]="'100%'"
+      >
+        <app-upload-folder
+          [directory]="currentDirectory"
+          [selectedItem]="currentDirectory"
+        ></app-upload-folder>
       </dx-scroll-view>
     </div>
   </dx-popup>

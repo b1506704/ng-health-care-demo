@@ -1,28 +1,31 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { Image } from '../../models/image';
+import { File } from '../../models/file';
+import { Container } from '../../models/container';
 import { StateService } from '../state.service';
 import { StoreService } from '../store.service';
-import { ImageHttpService } from './image-http.service';
+import { FileHttpService } from './file-http.service';
 import { confirm } from 'devextreme/ui/dialog';
 import { MedicalCheckupStore } from '../medical-checkup/medical-checkup-store.service';
 
-interface ImageState {
-  imageList: Array<Image>;
+interface FileState {
+  fileList: Array<File>;
+  containerList: Array<Container>;
   isUploading: boolean;
-  exportData: Array<Image>;
-  selectedImage: Object;
-  imageInstance: Image;
+  exportData: Array<File>;
+  selectedFile: Object;
+  fileInstance: File;
   totalPages: number;
   currentPage: number;
   totalItems: number;
   responseMsg: String;
 }
-const initialState: ImageState = {
-  imageList: [],
+const initialState: FileState = {
+  fileList: [],
+  containerList: [],
   isUploading: false,
-  selectedImage: {},
-  imageInstance: undefined,
+  selectedFile: {},
+  fileInstance: undefined,
   exportData: [],
   totalPages: 0,
   currentPage: 0,
@@ -32,9 +35,9 @@ const initialState: ImageState = {
 @Injectable({
   providedIn: 'root',
 })
-export class ImageStore extends StateService<ImageState> {
+export class FileStore extends StateService<FileState> {
   constructor(
-    private imageService: ImageHttpService,
+    private fileService: FileHttpService,
     private store: StoreService,
     private medicalCheckupService: MedicalCheckupStore
   ) {
@@ -63,10 +66,10 @@ export class ImageStore extends StateService<ImageState> {
   fillEmpty(
     startIndex: number,
     endIndex: number,
-    sourceArray: Array<Image>,
-    addedArray: Array<Image>
-  ): Array<Image> {
-    let result: Array<Image> = sourceArray;
+    sourceArray: Array<File>,
+    addedArray: Array<File>
+  ): Array<File> {
+    let result: Array<File> = sourceArray;
     let fillIndex = startIndex * endIndex;
     for (var j = 0; j < addedArray.length; j++) {
       result[fillIndex] = addedArray[j];
@@ -83,16 +86,16 @@ export class ImageStore extends StateService<ImageState> {
     return result;
   }
 
-  fetchSelectedImages(source: Array<any>) {
+  fetchSelectedFiles(source: Array<any>) {
     const sourceIDs = source.map((e) => e._id);
     console.log('ARRAY OF IDs');
     console.log(sourceIDs);
     this.store.setIsLoading(true);
-    this.imageService.fetchSelectedImages(sourceIDs).subscribe((data: any) => {
+    this.fileService.fetchSelectedFiles(sourceIDs).subscribe((data: any) => {
       this.store.setIsLoading(false);
       if (data !== null) {
-        this.setState({ imageList: this.state.imageList.concat(data) });
-        console.log('FETCHED IMAGES');
+        this.setState({ fileList: this.state.fileList.concat(data) });
+        console.log('FETCHED FILES');
         console.log(data);
         // this.store.setIsLoading(false);
       }
@@ -100,15 +103,15 @@ export class ImageStore extends StateService<ImageState> {
   }
 
   initInfiniteData(page: number, size: number) {
-    return this.imageService
-      .fetchImage(page, size)
+    return this.fileService
+      .fetchFile(page, size)
       .toPromise()
       .then((data: any) => {
         this.setState({
-          imageList: new Array<Image>(data.items.length),
+          fileList: new Array<File>(data.items.length),
         });
         console.log('Current flag: infite list');
-        console.log(this.state.imageList);
+        console.log(this.state.fileList);
         this.setState({ totalItems: data.totalItems });
         this.setState({ totalPages: data.totalPages });
         this.setState({ currentPage: data.currentPage });
@@ -120,13 +123,13 @@ export class ImageStore extends StateService<ImageState> {
 
   loadInfiniteDataAsync(page: number, size: number) {
     this.setIsLoading(true);
-    this.imageService.fetchImage(page, size).subscribe({
+    this.fileService.fetchFile(page, size).subscribe({
       next: (data: any) => {
         this.setState({
-          imageList: this.state.imageList.concat(data.items),
+          fileList: this.state.fileList.concat(data.items),
         });
         console.log('Infinite list');
-        console.log(this.state.imageList);
+        console.log(this.state.fileList);
         console.log('Server response');
         console.log(data);
         this.setState({ totalItems: data.totalItems });
@@ -143,15 +146,15 @@ export class ImageStore extends StateService<ImageState> {
   }
 
   initData(page: number, size: number) {
-    this.imageService
-      .fetchImage(page, size)
+    this.fileService
+      .fetchFile(page, size)
       .toPromise()
       .then((data: any) => {
         this.setState({
-          imageList: new Array<Image>(data.totalItems),
+          fileList: new Array<File>(data.totalItems),
         });
         console.log('Current flag: pure list');
-        console.log(this.state.imageList);
+        console.log(this.state.fileList);
         this.setState({ totalItems: data.totalItems });
         this.setState({ totalPages: data.totalPages });
         this.setState({ currentPage: data.currentPage });
@@ -163,145 +166,140 @@ export class ImageStore extends StateService<ImageState> {
 
   initFilterByCategoryData(value: string, page: number, size: number) {
     this.store.showNotif('Filtered Mode On', 'custom');
-    this.imageService
-      .filterImageByCategory(value, 0, 5)
+    this.fileService
+      .filterFileByCategory(value, 0, 5)
       .toPromise()
       .then((data: any) => {
         this.setState({
-          imageList: new Array<Image>(data.totalItems),
+          fileList: new Array<File>(data.totalItems),
         });
         console.log('Current flag: filtered list');
-        console.log(this.state.imageList);
+        console.log(this.state.fileList);
         this.setState({ totalItems: data.totalItems });
         this.setState({ totalPages: data.totalPages });
         this.setState({ currentPage: data.currentPage });
       })
       .then(() => {
-        this.filterImageByCategory(value, page, size);
+        this.filterFileByCategory(value, page, size);
       });
   }
 
   initInfiniteFilterByCategoryData(value: string, page: number, size: number) {
     // this.store.showNotif('Filtered Mode On', 'custom');
-    this.setState({ imageList: [] });
+    this.setState({ fileList: [] });
     this.store.setIsLoading(true);
-    return this.imageService
-      .filterImageByCategory(value, page, size)
+    return this.fileService
+      .filterFileByCategory(value, page, size)
       .toPromise()
       .then((data: any) => {
         this.setState({
-          imageList: this.state.imageList.concat(data.items),
+          fileList: this.state.fileList.concat(data.items),
         });
         console.log('Current flag: infinite filtered list');
-        console.log(this.state.imageList);
+        console.log(this.state.fileList);
         this.store.setIsLoading(false);
         this.setState({ totalItems: data.totalItems });
         this.setState({ totalPages: data.totalPages });
         this.setState({ currentPage: data.currentPage });
       });
     // .then(() => {
-    //   this.filterImageByCategory(value, page, size);
+    //   this.filterFileByCategory(value, page, size);
     // });
   }
 
   initSearchByNameData(value: string, page: number, size: number) {
     this.store.showNotif('Searched Mode On', 'custom');
-    this.imageService
-      .searchImageByName(value, 0, 5)
+    this.fileService
+      .searchFileByName(value, 0, 5)
       .toPromise()
       .then((data: any) => {
         this.setState({
-          imageList: new Array<Image>(data.totalItems),
+          fileList: new Array<File>(data.totalItems),
         });
         console.log('Current flag: searched list');
-        console.log(this.state.imageList);
+        console.log(this.state.fileList);
         this.setState({ totalItems: data.totalItems });
         this.setState({ totalPages: data.totalPages });
         this.setState({ currentPage: data.currentPage });
       })
       .then(() => {
-        this.searchImageByName(value, page, size);
+        this.searchFileByName(value, page, size);
       });
   }
 
   initInfiniteSearchByNameData(value: string, page: number, size: number) {
     this.store.showNotif('Searched Mode On', 'custom');
-    this.imageService
-      .searchImageByName(value, page, size)
+    this.fileService
+      .searchFileByName(value, page, size)
       .toPromise()
       .then((data: any) => {
         if (data.totalItems !== 0) {
           this.setState({
-            imageList: new Array<Image>(size),
+            fileList: new Array<File>(size),
           });
         } else {
           this.store.showNotif('No result found!', 'custom');
         }
         console.log('Current flag: infitite searched list');
-        console.log(this.state.imageList);
+        console.log(this.state.fileList);
         this.setState({ totalItems: data.totalItems });
         this.setState({ totalPages: data.totalPages });
         this.setState({ currentPage: data.currentPage });
       })
       .then(() => {
-        this.searchImageByName(value, page, size);
+        this.searchFileByName(value, page, size);
       });
   }
 
   initSortByPriceData(value: string, page: number, size: number) {
     this.store.showNotif('Sort Mode On', 'custom');
-    this.imageService
-      .sortImageByPrice(value, 0, 5)
+    this.fileService
+      .sortFileByPrice(value, 0, 5)
       .toPromise()
       .then((data: any) => {
         this.setState({
-          imageList: new Array<Image>(data.totalItems),
+          fileList: new Array<File>(data.totalItems),
         });
         console.log('Current flag: sort list');
-        console.log(this.state.imageList);
+        console.log(this.state.fileList);
         this.setState({ totalItems: data.totalItems });
         this.setState({ totalPages: data.totalPages });
         this.setState({ currentPage: data.currentPage });
       })
       .then(() => {
-        this.sortImageByPrice(value, page, size);
+        this.sortFileByPrice(value, page, size);
       });
   }
 
   initInfiniteSortByPriceData(value: string, page: number, size: number) {
     this.store.showNotif('Sort Mode On', 'custom');
-    this.imageService
-      .sortImageByPrice(value, page, size)
+    this.fileService
+      .sortFileByPrice(value, page, size)
       .toPromise()
       .then((data: any) => {
         this.setState({
-          imageList: new Array<Image>(size),
+          fileList: new Array<File>(size),
         });
         console.log('Current flag: sort list');
-        console.log(this.state.imageList);
+        console.log(this.state.fileList);
         this.setState({ totalItems: data.totalItems });
         this.setState({ totalPages: data.totalPages });
         this.setState({ currentPage: data.currentPage });
       })
       .then(() => {
-        this.sortImageByPrice(value, page, size);
+        this.sortFileByPrice(value, page, size);
       });
   }
 
   loadDataAsync(page: number, size: number) {
     this.setIsLoading(true);
-    this.imageService.fetchImage(page, size).subscribe({
+    this.fileService.fetchFile(page, size).subscribe({
       next: (data: any) => {
         this.setState({
-          imageList: this.fillEmpty(
-            page,
-            size,
-            this.state.imageList,
-            data.items
-          ),
+          fileList: this.fillEmpty(page, size, this.state.fileList, data.items),
         });
         console.log('Pure list');
-        console.log(this.state.imageList);
+        console.log(this.state.fileList);
         console.log('Server response');
         console.log(data);
         this.setState({ totalItems: data.totalItems });
@@ -319,21 +317,16 @@ export class ImageStore extends StateService<ImageState> {
 
   refresh(page: number, size: number) {
     this.setIsLoading(true);
-    this.imageService.fetchImage(page, size).subscribe({
+    this.fileService.fetchFile(page, size).subscribe({
       next: (data: any) => {
         this.setState({
-          imageList: this.fillEmpty(
-            page,
-            size,
-            this.state.imageList,
-            data.items
-          ),
+          fileList: this.fillEmpty(page, size, this.state.fileList, data.items),
         });
         this.setState({ totalItems: data.totalItems });
         this.setState({ totalPages: data.totalPages });
         this.setState({ currentPage: data.currentPage });
         console.log('Pure list');
-        console.log(this.state.imageList);
+        console.log(this.state.fileList);
         console.log('Server response');
         console.log(data);
         this.store.showNotif('Refresh successfully', 'custom');
@@ -351,11 +344,13 @@ export class ImageStore extends StateService<ImageState> {
     this.store.setIsLoading(_isLoading);
   }
 
-  $imageList: Observable<Array<Image>> = this.select(
-    (state) => state.imageList
+  $fileList: Observable<Array<File>> = this.select((state) => state.fileList);
+
+  $containerList: Observable<Array<Container>> = this.select(
+    (state) => state.containerList
   );
 
-  $exportData: Observable<Array<Image>> = this.select(
+  $exportData: Observable<Array<File>> = this.select(
     (state) => state.exportData
   );
 
@@ -365,28 +360,24 @@ export class ImageStore extends StateService<ImageState> {
 
   $currentPage: Observable<Number> = this.select((state) => state.currentPage);
 
-  $selectedImage: Observable<Object> = this.select(
-    (state) => state.selectedImage
+  $selectedFile: Observable<Object> = this.select(
+    (state) => state.selectedFile
   );
 
-  $imageInstance: Observable<Image> = this.select(
-    (state) => state.imageInstance
-  );
+  $fileInstance: Observable<File> = this.select((state) => state.fileInstance);
 
-  $isUploading: Observable<boolean> = this.select(
-    (state) => state.isUploading
-  );
+  $isUploading: Observable<boolean> = this.select((state) => state.isUploading);
 
-  uploadImage(image: Image, page: number, size: number) {
+  uploadFile(file: File, page: number, size: number) {
     this.setIsLoading(true);
     this.setisUploading(true);
-    this.imageService.uploadImage(image).subscribe({
+    this.fileService.uploadFile(file).subscribe({
       next: (data: any) => {
         this.setState({ responseMsg: data });
         this.setTotalItems(this.state.totalItems + 1);
         console.log(data);
         // this.loadDataAsync(page, size);
-        this.getImageBySourceID(image?.sourceID);
+        this.getFileBySourceID(file?.sourceID);
         this.setIsLoading(false);
         this.setisUploading(false);
       },
@@ -397,11 +388,11 @@ export class ImageStore extends StateService<ImageState> {
     });
   }
 
-  updateImage(image: Image, key: string, page: number, size: number) {
+  updateFile(file: File, key: string, page: number, size: number) {
     this.confirmDialog('').then((confirm: boolean) => {
       if (confirm) {
         this.setIsLoading(true);
-        this.imageService.updateImage(image, key).subscribe({
+        this.fileService.updateFile(file, key).subscribe({
           next: (data: any) => {
             this.setState({ responseMsg: data });
             console.log(data);
@@ -427,19 +418,19 @@ export class ImageStore extends StateService<ImageState> {
     return confirm(`<b>Are you sure?</b>`, 'Confirm changes');
   }
 
-  deleteSelectedImages(selectedImages: Array<string>) {
+  deleteSelectedFiles(selectedFiles: Array<string>) {
     this.setIsLoading(true);
-    return this.imageService.deleteSelectedImages(selectedImages).toPromise();
+    return this.fileService.deleteSelectedFiles(selectedFiles).toPromise();
   }
 
-  deleteAllImages() {
+  deleteAllFiles() {
     this.confirmDialog('Delete all items?').then((confirm: boolean) => {
       if (confirm) {
         this.setIsLoading(true);
-        this.imageService.deleteAllImages().subscribe({
+        this.fileService.deleteAllFiles().subscribe({
           next: (data: any) => {
             this.setState({ responseMsg: data });
-            this.setState({ imageList: [] });
+            this.setState({ fileList: [] });
             this.setState({ totalPages: 0 });
             this.setState({ currentPage: 0 });
             this.setState({ totalItems: 0 });
@@ -457,13 +448,13 @@ export class ImageStore extends StateService<ImageState> {
     });
   }
 
-  deleteImage(id: string) {
+  deleteFile(id: string) {
     this.setIsLoading(true);
-    return this.imageService.deleteImage(id).toPromise();
+    return this.fileService.deleteFile(id).toPromise();
   }
 
-  selectImage(_image: Image) {
-    this.setState({ selectedImage: _image });
+  selectFile(_file: File) {
+    this.setState({ selectedFile: _file });
   }
 
   setTotalPages(_totalPages: number) {
@@ -478,53 +469,41 @@ export class ImageStore extends StateService<ImageState> {
     this.setState({ currentPage: _currentPage });
   }
 
-  filterImageByPrice(
+  filterFileByPrice(
     criteria: string,
     value: number,
     page: number,
     size: number
   ) {
     this.setIsLoading(true);
-    this.imageService
-      .filterImageByPrice(criteria, value, page, size)
-      .subscribe({
-        next: (data: any) => {
-          this.setState({ responseMsg: data });
-          this.setState({
-            imageList: this.fillEmpty(
-              page,
-              size,
-              this.state.imageList,
-              data.items
-            ),
-          });
-          this.setState({ totalItems: data.totalItems });
-          this.setState({ totalPages: data.totalPages });
-          this.setState({ currentPage: data.currentPage });
-          this.setIsLoading(false);
-        },
-        error: (data: any) => {
-          this.setIsLoading(false);
-          this.store.showNotif(data.error.errorMessage, 'error');
-          console.log(data);
-        },
-      });
+    this.fileService.filterFileByPrice(criteria, value, page, size).subscribe({
+      next: (data: any) => {
+        this.setState({ responseMsg: data });
+        this.setState({
+          fileList: this.fillEmpty(page, size, this.state.fileList, data.items),
+        });
+        this.setState({ totalItems: data.totalItems });
+        this.setState({ totalPages: data.totalPages });
+        this.setState({ currentPage: data.currentPage });
+        this.setIsLoading(false);
+      },
+      error: (data: any) => {
+        this.setIsLoading(false);
+        this.store.showNotif(data.error.errorMessage, 'error');
+        console.log(data);
+      },
+    });
   }
 
-  filterImageByCategory(value: string, page: number, size: number) {
+  filterFileByCategory(value: string, page: number, size: number) {
     this.setIsLoading(true);
-    this.imageService.filterImageByCategory(value, page, size).subscribe({
+    this.fileService.filterFileByCategory(value, page, size).subscribe({
       next: (data: any) => {
         this.setState({
-          imageList: this.fillEmpty(
-            page,
-            size,
-            this.state.imageList,
-            data.items
-          ),
+          fileList: this.fillEmpty(page, size, this.state.fileList, data.items),
         });
         console.log('Filtered list');
-        console.log(this.state.imageList);
+        console.log(this.state.fileList);
         console.log('Server response');
         console.log(data);
         this.setState({ totalItems: data.totalItems });
@@ -540,15 +519,15 @@ export class ImageStore extends StateService<ImageState> {
     });
   }
 
-  filterInfiniteImageByCategory(value: string, page: number, size: number) {
+  filterInfiniteFileByCategory(value: string, page: number, size: number) {
     this.setIsLoading(true);
-    this.imageService.filterImageByCategory(value, page, size).subscribe({
+    this.fileService.filterFileByCategory(value, page, size).subscribe({
       next: (data: any) => {
         this.setState({
-          imageList: this.state.imageList.concat(data.items),
+          fileList: this.state.fileList.concat(data.items),
         });
         console.log('Filtered list');
-        console.log(this.state.imageList);
+        console.log(this.state.fileList);
         console.log('Server response');
         console.log(data);
         this.setState({ totalItems: data.totalItems });
@@ -564,16 +543,16 @@ export class ImageStore extends StateService<ImageState> {
     });
   }
 
-  searchImageByName(value: string, page: number, size: number) {
+  searchFileByName(value: string, page: number, size: number) {
     this.setIsLoading(true);
-    this.imageService.searchImageByName(value, page, size).subscribe({
+    this.fileService.searchFileByName(value, page, size).subscribe({
       next: (data: any) => {
         if (data.totalItems !== 0) {
           this.setState({
-            imageList: this.fillEmpty(
+            fileList: this.fillEmpty(
               page,
               size,
-              this.state.imageList,
+              this.state.fileList,
               data.items
             ),
           });
@@ -581,7 +560,7 @@ export class ImageStore extends StateService<ImageState> {
           this.store.showNotif('No result found!', 'custom');
         }
         console.log('Searched list');
-        console.log(this.state.imageList);
+        console.log(this.state.fileList);
         console.log('Server response');
         console.log(data);
         this.setState({ totalItems: data.totalItems });
@@ -597,19 +576,19 @@ export class ImageStore extends StateService<ImageState> {
     });
   }
 
-  searchInfiniteImageByName(value: string, page: number, size: number) {
+  searchInfiniteFileByName(value: string, page: number, size: number) {
     this.setIsLoading(true);
-    this.imageService.searchImageByName(value, page, size).subscribe({
+    this.fileService.searchFileByName(value, page, size).subscribe({
       next: (data: any) => {
         if (data.totalItems !== 0) {
           this.setState({
-            imageList: this.state.imageList.concat(data.items),
+            fileList: this.state.fileList.concat(data.items),
           });
         } else {
           this.store.showNotif('No result found!', 'custome');
         }
         console.log('Infite searched list');
-        console.log(this.state.imageList);
+        console.log(this.state.fileList);
         console.log('Server response');
         console.log(data);
         this.setState({ totalItems: data.totalItems });
@@ -625,24 +604,19 @@ export class ImageStore extends StateService<ImageState> {
     });
   }
 
-  sortImageByName(value: string, page: number, size: number) {
+  sortFileByName(value: string, page: number, size: number) {
     this.setIsLoading(true);
-    this.imageService.sortImageByName(value, page, size).subscribe({
+    this.fileService.sortFileByName(value, page, size).subscribe({
       next: (data: any) => {
         this.setState({ responseMsg: data });
         this.setState({
-          imageList: this.fillEmpty(
-            page,
-            size,
-            this.state.imageList,
-            data.items
-          ),
+          fileList: this.fillEmpty(page, size, this.state.fileList, data.items),
         });
         this.setState({ totalItems: data.totalItems });
         this.setState({ totalPages: data.totalPages });
         this.setState({ currentPage: data.currentPage });
         console.log('Sorted list');
-        console.log(this.state.imageList);
+        console.log(this.state.fileList);
         console.log('Server response');
         console.log(data);
         this.setIsLoading(false);
@@ -655,24 +629,19 @@ export class ImageStore extends StateService<ImageState> {
     });
   }
 
-  sortImageByPrice(value: string, page: number, size: number) {
+  sortFileByPrice(value: string, page: number, size: number) {
     this.setIsLoading(true);
-    this.imageService.sortImageByPrice(value, page, size).subscribe({
+    this.fileService.sortFileByPrice(value, page, size).subscribe({
       next: (data: any) => {
         this.setState({ responseMsg: data });
         this.setState({
-          imageList: this.fillEmpty(
-            page,
-            size,
-            this.state.imageList,
-            data.items
-          ),
+          fileList: this.fillEmpty(page, size, this.state.fileList, data.items),
         });
         this.setState({ totalItems: data.totalItems });
         this.setState({ totalPages: data.totalPages });
         this.setState({ currentPage: data.currentPage });
         console.log('Sorted list');
-        console.log(this.state.imageList);
+        console.log(this.state.fileList);
         console.log('Server response');
         console.log(data);
         this.setIsLoading(false);
@@ -685,15 +654,15 @@ export class ImageStore extends StateService<ImageState> {
     });
   }
 
-  sortInfiniteImageByPrice(value: string, page: number, size: number) {
+  sortInfiniteFileByPrice(value: string, page: number, size: number) {
     this.setIsLoading(true);
-    this.imageService.sortImageByPrice(value, page, size).subscribe({
+    this.fileService.sortFileByPrice(value, page, size).subscribe({
       next: (data: any) => {
         this.setState({
-          imageList: this.state.imageList.concat(data.items),
+          fileList: this.state.fileList.concat(data.items),
         });
         console.log('Infite sorted list');
-        console.log(this.state.imageList);
+        console.log(this.state.fileList);
         console.log('Server response');
         console.log(data);
         this.setState({ totalItems: data.totalItems });
@@ -709,25 +678,25 @@ export class ImageStore extends StateService<ImageState> {
     });
   }
 
-  getImage(id: string) {
+  getFile(id: string) {
     this.setIsLoading(true);
-    return this.imageService
-      .getImage(id)
+    return this.fileService
+      .getFile(id)
       .toPromise()
       .then((data: any) => {
-        this.setState({ imageInstance: data });
+        this.setState({ fileInstance: data });
         console.log(data);
         this.setIsLoading(false);
       });
   }
 
-  getImageBySourceID(id: string) {
+  getFileBySourceID(id: string) {
     this.setIsLoading(true);
-    return this.imageService
-      .getImageBySourceID(id)
+    return this.fileService
+      .getFileBySourceID(id)
       .toPromise()
       .then((data: any) => {
-        this.setState({ imageInstance: data });
+        this.setState({ fileInstance: data });
         console.log(data);
         this.setIsLoading(false);
       });
@@ -737,7 +706,41 @@ export class ImageStore extends StateService<ImageState> {
     this.setState({ isUploading: isFetching });
   }
 
-  setExportData(array: Array<Image>) {
-    this.setState({ imageList: array });
+  setExportData(array: Array<File>) {
+    this.setState({ fileList: array });
+  }
+  // container functions
+
+  initInfiniteContainer(page: number, size: number) {
+    return this.fileService
+      .fetchContainer(page, size)
+      .toPromise()
+      .then((data: any) => {
+        this.setState({
+          containerList: data.items,
+        });
+        console.log('Current flag: infite list');
+        console.log(this.state.containerList);
+        this.setState({ totalItems: data.totalItems });
+        this.setState({ totalPages: data.totalPages });
+        this.setState({ currentPage: data.currentPage });
+      });
+  }
+  uploadContainer(container: Container) {
+    this.setIsLoading(true);
+    this.setisUploading(true);
+    this.fileService.uploadContainer(container).subscribe({
+      next: (data: any) => {
+        this.setState({ responseMsg: data });
+        this.setTotalItems(this.state.totalItems + 1);
+        console.log(data);
+        this.setIsLoading(false);
+        this.setisUploading(false);
+      },
+      error: (data: any) => {
+        this.setIsLoading(false);
+        console.log(data);
+      },
+    });
   }
 }

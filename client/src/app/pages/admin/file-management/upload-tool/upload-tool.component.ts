@@ -14,6 +14,7 @@ import { CustomerHttpService } from 'src/app/shared/services/customer/customer-h
 import { DoctorHttpService } from 'src/app/shared/services/doctor/doctor-http.service';
 import { MedicineHttpService } from 'src/app/shared/services/medicine/medicine-http.service';
 import { ImageHttpService } from 'src/app/shared/services/image/image-http.service';
+import { FileStore } from 'src/app/shared/services/file/file-store.service';
 @Component({
   selector: 'app-upload-tool',
   templateUrl: './upload-tool.component.html',
@@ -45,7 +46,7 @@ export class UploadToolComponent implements OnInit, OnDestroy, OnChanges {
     fileType: '',
     url: '../../../../assets/imgs/profile.png',
   };
-  isUploadingImage!: boolean;
+  isUploading!: boolean;
   searchPlaceholder!: string;
   searchCategory!: string;
   searchValue!: string;
@@ -59,7 +60,7 @@ export class UploadToolComponent implements OnInit, OnDestroy, OnChanges {
 
   constructor(
     private imageStore: ImageStore,
-    private imageService: ImageHttpService,
+    private imageService: ImageHttpService,    
     private store: StoreService,
     private customerService: CustomerHttpService,
     private doctorService: DoctorHttpService,
@@ -131,26 +132,28 @@ export class UploadToolComponent implements OnInit, OnDestroy, OnChanges {
     this.setImageCategory();
   }
 
-  isUploadingImageListener() {
-    return this.imageStore.$isUploadingImage.subscribe((data: boolean) => {
-      this.isUploadingImage = data;
+  isUploadingListener() {
+    return this.imageStore.$isUploading.subscribe((data: boolean) => {
+      this.isUploading = data;
     });
-  }
+  } 
 
   onItemClick(e: any) {
     this.selectedData = e.itemData;
     console.log('SELECTED DATA');
     console.log(this.selectedData);
     this.imageData.sourceID = e.itemData._id;
-    this.isUploadingImage = true;
+    this.isUploading = true;
     this.imageService
       .getImageBySourceID(e.itemData._id)
       .subscribe((data: any) => {
-        this.isUploadingImage = false;
+        this.isUploading = false;
         if (data !== null) {
           console.log('IMAGE BY AUTOCOMPLETE');
           console.log(data);
           this.imageData.url = data?.url;
+        } else {
+          this.imageData.url = '../../../../assets/imgs/profile.png';
         }
       });
     switch (this.imageData?.category) {
@@ -248,7 +251,7 @@ export class UploadToolComponent implements OnInit, OnDestroy, OnChanges {
   };
 
   ngOnInit(): void {
-    this.isUploadingImageListener();
+    this.isUploadingListener();
   }
 
   setImageCategory() {
@@ -297,6 +300,6 @@ export class UploadToolComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   ngOnDestroy(): void {
-    this.isUploadingImageListener().unsubscribe();
+    this.isUploadingListener().unsubscribe();
   }
 }

@@ -9,6 +9,7 @@
     "heroku-postbuild": "cd client && npm install && npm run build"
   },
   "dependencies": {
+    "@azure/storage-blob": "^12.7.0",
     "@types/socket.io": "^3.0.2",
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
