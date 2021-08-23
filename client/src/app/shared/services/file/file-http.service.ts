@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { File } from '../../models/file';
 import { Container } from '../../models/container';
+import { ImageUrl } from '../../models/image-url';
 
 @Injectable({
   providedIn: 'root',
@@ -23,10 +24,14 @@ export class FileHttpService {
   }
 
   uploadContainer(container: Container): Observable<Container> {
-    return this.http.post<Container>(this.apiFileUrl + '/uploadContainer', container, {
-      reportProgress: true,
-      observe: 'body',
-    });
+    return this.http.post<Container>(
+      this.apiFileUrl + '/uploadContainer',
+      container,
+      {
+        reportProgress: true,
+        observe: 'body',
+      }
+    );
   }
 
   fetchFile(page: number, size: number): Observable<File> {
@@ -39,11 +44,24 @@ export class FileHttpService {
     });
   }
 
-
   fetchSelectedFiles(selectedItems: Array<string>): Observable<Array<File>> {
     return this.http.post<Array<File>>(
       this.apiFileUrl + '/fetchBatch',
       selectedItems,
+      {
+        reportProgress: true,
+        observe: 'body',
+      }
+    );
+  }
+
+  fetchFilesByContainer(
+    container: string,
+    size: number
+  ): Observable<Array<ImageUrl>> {
+    return this.http.post<Array<ImageUrl>>(
+      this.apiFileUrl + '/byContainer',
+      { directory: container, pageSize: size },
       {
         reportProgress: true,
         observe: 'body',
@@ -151,7 +169,7 @@ export class FileHttpService {
   }
 
   uploadFile(file: File): Observable<File> {
-    return this.http.post<File>(this.apiFileUrl, file, {
+    return this.http.post<File>(this.apiFileUrl + '/upload', file, {
       reportProgress: true,
       observe: 'body',
     });

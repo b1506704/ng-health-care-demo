@@ -7,6 +7,7 @@ import {
   deleteFiles,
   getContainerByName,
   getContainers,
+  getFileByContainer,
   getFileBySourceID,
   getFiles,
   getSelectedFiles,
@@ -22,6 +23,7 @@ const router = express.Router();
 router.get("/", getFiles);
 router.post("/fetchBatch", getSelectedFiles);
 router.post("/bySourceID", getFileBySourceID);
+router.post("/byContainer", getFileByContainer);
 router.post("/upload", uploadFile);
 router.post("/delete", deleteFile);
 router.post("/update", updateFile);

@@ -99,7 +99,7 @@ export class UserProfileComponent implements OnInit, OnDestroy {
     this.imageData.sourceID = this.customerData._id;
     this.imageData.category = 'customer';
     this.imageData.title = this.customerData.fullName;
-    this.imageStore.uploadImage(this.imageData, 0, 5);
+    this.imageStore.uploadImage(this.imageData);
     this.customerStore.updateCustomer(
       this.customerData,
       this.customerData._id,
@@ -113,7 +113,7 @@ export class UserProfileComponent implements OnInit, OnDestroy {
     this.imageData.sourceID = this.doctorData._id;
     this.imageData.category = 'doctor';
     this.imageData.title = this.doctorData.fullName;
-    this.imageStore.uploadImage(this.imageData, 0, 5);
+    this.imageStore.uploadImage(this.imageData);
     this.doctorStore.updateDoctor(this.doctorData, this.doctorData._id, 0, 5);
   };
 

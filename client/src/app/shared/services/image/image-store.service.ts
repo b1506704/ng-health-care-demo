@@ -377,7 +377,7 @@ export class ImageStore extends StateService<ImageState> {
     (state) => state.isUploading
   );
 
-  uploadImage(image: Image, page: number, size: number) {
+  uploadImage(image: Image) {
     this.setIsLoading(true);
     this.setisUploading(true);
     this.imageService.uploadImage(image).subscribe({

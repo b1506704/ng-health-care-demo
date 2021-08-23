@@ -15,6 +15,7 @@ import { DoctorHttpService } from 'src/app/shared/services/doctor/doctor-http.se
 import { MedicineHttpService } from 'src/app/shared/services/medicine/medicine-http.service';
 import { ImageHttpService } from 'src/app/shared/services/image/image-http.service';
 import { FileStore } from 'src/app/shared/services/file/file-store.service';
+import { File } from 'src/app/shared/models/file';
 @Component({
   selector: 'app-upload-tool',
   templateUrl: './upload-tool.component.html',
@@ -46,6 +47,18 @@ export class UploadToolComponent implements OnInit, OnDestroy, OnChanges {
     fileType: '',
     url: '../../../../assets/imgs/profile.png',
   };
+  fileData: any = {
+    fileName: '',
+    fileContent: 0,
+    fileType: '',
+    fileSize: 0,
+    fileDirectory: this.directory,
+    metadata: {
+      sourceID: '',
+      title: '',
+      category: '',
+    },
+  };
   isUploading!: boolean;
   searchPlaceholder!: string;
   searchCategory!: string;
@@ -60,7 +73,8 @@ export class UploadToolComponent implements OnInit, OnDestroy, OnChanges {
 
   constructor(
     private imageStore: ImageStore,
-    private imageService: ImageHttpService,    
+    private imageService: ImageHttpService,
+    private fileStore: FileStore,
     private store: StoreService,
     private customerService: CustomerHttpService,
     private doctorService: DoctorHttpService,
@@ -69,6 +83,7 @@ export class UploadToolComponent implements OnInit, OnDestroy, OnChanges {
 
   onCategoryValueChanged(e: any) {
     this.imageData.category = e.value;
+    this.fileData.metadata.category = e.value;
     this.searchValue = '';
     switch (e.value) {
       case 'customer':
@@ -95,9 +110,11 @@ export class UploadToolComponent implements OnInit, OnDestroy, OnChanges {
         this.imageData.fileSize = file.size;
         this.imageData.fileType = file.type;
         this.imageData.fileName = file.name;
+        this.fileData.fileName = file.name;
+        this.fileData.fileType = file.type;
+        this.fileData.fileSize = file.size;
         var pattern = /image-*/;
         var reader = new FileReader();
-
         if (!file.type.match(pattern)) {
           this.store.showNotif('Invalid format!', 'custom');
           return;
@@ -114,6 +131,7 @@ export class UploadToolComponent implements OnInit, OnDestroy, OnChanges {
     var reader = e.target;
     console.log('READER');
     console.log(reader);
+    this.fileData.fileContent = reader.result;
     this.imageData.url = reader.result;
     console.log('SOURCE ID');
     console.log(this.imageData.sourceID);
@@ -129,6 +147,18 @@ export class UploadToolComponent implements OnInit, OnDestroy, OnChanges {
       fileType: '',
       url: '../../../../assets/imgs/profile.png',
     };
+    this.fileData = {
+      fileName: '',
+      fileContent: 0,
+      fileType: '',
+      fileSize: 0,
+      fileDirectory: this.directory,
+      metadata: {
+        sourceID: '',
+        title: '',
+        category: '',
+      },
+    };
     this.setImageCategory();
   }
 
@@ -136,13 +166,14 @@ export class UploadToolComponent implements OnInit, OnDestroy, OnChanges {
     return this.imageStore.$isUploading.subscribe((data: boolean) => {
       this.isUploading = data;
     });
-  } 
+  }
 
   onItemClick(e: any) {
     this.selectedData = e.itemData;
     console.log('SELECTED DATA');
     console.log(this.selectedData);
     this.imageData.sourceID = e.itemData._id;
+    this.fileData.metadata.sourceID = e.itemData._id;
     this.isUploading = true;
     this.imageService
       .getImageBySourceID(e.itemData._id)
@@ -151,7 +182,9 @@ export class UploadToolComponent implements OnInit, OnDestroy, OnChanges {
         if (data !== null) {
           console.log('IMAGE BY AUTOCOMPLETE');
           console.log(data);
+          // get image url from blob storage instead of base64
           this.imageData.url = data?.url;
+
         } else {
           this.imageData.url = '../../../../assets/imgs/profile.png';
         }
@@ -161,10 +194,14 @@ export class UploadToolComponent implements OnInit, OnDestroy, OnChanges {
       case 'customer':
         this.imageData.title = e.itemData.fullName;
         this.imageData.fileName = e.itemData.fullName;
+        this.fileData.metadata.title = e.itemData.fullName;
+        this.fileData.fileName = e.itemData.fullName;
         break;
       case 'medicine':
         this.imageData.title = e.itemData.name;
         this.imageData.fileName = e.itemData.name;
+        this.fileData.metadata.title = e.itemData.name;
+        this.fileData.fileName = e.itemData.name;
         break;
       default:
         break;
@@ -246,7 +283,8 @@ export class UploadToolComponent implements OnInit, OnDestroy, OnChanges {
 
   onSubmit = (e: any) => {
     e.preventDefault();
-    this.imageStore.uploadImage(this.imageData, 0, 5);
+    this.imageStore.uploadImage(this.imageData);
+    this.fileStore.uploadFile(this.fileData);
     this.resetValues();
   };
 
@@ -255,6 +293,7 @@ export class UploadToolComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   setImageCategory() {
+    // todo: switch image.category
     switch (this.directory) {
       case 'Images/Doctors':
         this.searchValue = '';
