@@ -1,8 +1,8 @@
 import express from "express";
+import Image from "../models/image.js";
 import { BlobServiceClient } from "@azure/storage-blob";
 import { getAccountName, getCredential } from "../config/azure.config.js";
 import getPagination from "../middleware/getPagination.js";
-
 const router = express.Router();
 
 const blobServiceClient = new BlobServiceClient(
@@ -86,29 +86,55 @@ export const getFileByContainer = async (req, res) => {
   }
 };
 
+const createImage = async (metadata, newUrl) => {
+  const { sourceID, title, category, fileName, fileSize, fileType } = metadata;
+  const foundImage = await Image.findOne({ sourceID: sourceID });
+  if (foundImage) {
+    await Image.findOneAndUpdate(
+      { sourceID: sourceID },
+      {
+        url: newUrl,
+        title: title,
+        fileName: fileName,
+        fileSize: fileSize,
+        fileType: fileType,
+        category: category,
+      },
+      { new: true }
+    );
+  } else {
+    const newImage = new Image({
+      sourceID,
+      url: newUrl,
+      title,
+      category,
+      fileName,
+      fileSize,
+      fileType,
+    });
+    await newImage.save();
+  }
+  console.log(metadata);
+  console.log(newUrl);
+};
+
 export const uploadFile = async (req, res) => {
-  const { fileName, fileContent, fileType, fileSize, fileDirectory, metadata } =
-    req.body;
+  const { fileName, fileContent, fileType, fileDirectory, metadata } = req.body;
   console.log(`FILE: ${fileName}. DIRECTORY: ${fileDirectory}`);
   try {
     const containerName = `${fileDirectory.trim().toLowerCase()}`;
     const containerClient = blobServiceClient.getContainerClient(containerName);
-    const content = fileContent;
+    const imgBuffer = new Buffer.from(fileContent, "base64");
+    const content = imgBuffer;
     const blobName = `${fileDirectory}/${fileName}`;
     const blockBlobClient = containerClient.getBlockBlobClient(blobName);
     let progress;
-    // NOT WORKING
-    // const uploadBlobResponse = await blockBlobClient.uploadFile(content);
-    // const uploadBlobResponse = await blockBlobClient.uploadData(content, {
-    //   blobHTTPHeaders: { blobContentType: fileType },
-    //   metadata: metadata,
-    //   // onProgress: progress,
-    // });
-    const uploadBlobResponse = await blockBlobClient.upload(content, fileSize, {
+    const uploadBlobResponse = await blockBlobClient.uploadData(content, {
       blobHTTPHeaders: { blobContentType: fileType },
-      metadata: metadata,
       // onProgress: progress,
     });
+    const imgUrl = blockBlobClient.url;
+    createImage(metadata, imgUrl);
     console.log(
       `Upload block blob ${blobName} successfully`,
       uploadBlobResponse.requestId

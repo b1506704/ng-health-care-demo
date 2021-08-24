@@ -7,6 +7,7 @@ import { DoctorStore } from '../../services/doctor/doctor-store.service';
 import { Customer } from '../../models/customer';
 import { ImageStore } from '../../services/image/image-store.service';
 import { Image } from '../../models/image';
+import { FileStore } from '../../services/file/file-store.service';
 @Component({
   selector: 'app-user-profile',
   templateUrl: 'user-profile.component.html',
@@ -76,12 +77,20 @@ export class UserProfileComponent implements OnInit, OnDestroy {
     fileType: '',
     url: '../../../../assets/imgs/profile.png',
   };
-
+  fileData: any = {
+    fileName: '',
+    fileContent: 0,
+    fileType: '',
+    fileSize: 0,
+    fileDirectory: '',
+    metadata: this.imageData,
+  };
   constructor(
     private store: StoreService,
     private customerStore: CustomerStore,
     private doctorStore: DoctorStore,
-    private imageStore: ImageStore
+    private imageStore: ImageStore,
+    private fileStore: FileStore
   ) {}
 
   onFormShown(e: any) {
@@ -99,7 +108,9 @@ export class UserProfileComponent implements OnInit, OnDestroy {
     this.imageData.sourceID = this.customerData._id;
     this.imageData.category = 'customer';
     this.imageData.title = this.customerData.fullName;
-    this.imageStore.uploadImage(this.imageData);
+    this.fileData.fileName = this.customerData.fullName;
+    this.fileData.metadata = this.imageData;
+    this.fileStore.uploadFile(this.fileData);
     this.customerStore.updateCustomer(
       this.customerData,
       this.customerData._id,
@@ -113,7 +124,9 @@ export class UserProfileComponent implements OnInit, OnDestroy {
     this.imageData.sourceID = this.doctorData._id;
     this.imageData.category = 'doctor';
     this.imageData.title = this.doctorData.fullName;
-    this.imageStore.uploadImage(this.imageData);
+    this.fileData.fileName = this.doctorData.fullName;
+    this.fileData.metadata = this.imageData;
+    this.fileStore.uploadFile(this.fileData);
     this.doctorStore.updateDoctor(this.doctorData, this.doctorData._id, 0, 5);
   };
 
@@ -125,6 +138,8 @@ export class UserProfileComponent implements OnInit, OnDestroy {
         this.imageData.fileSize = file.size;
         this.imageData.fileType = file.type;
         this.imageData.fileName = file.name;
+        this.fileData.fileType = file.type;
+        this.fileData.fileSize = file.size;
         var pattern = /image-*/;
         var reader = new FileReader();
 
@@ -144,6 +159,7 @@ export class UserProfileComponent implements OnInit, OnDestroy {
     var reader = e.target;
     console.log('READER');
     console.log(reader);
+    this.fileData.fileContent = reader.result.split(',')[1];
     this.imageData.url = reader.result;
     console.log('SOURCE ID');
     console.log(this.imageData.sourceID);
@@ -199,6 +215,7 @@ export class UserProfileComponent implements OnInit, OnDestroy {
     this.user = this.currentUser;
     switch (this.currentRole) {
       case 'Customer':
+        this.fileData.fileDirectory = 'customers';
         this.customerStore
           .getCustomerByUserName(this.currentUser.userName)
           .then(() => {
@@ -211,6 +228,7 @@ export class UserProfileComponent implements OnInit, OnDestroy {
         };
         break;
       case 'Doctor':
+        this.fileData.fileDirectory = 'doctors';
         this.doctorStore
           .getDoctorByUserName(this.currentUser.userName)
           .then(() => {

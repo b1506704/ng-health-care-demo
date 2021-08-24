@@ -7,7 +7,6 @@ import { StoreService } from 'src/app/shared/services/store.service';
 import { FileStore } from 'src/app/shared/services/file/file-store.service';
 import { Container } from 'src/app/shared/models/container';
 import { File } from 'src/app/shared/models/file';
-import { ImageUrl } from 'src/app/shared/models/image-url';
 @Component({
   selector: 'app-file-management',
   templateUrl: './file-management.component.html',
@@ -19,28 +18,6 @@ export class FileManagementComponent implements OnInit {
   isDirectory: boolean = true;
   currentDirectory: string = '';
   fileItems: Array<any> = [];
-  // {
-  //   name: 'Images',
-  //   isDirectory: true,
-  // items: [
-  // {
-  //   name: 'Customers',
-  //   isDirectory: true,
-  //   items: [],
-  // },
-  // {
-  //   name: 'Doctors',
-  //   isDirectory: true,
-  //   items: [],
-  // },
-  // {
-  //   name: 'Medicines',
-  //   isDirectory: true,
-  //   items: [],
-  // },
-  // ],
-  // },
-  // ];
   isPopupVisible!: boolean;
   isUploadPopupVisible!: boolean;
   isUploadContainerPopupVisible!: boolean;
@@ -169,6 +146,7 @@ export class FileManagementComponent implements OnInit {
   loadFileByFolder() {
     console.log(this.fileItems);
     this.isDirectory = false;
+    this.fileList = [];
     if (this.currentDirectory !== '') {
       this.fileStore
         .initInfiniteDataByContainer(this.currentDirectory, this.pageSize)
@@ -229,16 +207,6 @@ export class FileManagementComponent implements OnInit {
     this.router.navigate(['/statistics']);
   }
 
-  imageDataListener() {
-    return this.imageStore.$imageList.subscribe((data: any) => {
-      if (data.length !== 0) {
-        this.imageList = data;
-        console.log('IMAGE LIST OF FILE MANAGEMENT');
-        console.log(this.imageList);
-      }
-    });
-  }
-
   fileDataListener() {
     return this.fileStore.$fileList.subscribe((data: any) => {
       if (data.length !== 0) {
@@ -256,7 +224,7 @@ export class FileManagementComponent implements OnInit {
   }
 
   isUploadingListener() {
-    return this.imageStore.$isUploading.subscribe((data: boolean) => {
+    return this.fileStore.$isUploading.subscribe((data: boolean) => {
       this.isUploadPopupVisible = data;
       if (this.isUploadPopupVisible === false) {
         this.refresh();
@@ -265,7 +233,7 @@ export class FileManagementComponent implements OnInit {
   }
 
   isUploadingFolderListener() {
-    return this.fileStore.$isUploading.subscribe((data: boolean) => {
+    return this.fileStore.$isUploadingFolder.subscribe((data: boolean) => {
       this.isUploadContainerPopupVisible = data;
       if (this.isUploadContainerPopupVisible === false) {
         this.refreshFolder();
@@ -289,7 +257,7 @@ export class FileManagementComponent implements OnInit {
       }
       setTimeout(() => {
         this.dxFileManager.instance.refresh();
-      }, 500);
+      }, 100);
     }
   }
 
@@ -304,10 +272,8 @@ export class FileManagementComponent implements OnInit {
         const file = this.fileList[i];
         this.fileItems[folderIndex].items.push({
           type: file.properties.contentType,
-          category: file.metadata?.category,
-          __KEY__: file.metadata?.sourceID || file.name,
-          sourceID: file.metadata?.sourceID,
-          name: file.metadata?.title || file.name,
+          __KEY__: file.name,
+          name: file.name,
           isDirectory: false,
           size: file.properties.contentLength,
           thumbnail: file.url,
@@ -317,18 +283,18 @@ export class FileManagementComponent implements OnInit {
     console.log(this.fileItems[folderIndex].items);
     console.log('CURRENT DX FILES');
     console.log(this.fileItems);
-    setTimeout(() => {
-      this.dxFileManager.instance.refresh();
-    }, 500);
+    // setTimeout(() => {
+    this.dxFileManager.instance.refresh();
+    // }, 500);
   }
 
   containerDataListener() {
     return this.fileStore.$containerList.subscribe((data: any) => {
       if (data.length !== 0) {
         this.containerList = data;
-        setTimeout(() => {
-          this.mapContainerToFolder();
-        }, 100);
+        // setTimeout(() => {
+        this.mapContainerToFolder();
+        // }, 100);
       }
     });
   }
@@ -337,7 +303,6 @@ export class FileManagementComponent implements OnInit {
     this.refreshFolder();
     this.fileDataListener();
     this.currentPageListener();
-    this.imageDataListener();
     this.isUploadingListener();
     this.isUploadingFolderListener();
   }
@@ -345,7 +310,6 @@ export class FileManagementComponent implements OnInit {
   ngOnDestroy(): void {
     this.containerDataListener().unsubscribe();
     this.currentPageListener().unsubscribe();
-    this.imageDataListener().unsubscribe();
     this.fileDataListener().unsubscribe();
     this.isUploadingListener().unsubscribe();
     this.isUploadingFolderListener().unsubscribe();

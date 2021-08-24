@@ -15,7 +15,6 @@ import { DoctorHttpService } from 'src/app/shared/services/doctor/doctor-http.se
 import { MedicineHttpService } from 'src/app/shared/services/medicine/medicine-http.service';
 import { ImageHttpService } from 'src/app/shared/services/image/image-http.service';
 import { FileStore } from 'src/app/shared/services/file/file-store.service';
-import { File } from 'src/app/shared/models/file';
 @Component({
   selector: 'app-upload-tool',
   templateUrl: './upload-tool.component.html',
@@ -53,11 +52,7 @@ export class UploadToolComponent implements OnInit, OnDestroy, OnChanges {
     fileType: '',
     fileSize: 0,
     fileDirectory: this.directory,
-    metadata: {
-      sourceID: '',
-      title: '',
-      category: '',
-    },
+    metadata: this.imageData,
   };
   isUploading!: boolean;
   searchPlaceholder!: string;
@@ -72,7 +67,6 @@ export class UploadToolComponent implements OnInit, OnDestroy, OnChanges {
   isOpenSuggestion!: boolean;
 
   constructor(
-    private imageStore: ImageStore,
     private imageService: ImageHttpService,
     private fileStore: FileStore,
     private store: StoreService,
@@ -83,7 +77,6 @@ export class UploadToolComponent implements OnInit, OnDestroy, OnChanges {
 
   onCategoryValueChanged(e: any) {
     this.imageData.category = e.value;
-    this.fileData.metadata.category = e.value;
     this.searchValue = '';
     switch (e.value) {
       case 'customer':
@@ -110,7 +103,7 @@ export class UploadToolComponent implements OnInit, OnDestroy, OnChanges {
         this.imageData.fileSize = file.size;
         this.imageData.fileType = file.type;
         this.imageData.fileName = file.name;
-        this.fileData.fileName = file.name;
+        // this.fileData.fileName = file.name;
         this.fileData.fileType = file.type;
         this.fileData.fileSize = file.size;
         var pattern = /image-*/;
@@ -131,7 +124,8 @@ export class UploadToolComponent implements OnInit, OnDestroy, OnChanges {
     var reader = e.target;
     console.log('READER');
     console.log(reader);
-    this.fileData.fileContent = reader.result;
+    this.fileData.fileContent = reader.result.split(',')[1];
+    // for previewing only
     this.imageData.url = reader.result;
     console.log('SOURCE ID');
     console.log(this.imageData.sourceID);
@@ -153,17 +147,12 @@ export class UploadToolComponent implements OnInit, OnDestroy, OnChanges {
       fileType: '',
       fileSize: 0,
       fileDirectory: this.directory,
-      metadata: {
-        sourceID: '',
-        title: '',
-        category: '',
-      },
+      metadata: this.imageData,
     };
-    this.setImageCategory();
   }
 
   isUploadingListener() {
-    return this.imageStore.$isUploading.subscribe((data: boolean) => {
+    return this.fileStore.$isUploading.subscribe((data: boolean) => {
       this.isUploading = data;
     });
   }
@@ -173,7 +162,6 @@ export class UploadToolComponent implements OnInit, OnDestroy, OnChanges {
     console.log('SELECTED DATA');
     console.log(this.selectedData);
     this.imageData.sourceID = e.itemData._id;
-    this.fileData.metadata.sourceID = e.itemData._id;
     this.isUploading = true;
     this.imageService
       .getImageBySourceID(e.itemData._id)
@@ -182,9 +170,7 @@ export class UploadToolComponent implements OnInit, OnDestroy, OnChanges {
         if (data !== null) {
           console.log('IMAGE BY AUTOCOMPLETE');
           console.log(data);
-          // get image url from blob storage instead of base64
           this.imageData.url = data?.url;
-
         } else {
           this.imageData.url = '../../../../assets/imgs/profile.png';
         }
@@ -194,18 +180,17 @@ export class UploadToolComponent implements OnInit, OnDestroy, OnChanges {
       case 'customer':
         this.imageData.title = e.itemData.fullName;
         this.imageData.fileName = e.itemData.fullName;
-        this.fileData.metadata.title = e.itemData.fullName;
         this.fileData.fileName = e.itemData.fullName;
         break;
       case 'medicine':
         this.imageData.title = e.itemData.name;
         this.imageData.fileName = e.itemData.name;
-        this.fileData.metadata.title = e.itemData.name;
         this.fileData.fileName = e.itemData.name;
         break;
       default:
         break;
     }
+    this.fileData.metadata = this.imageData;
   }
 
   onSearchKeyUpHandler(e: any) {
@@ -239,7 +224,6 @@ export class UploadToolComponent implements OnInit, OnDestroy, OnChanges {
             .subscribe((data: any) => {
               if (data.length !== 0) {
                 this.searchData = data.items;
-                // this.searchData = data.items.map((e: any) => e.fullName);
                 if (this.searchData.length === 0) {
                   this.store.showNotif('There is no matched item!', 'custom');
                 } else {
@@ -260,7 +244,6 @@ export class UploadToolComponent implements OnInit, OnDestroy, OnChanges {
             .subscribe((data: any) => {
               if (data.length !== 0) {
                 this.searchData = data.items;
-                // this.searchData = data.items.map((e: any) => e.fullName);
                 if (this.searchData.length === 0) {
                   this.store.showNotif('There is no matched item!', 'custom');
                 } else {
@@ -283,39 +266,13 @@ export class UploadToolComponent implements OnInit, OnDestroy, OnChanges {
 
   onSubmit = (e: any) => {
     e.preventDefault();
-    this.imageStore.uploadImage(this.imageData);
+    // this.imageStore.uploadImage(this.imageData);
     this.fileStore.uploadFile(this.fileData);
     this.resetValues();
   };
 
   ngOnInit(): void {
     this.isUploadingListener();
-  }
-
-  setImageCategory() {
-    // todo: switch image.category
-    switch (this.directory) {
-      case 'Images/Doctors':
-        this.searchValue = '';
-        this.valueExpr = 'fullName';
-        this.searchPlaceholder = 'Find sourceID by full name';
-        this.imageData.category = 'doctor';
-        break;
-      case 'Images/Customers':
-        this.searchValue = '';
-        this.valueExpr = 'fullName';
-        this.searchPlaceholder = 'Find sourceID by full name';
-        this.imageData.category = 'customer';
-        break;
-      case 'Images/Medicines':
-        this.searchValue = '';
-        this.valueExpr = 'name';
-        this.searchPlaceholder = 'Find sourceID by name';
-        this.imageData.category = 'medicine';
-        break;
-      default:
-        break;
-    }
   }
 
   renderSelectedImage() {
@@ -329,13 +286,13 @@ export class UploadToolComponent implements OnInit, OnDestroy, OnChanges {
       this.imageData.category = this.selectedItem.category;
       this.imageData.url = this.selectedItem.thumbnail;
       this.imageData.sourceID = this.selectedItem.sourceID;
+      this.fileData.metadata = this.imageData;
     }
   }
 
   ngOnChanges(): void {
     this.resetValues();
     this.renderSelectedImage();
-    this.setImageCategory();
   }
 
   ngOnDestroy(): void {

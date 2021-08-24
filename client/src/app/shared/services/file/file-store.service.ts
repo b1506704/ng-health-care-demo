@@ -6,13 +6,12 @@ import { StateService } from '../state.service';
 import { StoreService } from '../store.service';
 import { FileHttpService } from './file-http.service';
 import { confirm } from 'devextreme/ui/dialog';
-import { MedicalCheckupStore } from '../medical-checkup/medical-checkup-store.service';
-import { ImageUrl } from '../../models/image-url';
 
 interface FileState {
-  fileList: Array<ImageUrl>;
+  fileList: Array<File>;
   containerList: Array<Container>;
   isUploading: boolean;
+  isUploadingFolder: boolean;
   exportData: Array<File>;
   selectedFile: Object;
   fileInstance: File;
@@ -25,6 +24,7 @@ const initialState: FileState = {
   fileList: [],
   containerList: [],
   isUploading: false,
+  isUploadingFolder: false,
   selectedFile: {},
   fileInstance: undefined,
   exportData: [],
@@ -39,10 +39,10 @@ const initialState: FileState = {
 export class FileStore extends StateService<FileState> {
   constructor(
     private fileService: FileHttpService,
-    private store: StoreService,
+    private store: StoreService
   ) {
     super(initialState);
-  }  
+  }
 
   fetchSelectedFiles(source: Array<any>) {
     const sourceIDs = source.map((e) => e._id);
@@ -65,6 +65,7 @@ export class FileStore extends StateService<FileState> {
       .fetchFilesByContainer(container, size)
       .toPromise()
       .then((data: any) => {
+        this.setState({ fileList: [] });
         this.setState({
           fileList: data.items,
         });
@@ -165,9 +166,7 @@ export class FileStore extends StateService<FileState> {
     this.store.setIsLoading(_isLoading);
   }
 
-  $fileList: Observable<Array<ImageUrl>> = this.select(
-    (state) => state.fileList
-  );
+  $fileList: Observable<Array<File>> = this.select((state) => state.fileList);
 
   $containerList: Observable<Array<Container>> = this.select(
     (state) => state.containerList
@@ -190,6 +189,10 @@ export class FileStore extends StateService<FileState> {
   $fileInstance: Observable<File> = this.select((state) => state.fileInstance);
 
   $isUploading: Observable<boolean> = this.select((state) => state.isUploading);
+
+  $isUploadingFolder: Observable<boolean> = this.select(
+    (state) => state.isUploadingFolder
+  );
 
   uploadFile(file: File) {
     this.setIsLoading(true);
@@ -392,6 +395,10 @@ export class FileStore extends StateService<FileState> {
     this.setState({ isUploading: isFetching });
   }
 
+  setisUploadingFolder(isFetching: boolean) {
+    this.setState({ isUploadingFolder: isFetching });
+  }
+
   // container functions
 
   initInfiniteContainer(page: number, size: number) {
@@ -411,14 +418,14 @@ export class FileStore extends StateService<FileState> {
   }
   uploadContainer(container: Container) {
     this.setIsLoading(true);
-    this.setisUploading(true);
+    this.setisUploadingFolder(true);
     this.fileService.uploadContainer(container).subscribe({
       next: (data: any) => {
         this.setState({ responseMsg: data });
         this.setTotalItems(this.state.totalItems + 1);
         console.log(data);
         this.setIsLoading(false);
-        this.setisUploading(false);
+        this.setisUploadingFolder(false);
       },
       error: (data: any) => {
         this.setIsLoading(false);
