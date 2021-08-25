@@ -30,6 +30,7 @@ export class UserPanelComponent implements OnInit, OnDestroy {
   userImage: Image = {
     sourceID: '',
     category: '',
+    container: '',
     title: '',
     fileName: '',
     fileSize: 0,

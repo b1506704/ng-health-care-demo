@@ -9,8 +9,8 @@ import { Container } from '../../models/container';
 })
 export class FileHttpService {
   constructor(private http: HttpClient) {}
-  apiFileUrl = 'https://ng-health-care-demo.herokuapp.com/files';
-  // apiFileUrl = 'http://localhost/files';
+  // apiFileUrl = 'https://ng-health-care-demo.herokuapp.com/files';
+  apiFileUrl = 'http://localhost/files';
 
   fetchContainer(page: number, size: number): Observable<Container> {
     const params = new HttpParams().set('page', page).set('size', size);
@@ -27,6 +27,19 @@ export class FileHttpService {
       this.apiFileUrl + '/uploadContainer',
       container,
       {
+        reportProgress: true,
+        observe: 'body',
+      }
+    );
+  }
+
+  deleteContainer(container: string): Observable<any> {
+    const params = new HttpParams().set('name', container);
+    return this.http.post<any>(
+      this.apiFileUrl + '/deleteContainer',
+      {},      
+      {
+        params: params,
         reportProgress: true,
         observe: 'body',
       }
@@ -188,11 +201,18 @@ export class FileHttpService {
     });
   }
 
-  deleteFile(sourceID: string): Observable<ArrayBuffer> {
-    return this.http.delete<ArrayBuffer>(this.apiFileUrl + `/${sourceID}`, {
-      reportProgress: true,
-      observe: 'body',
-    });
+  deleteFile(name: string, container: string): Observable<any> {
+    return this.http.post<any>(
+      this.apiFileUrl + '/delete',
+      {
+        name,
+        container,
+      },
+      {
+        reportProgress: true,
+        observe: 'body',
+      }
+    );
   }
 
   getFile(id: string): Observable<File> {
@@ -216,10 +236,13 @@ export class FileHttpService {
     );
   }
 
-  deleteSelectedFiles(selectedItems: Array<String>): Observable<Array<String>> {
-    return this.http.post<Array<String>>(
-      this.apiFileUrl + '/batch',
-      selectedItems,
+  deleteSelectedFiles(
+    selectedItems: Array<String>,
+    container: string
+  ): Observable<any> {
+    return this.http.post<any>(
+      this.apiFileUrl + '/batch/delete',
+      { selectedItems, container },
       {
         reportProgress: true,
         observe: 'body',

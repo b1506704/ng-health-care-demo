@@ -78,6 +78,7 @@ export class DoctorListComponent implements OnInit, OnDestroy {
 
   imageData: Image = {
     sourceID: '',
+    container: '',
     category: '',
     title: '',
     fileName: '',

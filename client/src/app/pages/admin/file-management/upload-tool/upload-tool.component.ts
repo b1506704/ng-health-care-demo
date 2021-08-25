@@ -6,7 +6,6 @@ import {
   OnInit,
   ViewChild,
 } from '@angular/core';
-import { ImageStore } from 'src/app/shared/services/image/image-store.service';
 import { Image } from 'src/app/shared/models/image';
 import { DxFormComponent } from 'devextreme-angular';
 import { StoreService } from 'src/app/shared/services/store.service';
@@ -40,6 +39,7 @@ export class UploadToolComponent implements OnInit, OnDestroy, OnChanges {
   imageData: Image = {
     sourceID: '',
     category: '',
+    container: '',
     title: '',
     fileName: '',
     fileSize: 0,
@@ -135,6 +135,7 @@ export class UploadToolComponent implements OnInit, OnDestroy, OnChanges {
     this.imageData = {
       sourceID: '',
       category: '',
+      container: this.directory,
       title: '',
       fileName: '',
       fileSize: 0,
@@ -266,9 +267,12 @@ export class UploadToolComponent implements OnInit, OnDestroy, OnChanges {
 
   onSubmit = (e: any) => {
     e.preventDefault();
-    // this.imageStore.uploadImage(this.imageData);
-    this.fileStore.uploadFile(this.fileData);
-    this.resetValues();
+    if (this.imageData.url !== '../../../../assets/imgs/profile.png') {
+      this.fileStore.uploadFile(this.fileData);
+      this.resetValues();
+    } else {
+      this.store.showNotif('Please select an image', 'custom');
+    }
   };
 
   ngOnInit(): void {
@@ -286,6 +290,7 @@ export class UploadToolComponent implements OnInit, OnDestroy, OnChanges {
       this.imageData.category = this.selectedItem.category;
       this.imageData.url = this.selectedItem.thumbnail;
       this.imageData.sourceID = this.selectedItem.sourceID;
+      this.imageData.container = this.directory;
       this.fileData.metadata = this.imageData;
     }
   }

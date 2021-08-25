@@ -15,7 +15,8 @@ import { File } from 'src/app/shared/models/file';
 export class FileManagementComponent implements OnInit {
   @ViewChild(DxFileManagerComponent, { static: false })
   dxFileManager: DxFileManagerComponent;
-  isDirectory: boolean = true;
+  isItemMode = false;
+  isDirectorySelected: boolean = true;
   currentDirectory: string = '';
   fileItems: Array<any> = [];
   isPopupVisible!: boolean;
@@ -36,6 +37,7 @@ export class FileManagementComponent implements OnInit {
       {
         text: 'Create',
         icon: 'image',
+        hint: 'Upload new image',
       },
     ],
     onItemClick: this.uploadImage.bind(this),
@@ -45,6 +47,7 @@ export class FileManagementComponent implements OnInit {
       {
         text: 'Create Folder',
         icon: 'folder',
+        hint: 'Upload new folder',
       },
     ],
     onItemClick: this.uploadContainer.bind(this),
@@ -54,6 +57,7 @@ export class FileManagementComponent implements OnInit {
       {
         text: 'Refresh',
         icon: 'refresh',
+        hint: 'Refresh folder directory',
       },
     ],
     onItemClick: this.refresh.bind(this),
@@ -63,6 +67,7 @@ export class FileManagementComponent implements OnInit {
       {
         text: 'Delete',
         icon: 'trash',
+        hint: 'Delete current image',
       },
     ],
     onItemClick: this.deleteImages.bind(this),
@@ -72,9 +77,20 @@ export class FileManagementComponent implements OnInit {
       {
         text: 'Update',
         icon: 'edit',
+        hint: 'Edit current image',
       },
     ],
     onItemClick: this.updateImage.bind(this),
+  };
+  deleteFolderMenuOptions = {
+    items: [
+      {
+        text: 'Delete ',
+        icon: 'deletetable',
+        hint: 'Delete current folder',
+      },
+    ],
+    onItemClick: this.deleteSelectedContainer.bind(this),
   };
   containerList: Array<Container> = [];
 
@@ -89,23 +105,49 @@ export class FileManagementComponent implements OnInit {
     this.isUploadContainerPopupVisible = true;
   }
 
+  updateContainer() {
+    this.isUploadContainerPopupVisible = true;
+  }
+
+  deleteSelectedContainer() {
+    if (this.currentDirectory) {
+      this.fileStore
+        .confirmDialog(`Delete '${this.currentDirectory}' folder?`)
+        .then((confirm: boolean) => {
+          if (confirm) {
+            this.fileStore.deleteContainer(this.currentDirectory).then(() => {
+              this.refreshFolder();
+              this.store.showNotif(
+                `'${this.currentDirectory}' folder deleted`,
+                'custom'
+              );
+              this.store.setIsLoading(false);
+            });
+          }
+        });
+    }
+  }
+
   uploadImage() {
     this.isUploadPopupVisible = true;
   }
 
   deleteImages() {
     if (this.selectedKeys.length !== 0) {
-      this.imageStore
+      this.fileStore
         .confirmDialog('Delete selected items?')
         .then((confirm: boolean) => {
           if (confirm) {
-            this.imageStore.deleteSelectedImages(this.selectedKeys).then(() => {
-              this.refresh();
-              this.store.showNotif(
-                `${this.selectedKeys.length} item deleted`,
-                'custom'
-              );
-            });
+            this.fileStore
+              .deleteSelectedFiles(this.selectedKeys, this.currentDirectory)
+              .then(() => {
+                this.refresh();
+                this.store.showNotif(
+                  `${this.selectedKeys.length} item deleted`,
+                  'custom'
+                );
+                this.store.setIsLoading(false);
+              });
           }
         });
     }
@@ -113,14 +155,17 @@ export class FileManagementComponent implements OnInit {
 
   deleteSelectedImage() {
     if (this.selectedItemKey.length !== 0) {
-      this.imageStore
+      this.fileStore
         .confirmDialog('Delete this item?')
         .then((confirm: boolean) => {
           if (confirm) {
-            this.imageStore.deleteImage(this.selectedItemKey).then(() => {
-              this.refresh();
-              this.store.showNotif('1 item deleted', 'custom');
-            });
+            this.fileStore
+              .deleteFile(this.selectedItemKey, this.currentDirectory)
+              .then(() => {
+                this.refresh();
+                this.store.showNotif('1 item deleted', 'custom');
+                this.store.setIsLoading(false);
+              });
           }
         });
     }
@@ -145,7 +190,6 @@ export class FileManagementComponent implements OnInit {
 
   loadFileByFolder() {
     console.log(this.fileItems);
-    this.isDirectory = false;
     this.fileList = [];
     if (this.currentDirectory !== '') {
       this.fileStore
@@ -162,6 +206,12 @@ export class FileManagementComponent implements OnInit {
     this.selectedKeys = e.selectedItemKeys;
     this.selectedItemKey = e.currentSelectedItemKeys[0];
     this.selectedItem = e.selectedItems[0]?.dataItem;
+    if (this.selectedItem) {
+      this.isDirectorySelected = false;
+    } else {
+      this.isDirectorySelected = true;
+    }
+    console.log('IS DIRECTORY SELECTED: ', this.isDirectorySelected);
   }
 
   onToolbarItemClick(e: any) {
@@ -182,6 +232,15 @@ export class FileManagementComponent implements OnInit {
       case 'updateImage':
         this.updateImage();
         break;
+      case 'newFolder':
+        this.uploadContainer();
+        break;
+      case 'deleteFolder':
+        this.deleteSelectedContainer();
+        break;
+      case 'updateFolder':
+        this.updateContainer();
+        break;
       default:
         break;
     }
@@ -191,6 +250,12 @@ export class FileManagementComponent implements OnInit {
     console.log('OPTION CHANGED');
     console.log(e);
     if (e.fullName === 'currentPath') {
+      if (e.value !== '') {
+        this.isItemMode = true;
+      } else {
+        this.isItemMode = false;
+      }
+      console.log('IS ITEM MODE: ', this.isItemMode);
       this.currentDirectory = e.value;
       this.loadFileByFolder();
     }

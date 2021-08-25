@@ -71,6 +71,7 @@ export class UserProfileComponent implements OnInit, OnDestroy {
   imageData: Image = {
     sourceID: '',
     category: '',
+    container: '',
     title: '',
     fileName: '',
     fileSize: 0,
@@ -216,6 +217,7 @@ export class UserProfileComponent implements OnInit, OnDestroy {
     switch (this.currentRole) {
       case 'Customer':
         this.fileData.fileDirectory = 'customers';
+        this.imageData.container = 'customers';
         this.customerStore
           .getCustomerByUserName(this.currentUser.userName)
           .then(() => {
@@ -229,6 +231,7 @@ export class UserProfileComponent implements OnInit, OnDestroy {
         break;
       case 'Doctor':
         this.fileData.fileDirectory = 'doctors';
+        this.imageData.container = 'doctors';
         this.doctorStore
           .getDoctorByUserName(this.currentUser.userName)
           .then(() => {

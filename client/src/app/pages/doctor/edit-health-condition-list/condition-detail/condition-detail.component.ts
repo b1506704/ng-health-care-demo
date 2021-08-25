@@ -27,6 +27,7 @@ export class ConditionDetailComponent implements OnInit, OnDestroy {
   imageData: Image = {
     sourceID: '',
     category: '',
+    container: '',
     title: '',
     fileName: '',
     fileSize: 0,

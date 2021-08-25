@@ -10,71 +10,133 @@
     (onContextMenuItemClick)="onContextItemClick($event)"
     (onOptionChanged)="onOptionChanged($event)"
   >
-    <ng-container *ngIf="isDirectory === false">
-      <dxo-item-view [showParentFolder]="false">
-        <dxo-details>
+    <dxo-item-view [showParentFolder]="false">
+      <dxo-details>
+        <ng-container *ngIf="isItemMode">
           <dxi-column
             dataField="thumbnail"
             caption="Preview"
             [width]="150"
           ></dxi-column>
           <dxi-column dataField="name" caption="Title"></dxi-column>
-          <dxi-column dataField="type" caption="Type"></dxi-column>
+          <dxi-column
+            dataField="type"
+            caption="Type"
+            [width]="120"
+          ></dxi-column>
+          <dxi-column
+            dataField="size"
+            caption="Size"
+            [width]="120"
+          ></dxi-column>
           <dxi-column
             dataField="dateModified"
             caption="Date Modified"
           ></dxi-column>
-          <dxi-column dataField="size" caption="Size"></dxi-column>
-        </dxo-details>
-      </dxo-item-view>
-    </ng-container>
+        </ng-container>
+        <ng-container *ngIf="!isItemMode">
+          <dxi-column
+            dataField="thumbnail"
+            caption="..."
+            [width]="150"
+          ></dxi-column>
+          <dxi-column dataField="name" caption="Name"></dxi-column>
+          <dxi-column
+            dataField="dateModified"
+            caption="Date Modified"
+          ></dxi-column>
+        </ng-container>
+      </dxo-details>
+    </dxo-item-view>
     <dxo-toolbar>
       <dxi-item name="showNavPane" visible="true"></dxi-item>
       <dxi-item name="separator"></dxi-item>
       <dxi-item
         widget="dxMenu"
         location="before"
+        locateInMenu="auto"
         [options]="newContainerMenuOptions"
       ></dxi-item>
+      <ng-container *ngIf="isDirectorySelected">
+        <dxi-item
+          widget="dxMenu"
+          location="before"
+          locateInMenu="auto"
+          [options]="deleteFolderMenuOptions"
+        ></dxi-item>
+      </ng-container>
       <dxi-item
         widget="dxMenu"
         location="before"
+        locateInMenu="auto"
         [options]="newFileMenuOptions"
       ></dxi-item>
       <dxi-item
         widget="dxMenu"
         location="after"
+        locateInMenu="auto"
         [options]="refreshMenuOptions"
       ></dxi-item>
       <dxi-item name="separator" location="after"></dxi-item>
       <dxi-item name="switchView"></dxi-item>
       <dxi-file-selection-item name="separator"></dxi-file-selection-item>
+
       <dxi-file-selection-item
         widget="dxMenu"
         location="before"
+        locateInMenu="auto"
         [options]="deleteMenuOptions"
       ></dxi-file-selection-item>
       <dxi-file-selection-item
         widget="dxMenu"
         location="before"
+        locateInMenu="auto"
         [options]="updateMenuOptions"
       ></dxi-file-selection-item>
-      <dxi-file-selection-item name="clearSelection"></dxi-file-selection-item>
+      <dxi-file-selection-item
+        name="clearSelection"
+        locateInMenu="auto"
+      ></dxi-file-selection-item>
     </dxo-toolbar>
     <dxo-context-menu>
-      <dxi-item
-        name="newImage"
-        text="New image"
-        icon="plus"
-        beginGroup="true"
-      ></dxi-item>
-      <dxi-item name="deleteImage" text="Delete image" icon="trash"></dxi-item>
-      <dxi-item
-        name="updateImage"
-        text="Update image"
-        icon="edit"
-        beginGroup="true"
-      ></dxi-item>
+      <ng-container *ngIf="isDirectorySelected === true">
+        <dxi-item
+          name="newFolder"
+          text="New Folder"
+          icon="plus"
+          beginGroup="true"
+        ></dxi-item>
+        <dxi-item
+          name="deleteFolder"
+          text="Delete Folder"
+          icon="trash"
+        ></dxi-item>
+        <dxi-item
+          name="updateFolder"
+          text="Update Folder"
+          icon="edit"
+          beginGroup="true"
+        ></dxi-item>
+      </ng-container>
+      <ng-container *ngIf="isDirectorySelected === false">
+        <dxi-item
+          name="newImage"
+          text="New image"
+          icon="plus"
+          beginGroup="true"
+        ></dxi-item>
+        <dxi-item
+          name="deleteImage"
+          text="Delete image"
+          icon="trash"
+        ></dxi-item>
+        <dxi-item
+          name="updateImage"
+          text="Update image"
+          icon="edit"
+          beginGroup="true"
+        ></dxi-item>
+      </ng-container>
     </dxo-context-menu>
   </dx-file-manager>
   <dx-popup

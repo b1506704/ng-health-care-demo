@@ -55,31 +55,33 @@ export const getFileByContainer = async (req, res) => {
   try {
     const containerName = `${directory.trim().toLowerCase()}`;
     const containerClient = blobServiceClient.getContainerClient(containerName);
-    const imageUrlList = [];
-    let i = 1;
-    for await (const response of containerClient
-      .listBlobsFlat()
-      .byPage({ maxPageSize: pageSize })) {
-      for (const blob of response.segment.blobItems) {
-        const blobUrl = containerClient.getBlockBlobClient(blob.name).url;
-        const imageData = {
-          url: blobUrl,
-          name: blob?.name,
-          properties: blob?.properties,
-          metadata: blob?.metadata,
-        };
-        imageUrlList.push(imageData);
-        console.log(`Blob ${i++}: ${blob.name}`);
-        console.log(`Url: ${i++}: ${blobUrl}`);
+    if (containerClient) {
+      const imageUrlList = [];
+      let i = 1;
+      for await (const response of containerClient
+        .listBlobsFlat()
+        .byPage({ maxPageSize: pageSize })) {
+        for (const blob of response.segment.blobItems) {
+          const blobUrl = containerClient.getBlockBlobClient(blob.name).url;
+          const imageData = {
+            url: blobUrl,
+            name: blob?.name,
+            properties: blob?.properties,
+            metadata: blob?.metadata,
+          };
+          imageUrlList.push(imageData);
+          console.log(`Blob ${i++}: ${blob.name}`);
+          console.log(`Url: ${i++}: ${blobUrl}`);
+        }
       }
+      res.status(200).json({
+        totalItems: imageUrlList.length,
+        items: imageUrlList,
+        currentPage: "",
+        nextPage: "",
+        prevPage: "",
+      });
     }
-    res.status(200).json({
-      totalItems: imageUrlList.length,
-      items: imageUrlList,
-      currentPage: "",
-      nextPage: "",
-      prevPage: "",
-    });
   } catch (error) {
     res.status(404).json({ errorMessage: error.message });
     console.log(error.message);
@@ -87,7 +89,8 @@ export const getFileByContainer = async (req, res) => {
 };
 
 const createImage = async (metadata, newUrl) => {
-  const { sourceID, title, category, fileName, fileSize, fileType } = metadata;
+  const { sourceID, title, category, container, fileName, fileSize, fileType } =
+    metadata;
   const foundImage = await Image.findOne({ sourceID: sourceID });
   if (foundImage) {
     await Image.findOneAndUpdate(
@@ -95,10 +98,11 @@ const createImage = async (metadata, newUrl) => {
       {
         url: newUrl,
         title: title,
+        category: category,
+        container: container,
         fileName: fileName,
         fileSize: fileSize,
         fileType: fileType,
-        category: category,
       },
       { new: true }
     );
@@ -108,6 +112,7 @@ const createImage = async (metadata, newUrl) => {
       url: newUrl,
       title,
       category,
+      container,
       fileName,
       fileSize,
       fileType,
@@ -162,11 +167,18 @@ export const uploadFiles = async (req, res) => {
 };
 
 export const deleteFile = async (req, res) => {
-  const { name, parentDir } = req.body;
+  const { name, container } = req.body;
   console.log(req.body);
+
   try {
+    const containerClient = blobServiceClient.getContainerClient(container);
+    const deleteBlolbResponse = await containerClient.deleteBlob(name);
+    await Image.findOneAndDelete({
+      title: name.split("/")[1],
+    });
+    console.log(`Blolb ${name} deleted `, deleteBlolbResponse.requestId);
     res.status(200).json({
-      message: `Folder ${name} created`,
+      message: `Blob ${name} in ${container} deleted`,
     });
   } catch (error) {
     res.status(404).json({ errorMessage: error.message });
@@ -175,15 +187,28 @@ export const deleteFile = async (req, res) => {
 };
 
 export const deleteFiles = async (req, res) => {
-  const { name, parentDir } = req.body;
-  console.log(req.body);
+  const { selectedItems, container } = req.body;
   try {
-    res.status(200).json({
-      message: `Folder ${name} created`,
-    });
+    const containerClient = blobServiceClient.getContainerClient(container);
+    for (let i = 0; i < selectedItems.length; i++) {
+      const deleteBlolbResponse = await containerClient.deleteBlob(
+        selectedItems[i]
+      );
+      console.log(
+        `Blolb ${selectedItems[i]} deleted `,
+        deleteBlolbResponse.requestId
+      );
+      await Image.findOneAndDelete({
+        title: selectedItems[i].split("/")[1],
+      });
+      if (i === selectedItems.length - 1) {
+        res.status(200).json({
+          message: `${i + 1} image deleted`,
+        });
+      }
+    }
   } catch (error) {
-    res.status(404).json({ errorMessage: error.message });
-    console.log(error.message);
+    res.status(404).json({ errorMessage: "Medical checkup not found!" });
   }
 };
 
@@ -239,11 +264,20 @@ export const getContainerByName = async (req, res) => {
 };
 
 export const deleteContainer = async (req, res) => {
-  const { name, parentDir } = req.body;
-  console.log(req.body);
+  const { name } = req.query;
+  console.log(name);
   try {
+    const containerClient = blobServiceClient.getContainerClient(name);
+    const deleteContainerResponse = containerClient.deleteIfExists();
+    await Image.deleteMany({
+      container: name,
+    });
+    console.log(
+      `Container ${name} deleted. `,
+      deleteContainerResponse.requestId
+    );
     res.status(200).json({
-      message: `Folder ${name} created`,
+      message: `Folder ${name} deleted`,
     });
   } catch (error) {
     res.status(404).json({ errorMessage: error.message });

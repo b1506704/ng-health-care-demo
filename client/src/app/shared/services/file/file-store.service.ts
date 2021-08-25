@@ -240,9 +240,11 @@ export class FileStore extends StateService<FileState> {
     return confirm(`<b>Are you sure?</b>`, 'Confirm changes');
   }
 
-  deleteSelectedFiles(selectedFiles: Array<string>) {
+  deleteSelectedFiles(selectedFiles: Array<string>, container: string) {
     this.setIsLoading(true);
-    return this.fileService.deleteSelectedFiles(selectedFiles).toPromise();
+    return this.fileService
+      .deleteSelectedFiles(selectedFiles, container)
+      .toPromise();
   }
 
   deleteAllFiles() {
@@ -270,9 +272,9 @@ export class FileStore extends StateService<FileState> {
     });
   }
 
-  deleteFile(id: string) {
+  deleteFile(name: string, container: string) {
     this.setIsLoading(true);
-    return this.fileService.deleteFile(id).toPromise();
+    return this.fileService.deleteFile(name, container).toPromise();
   }
 
   selectFile(_file: File) {
@@ -432,5 +434,10 @@ export class FileStore extends StateService<FileState> {
         console.log(data);
       },
     });
+  }
+
+  deleteContainer(container: string) {
+    this.setIsLoading(true);
+    return this.fileService.deleteContainer(container).toPromise();
   }
 }

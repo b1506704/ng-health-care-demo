@@ -14,6 +14,7 @@ export class DoctorDetailComponent implements OnInit, OnDestroy, OnChanges {
   fieldList: Array<Object> = [];
   imageData: Image = {
     sourceID: '',
+    container: '',
     category: '',
     title: '',
     fileName: '',

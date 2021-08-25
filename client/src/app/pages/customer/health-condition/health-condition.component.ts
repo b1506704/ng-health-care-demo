@@ -23,6 +23,7 @@ export class HealthConditionComponent implements OnInit, OnDestroy {
   imageData: Image = {
     sourceID: '',
     category: '',
+    container: '',
     title: '',
     fileName: '',
     fileSize: 0,

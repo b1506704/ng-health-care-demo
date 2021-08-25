@@ -4,7 +4,8 @@ const imageSchema = mongoose.Schema(
   {
     sourceID: { type: String },
     category: { type: String },
-    title: { type: String },
+    container: { type: String },
+    title: { type: String, unique: true },
     fileName: { type: String },
     fileSize: { type: Number },
     fileType: { type: String },
