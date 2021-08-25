@@ -9,8 +9,8 @@ import { Container } from '../../models/container';
 })
 export class FileHttpService {
   constructor(private http: HttpClient) {}
-  // apiFileUrl = 'https://ng-health-care-demo.herokuapp.com/files';
-  apiFileUrl = 'http://localhost/files';
+  apiFileUrl = 'https://ng-health-care-demo.herokuapp.com/files';
+  // apiFileUrl = 'http://localhost/files';
 
   fetchContainer(page: number, size: number): Observable<Container> {
     const params = new HttpParams().set('page', page).set('size', size);
