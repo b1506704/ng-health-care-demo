@@ -212,6 +212,56 @@ export const deleteFiles = async (req, res) => {
   }
 };
 
+async function streamToBuffer(readableStream) {
+  return new Promise((resolve, reject) => {
+    const chunks = [];
+    readableStream.on("data", (data) => {
+      chunks.push(data instanceof Buffer ? data : Buffer.from(data));
+    });
+    readableStream.on("end", () => {
+      resolve(Buffer.concat(chunks));
+    });
+    readableStream.on("error", reject);
+  });
+}
+
+export const downloadFile = async (req, res) => {
+  const { name, container } = req.body;
+  try {
+    const containerClient = blobServiceClient.getContainerClient(container);
+    const blockBlobClient = containerClient.getBlockBlobClient(name);
+    // const downloadBlockBlobResponse = await blockBlobClient.download(0);
+    // const currentBlob = blockBlobClient.getProperties();
+    const contentType = (await blockBlobClient.getProperties()).contentType;
+    // const contentLength = (await blockBlobClient.getProperties()).contentLength;
+    // console.log("BLOB PROPERTIES: ", (await currentBlob).contentType);
+    // res.status(200);
+    // res.set({
+    //   "Cache-Control": "no-cache",
+    //   "Content-Type": contentType,
+    //   "Content-Length": contentLength,
+    //   "Content-Disposition": "attachment; filename=" + blockBlobClient.name,
+    // });
+    // const downloadedBuffer = await streamToBuffer(
+    //   downloadBlockBlobResponse.readableStreamBody
+    // );
+    res.status(200).json({
+      name: blockBlobClient.name,
+      url: blockBlobClient.url,
+      type: contentType,
+    });
+    // res.status(200).json({
+    //   buffer: downloadedBuffer,
+    //   type: contentType,
+    //   name: blockBlobClient.name,
+    // });
+    console.log(`Sucessfully downloaded ${name} in ${container}`);
+  } catch (error) {
+    console.log(error.message);
+    res.status(404).json({ errorMessage: "Something went wrong!" });
+  }
+};
+
 export const updateFile = async (req, res) => {
   const { name, parentDir } = req.body;
   console.log(req.body);

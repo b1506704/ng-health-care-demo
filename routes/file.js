@@ -5,6 +5,7 @@ import {
   deleteContainers,
   deleteFile,
   deleteFiles,
+  downloadFile,
   getContainerByName,
   getContainers,
   getFileByContainer,
@@ -27,6 +28,7 @@ router.post("/byContainer", getFileByContainer);
 router.post("/upload", uploadFile);
 router.post("/delete", deleteFile);
 router.post("/update", updateFile);
+router.post("/download", downloadFile);
 router.post("/batch/delete", deleteFiles);
 router.post("/batch/upload", uploadFiles);
 // container controller

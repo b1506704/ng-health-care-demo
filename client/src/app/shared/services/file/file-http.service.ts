@@ -37,7 +37,7 @@ export class FileHttpService {
     const params = new HttpParams().set('name', container);
     return this.http.post<any>(
       this.apiFileUrl + '/deleteContainer',
-      {},      
+      {},
       {
         params: params,
         reportProgress: true,
@@ -185,6 +185,16 @@ export class FileHttpService {
       reportProgress: true,
       observe: 'body',
     });
+  }
+
+  downloadFile(fileName: string, container: string): Observable<any> {
+    return this.http.post<any>(
+      this.apiFileUrl + '/download',
+      { name: fileName, container: container },
+      {
+        reportProgress: true,
+      }
+    );
   }
 
   generateRandomFile(): Observable<File> {

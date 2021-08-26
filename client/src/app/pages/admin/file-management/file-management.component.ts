@@ -35,7 +35,7 @@ export class FileManagementComponent implements OnInit {
   newFileMenuOptions = {
     items: [
       {
-        text: 'Create',
+        text: 'Upload Image',
         icon: 'image',
         hint: 'Upload new image',
       },
@@ -46,7 +46,7 @@ export class FileManagementComponent implements OnInit {
     items: [
       {
         text: 'Create Folder',
-        icon: 'folder',
+        icon: 'newfolder',
         hint: 'Upload new folder',
       },
     ],
@@ -65,7 +65,7 @@ export class FileManagementComponent implements OnInit {
   deleteMenuOptions = {
     items: [
       {
-        text: 'Delete',
+        text: 'Delete Image',
         icon: 'trash',
         hint: 'Delete current image',
       },
@@ -75,7 +75,7 @@ export class FileManagementComponent implements OnInit {
   updateMenuOptions = {
     items: [
       {
-        text: 'Update',
+        text: 'Update Image',
         icon: 'edit',
         hint: 'Edit current image',
       },
@@ -85,7 +85,7 @@ export class FileManagementComponent implements OnInit {
   deleteFolderMenuOptions = {
     items: [
       {
-        text: 'Delete ',
+        text: 'Delete Folder',
         icon: 'deletetable',
         hint: 'Delete current folder',
       },
@@ -175,6 +175,25 @@ export class FileManagementComponent implements OnInit {
     this.isUploadPopupVisible = true;
   }
 
+  downloadImage() {
+    if (this.selectedItemKey.length !== 0) {
+      this.fileStore
+        .confirmDialog('Download this item?')
+        .then((confirm: boolean) => {
+          if (confirm) {
+            this.fileStore.downloadFile(
+              this.selectedItemKey,
+              this.currentDirectory
+            );
+            this.store.showNotif(
+              `'${this.selectedItemKey}' downloaded`,
+              'custom'
+            );
+          }
+        });
+    }
+  }
+
   refreshFolder() {
     this.fileStore.initInfiniteContainer(0, this.pageSize).then(() => {
       this.containerDataListener();
@@ -223,6 +242,9 @@ export class FileManagementComponent implements OnInit {
     console.log('CONTEXT MENU ITEM');
     console.log(e);
     switch (e.itemData.name) {
+      case 'downloadImage':
+        this.downloadImage();
+        break;
       case 'newImage':
         this.uploadImage();
         break;

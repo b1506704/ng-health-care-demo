@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import saveAs from 'file-saver';
 import { File } from '../../models/file';
 import { Container } from '../../models/container';
 import { StateService } from '../state.service';
@@ -15,6 +16,7 @@ interface FileState {
   exportData: Array<File>;
   selectedFile: Object;
   fileInstance: File;
+  downloadedFile: any;
   totalPages: number;
   currentPage: number;
   totalItems: number;
@@ -27,6 +29,7 @@ const initialState: FileState = {
   isUploadingFolder: false,
   selectedFile: {},
   fileInstance: undefined,
+  downloadedFile: undefined,
   exportData: [],
   totalPages: 0,
   currentPage: 0,
@@ -188,6 +191,10 @@ export class FileStore extends StateService<FileState> {
 
   $fileInstance: Observable<File> = this.select((state) => state.fileInstance);
 
+  $downloadedFileInstance: Observable<any> = this.select(
+    (state) => state.fileInstance
+  );
+
   $isUploading: Observable<boolean> = this.select((state) => state.isUploading);
 
   $isUploadingFolder: Observable<boolean> = this.select(
@@ -204,6 +211,21 @@ export class FileStore extends StateService<FileState> {
         console.log(data);
         this.setIsLoading(false);
         this.setisUploading(false);
+      },
+      error: (data: any) => {
+        this.setIsLoading(false);
+        console.log(data);
+      },
+    });
+  }
+
+  downloadFile(fileName: string, container: string) {
+    this.setIsLoading(true);
+    this.fileService.downloadFile(fileName, container).subscribe({
+      next: (data: any) => {
+        console.log(data);
+        saveAs(data.url, data.name, { type: data.type });
+        this.setIsLoading(false);
       },
       error: (data: any) => {
         this.setIsLoading(false);

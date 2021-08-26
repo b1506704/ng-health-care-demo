@@ -103,7 +103,7 @@
         <dxi-item
           name="newFolder"
           text="New Folder"
-          icon="plus"
+          icon="newfolder"
           beginGroup="true"
         ></dxi-item>
         <dxi-item
@@ -119,6 +119,12 @@
         ></dxi-item>
       </ng-container>
       <ng-container *ngIf="isDirectorySelected === false">
+        <dxi-item
+          name="downloadImage"
+          text="Download Image"
+          icon="download"
+          beginGroup="true"
+        ></dxi-item>
         <dxi-item
           name="newImage"
           text="New image"

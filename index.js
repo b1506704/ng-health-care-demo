@@ -182,6 +182,6 @@ io.on("connection", (socket) => {
 
 app.use(express.static("./client/dist/ng-health-care-demo"));
 
-app.get("/*", function (req, res) {
-  res.sendFile("index.html", { root: "./client/dist/ng-health-care-demo" });
-});
+// app.get("/*", function (req, res) {
+//   res.sendFile("index.html", { root: "./client/dist/ng-health-care-demo" });
+// });
