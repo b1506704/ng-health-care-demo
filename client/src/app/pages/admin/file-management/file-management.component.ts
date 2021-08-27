@@ -72,6 +72,16 @@ export class FileManagementComponent implements OnInit {
     ],
     onItemClick: this.deleteImages.bind(this),
   };
+  downloadZipMenuOptions = {
+    items: [
+      {
+        text: 'Download Zip',
+        icon: 'download',
+        hint: 'Download as zip',
+      },
+    ],
+    onItemClick: this.downloadZip.bind(this),
+  };
   updateMenuOptions = {
     items: [
       {
@@ -185,9 +195,20 @@ export class FileManagementComponent implements OnInit {
               this.selectedItemKey,
               this.currentDirectory
             );
-            this.store.showNotif(
-              `'${this.selectedItemKey}' downloaded`,
-              'custom'
+          }
+        });
+    }
+  }
+
+  downloadZip() {
+    if (this.selectedKeys.length !== 0) {
+      this.fileStore
+        .confirmDialog('Download selected items as zip?')
+        .then((confirm: boolean) => {
+          if (confirm) {
+            this.fileStore.downloadFiles(
+              this.selectedKeys,
+              this.currentDirectory
             );
           }
         });
@@ -224,12 +245,12 @@ export class FileManagementComponent implements OnInit {
     console.log(e);
     this.selectedKeys = e.selectedItemKeys;
     this.selectedItemKey = e.currentSelectedItemKeys[0];
-    this.selectedItem = e.selectedItems[0]?.dataItem;
-    if (this.selectedItem) {
-      this.isDirectorySelected = false;
-    } else {
-      this.isDirectorySelected = true;
+    if (e.selectedItems) {
+      e.selectedItems.forEach((item: any) => {
+        this.isDirectorySelected = item.isDirectory;
+      });
     }
+    this.selectedItem = e.selectedItems[0]?.dataItem;
     console.log('IS DIRECTORY SELECTED: ', this.isDirectorySelected);
   }
 

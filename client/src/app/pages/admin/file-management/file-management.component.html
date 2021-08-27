@@ -79,24 +79,31 @@
       ></dxi-item>
       <dxi-item name="separator" location="after"></dxi-item>
       <dxi-item name="switchView"></dxi-item>
-      <dxi-file-selection-item name="separator"></dxi-file-selection-item>
-
-      <dxi-file-selection-item
-        widget="dxMenu"
-        location="before"
-        locateInMenu="auto"
-        [options]="deleteMenuOptions"
-      ></dxi-file-selection-item>
-      <dxi-file-selection-item
-        widget="dxMenu"
-        location="before"
-        locateInMenu="auto"
-        [options]="updateMenuOptions"
-      ></dxi-file-selection-item>
-      <dxi-file-selection-item
-        name="clearSelection"
-        locateInMenu="auto"
-      ></dxi-file-selection-item>
+      <ng-container *ngIf="isDirectorySelected === false">
+        <dxi-file-selection-item name="separator"></dxi-file-selection-item>
+        <dxi-file-selection-item
+          widget="dxMenu"
+          location="before"
+          locateInMenu="auto"
+          [options]="deleteMenuOptions"
+        ></dxi-file-selection-item>
+        <dxi-file-selection-item
+          widget="dxMenu"
+          location="before"
+          locateInMenu="auto"
+          [options]="updateMenuOptions"
+        ></dxi-file-selection-item>
+        <dxi-file-selection-item
+          widget="dxMenu"
+          location="before"
+          locateInMenu="auto"
+          [options]="downloadZipMenuOptions"
+        ></dxi-file-selection-item>
+        <dxi-file-selection-item
+          name="clearSelection"
+          locateInMenu="auto"
+        ></dxi-file-selection-item>
+      </ng-container>
     </dxo-toolbar>
     <dxo-context-menu>
       <ng-container *ngIf="isDirectorySelected === true">

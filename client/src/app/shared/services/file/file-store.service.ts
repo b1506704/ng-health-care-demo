@@ -226,6 +226,24 @@ export class FileStore extends StateService<FileState> {
         console.log(data);
         saveAs(data.url, data.name, { type: data.type });
         this.setIsLoading(false);
+        this.store.showNotif(`'${fileName}' downloaded`, 'custom');
+      },
+      error: (data: any) => {
+        this.setIsLoading(false);
+        console.log(data);
+      },
+    });
+  }
+
+  downloadFiles(selectedItems: Array<string>, container: string) {
+    this.setIsLoading(true);
+    const currentDate = new Date();
+    this.fileService.downloadFiles(selectedItems, container).subscribe({
+      next: (data: any) => {
+        let blob: any = new Blob([data], { type: 'application/zip' });
+        saveAs(blob, `${currentDate.toLocaleDateString()}.zip`);
+        this.store.showNotif('1 zip downloaded', 'custom');
+        this.setIsLoading(false);
       },
       error: (data: any) => {
         this.setIsLoading(false);

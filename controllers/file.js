@@ -1,4 +1,5 @@
 import express from "express";
+import AdmZip from "adm-zip";
 import Image from "../models/image.js";
 import { BlobServiceClient } from "@azure/storage-blob";
 import { getAccountName, getCredential } from "../config/azure.config.js";
@@ -230,32 +231,53 @@ export const downloadFile = async (req, res) => {
   try {
     const containerClient = blobServiceClient.getContainerClient(container);
     const blockBlobClient = containerClient.getBlockBlobClient(name);
-    // const downloadBlockBlobResponse = await blockBlobClient.download(0);
-    // const currentBlob = blockBlobClient.getProperties();
     const contentType = (await blockBlobClient.getProperties()).contentType;
-    // const contentLength = (await blockBlobClient.getProperties()).contentLength;
-    // console.log("BLOB PROPERTIES: ", (await currentBlob).contentType);
-    // res.status(200);
-    // res.set({
-    //   "Cache-Control": "no-cache",
-    //   "Content-Type": contentType,
-    //   "Content-Length": contentLength,
-    //   "Content-Disposition": "attachment; filename=" + blockBlobClient.name,
-    // });
-    // const downloadedBuffer = await streamToBuffer(
-    //   downloadBlockBlobResponse.readableStreamBody
-    // );
     res.status(200).json({
       name: blockBlobClient.name,
       url: blockBlobClient.url,
       type: contentType,
     });
-    // res.status(200).json({
-    //   buffer: downloadedBuffer,
-    //   type: contentType,
-    //   name: blockBlobClient.name,
-    // });
     console.log(`Sucessfully downloaded ${name} in ${container}`);
+  } catch (error) {
+    console.log(error.message);
+    res.status(404).json({ errorMessage: "Something went wrong!" });
+  }
+};
+
+export const downloadFiles = async (req, res) => {
+  const { selectedItems, container } = req.body;
+  console.log(req.body);
+  try {
+    const currentDate = new Date();
+    const zip = new AdmZip();
+    const containerClient = blobServiceClient.getContainerClient(container);
+    let blobLists = [];
+    for (let i = 0; i < selectedItems.length; i++) {
+      const blockBlobClient = containerClient.getBlockBlobClient(
+        selectedItems[i]
+      );
+      const blobName = blockBlobClient.name;
+      const blobExtension = (
+        await blockBlobClient.getProperties()
+      ).contentType.split("/")[1];
+      const downloadBlockBlobResponse = await blockBlobClient.download(0);
+      const downloadedBuffer = await streamToBuffer(
+        downloadBlockBlobResponse.readableStreamBody
+      );
+      console.log(downloadedBuffer);
+      blobLists.push(blockBlobClient.url);
+      zip.addFile(`${blobName}.${blobExtension}`, downloadedBuffer, "Comments");
+    }
+    const zipFileContents = zip.toBuffer();
+    const fileName = `${currentDate.toLocaleDateString()}.zip`;
+    const fileType = "application/zip";
+    res.writeHead(200, {
+      "Content-Disposition": `attachment; filename="${fileName}"`,
+      "Content-Type": fileType,
+    });
+    console.log("Downloaded items: ");
+    console.log(blobLists);
+    return res.end(zipFileContents);
   } catch (error) {
     console.log(error.message);
     res.status(404).json({ errorMessage: "Something went wrong!" });

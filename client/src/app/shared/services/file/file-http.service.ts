@@ -197,6 +197,20 @@ export class FileHttpService {
     );
   }
 
+  downloadFiles(
+    selectedItems: Array<string>,
+    container: string
+  ): Observable<any> {
+    return this.http.post(
+      this.apiFileUrl + '/batch/download',
+      { selectedItems: selectedItems, container: container },
+      {
+        responseType: 'blob',
+        reportProgress: true,
+      }
+    );
+  }
+
   generateRandomFile(): Observable<File> {
     return this.http.post<File>(this.apiFileUrl + '/randomFile', {
       reportProgress: true,
