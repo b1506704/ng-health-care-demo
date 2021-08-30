@@ -73,6 +73,12 @@
       ></dxi-item>
       <dxi-item
         widget="dxMenu"
+        location="before"
+        locateInMenu="auto"
+        [options]="newFilesMenuOptions"
+      ></dxi-item>
+      <dxi-item
+        widget="dxMenu"
         location="after"
         locateInMenu="auto"
         [options]="refreshMenuOptions"
@@ -207,6 +213,28 @@
           [directory]="currentDirectory"
           [selectedItem]="selectedItem"
         ></app-upload-tool>
+      </dx-scroll-view>
+    </div>
+  </dx-popup>
+  <dx-popup
+    id="upload-batch-popup"
+    [height]="'90%'"
+    [width]="'90%'"
+    [showTitle]="true"
+    [shading]="true"
+    [showCloseButton]="true"
+    [title]="'Upload Batch'"
+    [(visible)]="isUploadBatchPopupVisible"
+  >
+    <div *dxTemplate="let data of 'content'">
+      <dx-scroll-view
+        [bounceEnabled]="true"
+        [scrollByContent]="true"
+        [scrollByThumb]="true"
+        [height]="'100%'"
+        [width]="'100%'"
+      >
+        <app-upload-batch [directory]="currentDirectory"></app-upload-batch>
       </dx-scroll-view>
     </div>
   </dx-popup>

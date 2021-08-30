@@ -9,9 +9,11 @@ import {
   DxPopupModule,
   DxScrollViewModule,
   DxSelectBoxModule,
+  DxTileViewModule,
 } from 'devextreme-angular';
 import { UploadToolComponent } from './upload-tool/upload-tool.component';
 import { UploadFolderComponent } from './upload-folder/upload-folder.component';
+import { UploadBatchComponent } from './upload-batch/upload-batch.component';
 
 @NgModule({
   imports: [
@@ -21,6 +23,7 @@ import { UploadFolderComponent } from './upload-folder/upload-folder.component';
     DxPopupModule,
     DxScrollViewModule,
     DxFormModule,
+    DxTileViewModule,
     DxAutocompleteModule,
     DxSelectBoxModule,
   ],
@@ -28,6 +31,7 @@ import { UploadFolderComponent } from './upload-folder/upload-folder.component';
     FileManagementComponent,
     UploadToolComponent,
     UploadFolderComponent,
+    UploadBatchComponent
   ],
 })
 export class FileManagementModule {}

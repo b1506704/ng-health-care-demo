@@ -187,6 +187,20 @@ export class FileHttpService {
     });
   }
 
+  uploadFiles(
+    selectedItems: Array<String>,
+    container: string
+  ): Observable<any> {
+    return this.http.post<any>(
+      this.apiFileUrl + '/batch/upload',
+      { selectedItems, container },
+      {
+        reportProgress: true,
+        observe: 'body',
+      }
+    );
+  }
+
   downloadFile(fileName: string, container: string): Observable<any> {
     return this.http.post<any>(
       this.apiFileUrl + '/download',

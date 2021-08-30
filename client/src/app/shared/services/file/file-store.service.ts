@@ -273,6 +273,13 @@ export class FileStore extends StateService<FileState> {
     });
   }
 
+  uploadFiles(selectedFiles: Array<string>, container: string) {
+    this.setIsLoading(true);
+    return this.fileService
+      .uploadFiles(selectedFiles, container)
+      .toPromise();
+  }
+
   confirmDialog(msg: string) {
     if (msg != '') {
       return confirm(`<b>${msg}</b>`, 'Confirm changes');

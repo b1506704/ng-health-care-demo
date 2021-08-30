@@ -21,6 +21,7 @@ export class FileManagementComponent implements OnInit {
   fileItems: Array<any> = [];
   isPopupVisible!: boolean;
   isUploadPopupVisible!: boolean;
+  isUploadBatchPopupVisible!: boolean;
   isUploadContainerPopupVisible!: boolean;
   isUploading!: boolean;
   currentFile!: any;
@@ -41,6 +42,16 @@ export class FileManagementComponent implements OnInit {
       },
     ],
     onItemClick: this.uploadImage.bind(this),
+  };
+  newFilesMenuOptions = {
+    items: [
+      {
+        text: 'Upload Batch',
+        icon: 'upload',
+        hint: 'Upload multiple files',
+      },
+    ],
+    onItemClick: this.uploadBatch.bind(this),
   };
   newContainerMenuOptions = {
     items: [
@@ -140,6 +151,10 @@ export class FileManagementComponent implements OnInit {
 
   uploadImage() {
     this.isUploadPopupVisible = true;
+  }
+
+  uploadBatch() {
+    this.isUploadBatchPopupVisible = true;
   }
 
   deleteImages() {
