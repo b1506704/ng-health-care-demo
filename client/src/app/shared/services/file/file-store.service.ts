@@ -13,6 +13,7 @@ interface FileState {
   containerList: Array<Container>;
   isUploading: boolean;
   isUploadingFolder: boolean;
+  isUpdatingFolder: boolean;
   exportData: Array<File>;
   selectedFile: Object;
   fileInstance: File;
@@ -27,6 +28,7 @@ const initialState: FileState = {
   containerList: [],
   isUploading: false,
   isUploadingFolder: false,
+  isUpdatingFolder: false,
   selectedFile: {},
   fileInstance: undefined,
   downloadedFile: undefined,
@@ -201,19 +203,24 @@ export class FileStore extends StateService<FileState> {
     (state) => state.isUploadingFolder
   );
 
+  $isUpdatingFolder: Observable<boolean> = this.select(
+    (state) => state.isUpdatingFolder
+  );
+
   uploadFile(file: File) {
     this.setIsLoading(true);
     this.setisUploading(true);
     this.fileService.uploadFile(file).subscribe({
       next: (data: any) => {
         this.setState({ responseMsg: data });
-        this.setTotalItems(this.state.totalItems + 1);
         console.log(data);
         this.setIsLoading(false);
         this.setisUploading(false);
+        this.store.showNotif(data.message, 'custom');
       },
       error: (data: any) => {
         this.setIsLoading(false);
+        this.store.showNotif(data.error.errorMessage, 'error');
         console.log(data);
       },
     });
@@ -246,6 +253,7 @@ export class FileStore extends StateService<FileState> {
         this.setIsLoading(false);
       },
       error: (data: any) => {
+        this.store.showNotif(data.error.errorMessage, 'error');
         this.setIsLoading(false);
         console.log(data);
       },
@@ -273,11 +281,23 @@ export class FileStore extends StateService<FileState> {
     });
   }
 
-  uploadFiles(selectedFiles: Array<string>, container: string) {
+  uploadFiles(selectedFiles: Array<File>, container: string) {
     this.setIsLoading(true);
-    return this.fileService
-      .uploadFiles(selectedFiles, container)
-      .toPromise();
+    this.setisUploading(true);
+    this.fileService.uploadFiles(selectedFiles, container).subscribe({
+      next: (data: any) => {
+        this.setState({ responseMsg: data });
+        console.log(data);
+        this.setIsLoading(false);
+        this.setisUploading(false);
+        this.store.showNotif(data.message, 'custom');
+      },
+      error: (data: any) => {
+        this.store.showNotif(data.error.errorMessage, 'error');
+        this.setIsLoading(false);
+        console.log(data);
+      },
+    });
   }
 
   confirmDialog(msg: string) {
@@ -448,6 +468,10 @@ export class FileStore extends StateService<FileState> {
     this.setState({ isUploadingFolder: isFetching });
   }
 
+  setisUpdatingFolder(isFetching: boolean) {
+    this.setState({ isUpdatingFolder: isFetching });
+  }
+
   // container functions
 
   initInfiniteContainer(page: number, size: number) {
@@ -471,13 +495,35 @@ export class FileStore extends StateService<FileState> {
     this.fileService.uploadContainer(container).subscribe({
       next: (data: any) => {
         this.setState({ responseMsg: data });
-        this.setTotalItems(this.state.totalItems + 1);
         console.log(data);
         this.setIsLoading(false);
         this.setisUploadingFolder(false);
+        this.store.showNotif(data.message, 'custom');
       },
       error: (data: any) => {
         this.setIsLoading(false);
+        this.setisUploadingFolder(false);
+        this.store.showNotif(data.errorMessage.message, 'custom');
+        console.log(data);
+      },
+    });
+  }
+
+  updateContainer(container: string, newContainer: string) {
+    this.setIsLoading(true);
+    this.setisUpdatingFolder(true);
+    this.fileService.updateContainer(container, newContainer).subscribe({
+      next: (data: any) => {
+        this.setState({ responseMsg: data });
+        console.log(data);
+        this.setIsLoading(false);
+        this.setisUpdatingFolder(false);
+        this.store.showNotif(data.message, 'custom');
+      },
+      error: (data: any) => {
+        this.setIsLoading(false);
+        this.setisUpdatingFolder(false);
+        this.store.showNotif(data.errorMessage.message, 'custom');
         console.log(data);
       },
     });

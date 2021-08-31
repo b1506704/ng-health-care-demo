@@ -10,9 +10,6 @@ import {
   getContainerByName,
   getContainers,
   getFileByContainer,
-  getFileBySourceID,
-  getFiles,
-  getSelectedFiles,
   updateContainer,
   updateFile,
   uploadContainer,
@@ -22,9 +19,6 @@ import {
 
 const router = express.Router();
 // file controller
-router.get("/", getFiles);
-router.post("/fetchBatch", getSelectedFiles);
-router.post("/bySourceID", getFileBySourceID);
 router.post("/byContainer", getFileByContainer);
 router.post("/upload", uploadFile);
 router.post("/delete", deleteFile);

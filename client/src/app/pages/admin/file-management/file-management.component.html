@@ -64,6 +64,12 @@
           locateInMenu="auto"
           [options]="deleteFolderMenuOptions"
         ></dxi-item>
+        <dxi-item
+          widget="dxMenu"
+          location="before"
+          locateInMenu="auto"
+          [options]="renameFolderMenuOptions"
+        ></dxi-item>
       </ng-container>
       <dxi-item
         widget="dxMenu"
@@ -260,6 +266,30 @@
           [directory]="currentDirectory"
           [selectedItem]="currentDirectory"
         ></app-upload-folder>
+      </dx-scroll-view>
+    </div>
+  </dx-popup>
+  <dx-popup
+    id="rename-folder-popup"
+    [height]="'70%'"
+    [width]="'70%'"
+    [showTitle]="true"
+    [shading]="true"
+    [showCloseButton]="true"
+    [title]="'Rename Folder'"
+    [(visible)]="isUpdateContainerPopupVisible"
+  >
+    <div *dxTemplate="let data of 'content'">
+      <dx-scroll-view
+        [bounceEnabled]="true"
+        [scrollByContent]="true"
+        [scrollByThumb]="true"
+        [height]="'100%'"
+        [width]="'100%'"
+      >
+        <app-update-folder
+          [selectedItem]="currentDirectory"
+        ></app-update-folder>
       </dx-scroll-view>
     </div>
   </dx-popup>

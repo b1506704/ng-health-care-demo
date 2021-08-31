@@ -11,16 +11,16 @@
       [classList]="['upload-form']"
     >
       <div class="long-title">
-        <h3>To {{ directory }}/</h3>
+        <h3>Folder: {{ selectedItem }}/</h3>
       </div>
       <dx-form
         id="form"
         [formData]="containerData"
         [showValidationSummary]="true"
-        validationGroup="uploadFolder"
+        validationGroup="updateFolder"
       >
         <dxi-item itemType="group">
-          <dxi-item itemType="group" caption="Folder Name">
+          <dxi-item itemType="group" caption="New Folder">
             <dxi-item
               dataField="name"
               [label]="{ text: 'Folder Name' }"

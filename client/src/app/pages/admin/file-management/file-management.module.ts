@@ -14,6 +14,7 @@ import {
 import { UploadToolComponent } from './upload-tool/upload-tool.component';
 import { UploadFolderComponent } from './upload-folder/upload-folder.component';
 import { UploadBatchComponent } from './upload-batch/upload-batch.component';
+import { UpdateFolderComponent } from './update-folder/update-folder.component';
 
 @NgModule({
   imports: [
@@ -31,7 +32,8 @@ import { UploadBatchComponent } from './upload-batch/upload-batch.component';
     FileManagementComponent,
     UploadToolComponent,
     UploadFolderComponent,
-    UploadBatchComponent
+    UploadBatchComponent,
+    UpdateFolderComponent,
   ],
 })
 export class FileManagementModule {}

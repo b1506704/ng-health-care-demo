@@ -4,13 +4,22 @@
     'photo-popup-loading': isUploading === true
   }"
 >
-  <dx-tile-view [dataSource]="imageList" itemTemplate="uploadedImages">
+  <dx-tile-view
+    [dataSource]="imageList"
+    itemTemplate="uploadedImages"
+    [baseItemHeight]="250"
+    [baseItemWidth]="200"
+    [itemMargin]="10"
+    [width]="'100%'"
+    [height]="'100%'"
+    [direction]="'vertical'"
+  >
     <div class="tile" *dxTemplate="let data of 'uploadedImages'">
-      <p style="font-size: larger">
-        <b>File Name: {{ data?.fileName }}</b>
+      <p style="font-size: small">
+        <b>Name: {{ data?.fileName }}</b>
       </p>
-      <p>
-        File Size: <i>{{ data?.fileSize }}</i>
+      <p style="font-size: small">
+        Size: <i>{{ data?.fileSize }} byte</i>
       </p>
       <div class="img-container">
         <img [src]="data?.url" />
@@ -23,16 +32,13 @@
       (submit)="onSubmit($event)"
       [classList]="['upload-form']"
     >
-      <div class="long-title">
-        <h3>Image Detail</h3>
-      </div>
       <dx-form
         id="form"
         [showValidationSummary]="true"
-        validationGroup="imageData"
+        validationGroup="uploadBatch"
       >
         <dxi-item itemType="group">
-          <dxi-item itemType="group" caption="Image Meta Data">
+          <dxi-item itemType="group" caption="Batch Upload">
             <dxi-item name="directory">
               <dxo-label text="Current Directory"> </dxo-label>
               <div *dxTemplate>
@@ -42,7 +48,6 @@
               </div>
             </dxi-item>
             <dxi-item name="avatar">
-              <dxo-label text="Upload Image"> </dxo-label>
               <div *dxTemplate>
                 <div class="image-container">
                   <input

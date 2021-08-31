@@ -57,7 +57,7 @@ export class UploadBatchComponent implements OnInit, OnDestroy, OnChanges {
             sourceID: '',
             category: this.directory,
             container: this.directory,
-            title: '',
+            title: file.name,
             fileName: file.name,
             fileSize: file.size,
             fileType: file.type,

@@ -23,6 +23,7 @@ export class FileManagementComponent implements OnInit {
   isUploadPopupVisible!: boolean;
   isUploadBatchPopupVisible!: boolean;
   isUploadContainerPopupVisible!: boolean;
+  isUpdateContainerPopupVisible!: boolean;
   isUploading!: boolean;
   currentFile!: any;
   uploadButtonOption: any = {};
@@ -113,6 +114,16 @@ export class FileManagementComponent implements OnInit {
     ],
     onItemClick: this.deleteSelectedContainer.bind(this),
   };
+  renameFolderMenuOptions = {
+    items: [
+      {
+        text: 'Rename Folder',
+        icon: 'edit',
+        hint: 'Rename current folder',
+      },
+    ],
+    onItemClick: this.updateContainer.bind(this),
+  };
   containerList: Array<Container> = [];
 
   constructor(
@@ -127,7 +138,7 @@ export class FileManagementComponent implements OnInit {
   }
 
   updateContainer() {
-    this.isUploadContainerPopupVisible = true;
+    this.isUpdateContainerPopupVisible = true;
   }
 
   deleteSelectedContainer() {
@@ -349,7 +360,8 @@ export class FileManagementComponent implements OnInit {
   isUploadingListener() {
     return this.fileStore.$isUploading.subscribe((data: boolean) => {
       this.isUploadPopupVisible = data;
-      if (this.isUploadPopupVisible === false) {
+      this.isUploadBatchPopupVisible = data;
+      if (data === false) {
         this.refresh();
       }
     });
@@ -359,6 +371,15 @@ export class FileManagementComponent implements OnInit {
     return this.fileStore.$isUploadingFolder.subscribe((data: boolean) => {
       this.isUploadContainerPopupVisible = data;
       if (this.isUploadContainerPopupVisible === false) {
+        this.refreshFolder();
+      }
+    });
+  }
+
+  isUpdatingFolderListener() {
+    return this.fileStore.$isUpdatingFolder.subscribe((data: boolean) => {
+      this.isUpdateContainerPopupVisible = data;
+      if (data === false) {
         this.refreshFolder();
       }
     });
@@ -428,6 +449,7 @@ export class FileManagementComponent implements OnInit {
     this.currentPageListener();
     this.isUploadingListener();
     this.isUploadingFolderListener();
+    this.isUpdatingFolderListener();
   }
 
   ngOnDestroy(): void {
@@ -436,5 +458,6 @@ export class FileManagementComponent implements OnInit {
     this.fileDataListener().unsubscribe();
     this.isUploadingListener().unsubscribe();
     this.isUploadingFolderListener().unsubscribe();
+    this.isUpdatingFolderListener().unsubscribe();
   }
 }

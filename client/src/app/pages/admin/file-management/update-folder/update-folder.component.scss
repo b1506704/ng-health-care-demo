@@ -1,0 +1,49 @@
+@media screen and (max-width: 450px) {
+  .folder-popup-content {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+    align-items: flex-start;
+    font-size: large;
+  }
+  .folder-popup-loading {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+    align-items: flex-start;
+    font-size: large;
+    background-color: rgba(0, 0, 0, 0.514);
+    filter: blur(2rem);
+    animation: color-change 3s infinite;
+  }
+}
+@media screen and (min-width: 451px) {
+  .folder-popup-content {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    align-items: flex-start;
+    font-size: large;
+  }
+  .folder-popup-loading {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    align-items: flex-start;
+    font-size: large;
+    background-color: rgba(0, 0, 0, 0.514);
+    filter: blur(2rem);
+    animation: color-change 3s infinite alternate;
+  }
+}
+
+@keyframes color-change {
+  from {
+    background-color: red;
+  }
+  to {
+    background-color: blue;
+  }
+}

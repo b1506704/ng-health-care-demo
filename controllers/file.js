@@ -11,45 +11,6 @@ const blobServiceClient = new BlobServiceClient(
   getCredential()
 );
 
-export const getFiles = async (req, res) => {
-  const { name, parentDir } = req.body;
-  console.log(req.body);
-  try {
-    res.status(200).json({
-      message: `Folder ${name} created`,
-    });
-  } catch (error) {
-    res.status(404).json({ errorMessage: error.message });
-    console.log(error.message);
-  }
-};
-
-export const getSelectedFiles = async (req, res) => {
-  const { name, parentDir } = req.body;
-  console.log(req.body);
-  try {
-    res.status(200).json({
-      message: `Folder ${name} created`,
-    });
-  } catch (error) {
-    res.status(404).json({ errorMessage: error.message });
-    console.log(error.message);
-  }
-};
-
-export const getFileBySourceID = async (req, res) => {
-  const { name, parentDir } = req.body;
-  console.log(req.body);
-  try {
-    res.status(200).json({
-      message: `Folder ${name} created`,
-    });
-  } catch (error) {
-    res.status(404).json({ errorMessage: error.message });
-    console.log(error.message);
-  }
-};
-
 export const getFileByContainer = async (req, res) => {
   const { directory, pageSize } = req.body;
   console.log(req.body);
@@ -93,7 +54,7 @@ const createImage = async (metadata, newUrl) => {
   const { sourceID, title, category, container, fileName, fileSize, fileType } =
     metadata;
   const foundImage = await Image.findOne({ sourceID: sourceID });
-  if (foundImage) {
+  if (foundImage && sourceID !== "") {
     await Image.findOneAndUpdate(
       { sourceID: sourceID },
       {
@@ -155,15 +116,32 @@ export const uploadFile = async (req, res) => {
 };
 
 export const uploadFiles = async (req, res) => {
-  const { name, parentDir } = req.body;
+  const { selectedItems, container } = req.body;
   console.log(req.body);
   try {
-    res.status(200).json({
-      message: `Folder ${name} created`,
-    });
+    const containerClient = blobServiceClient.getContainerClient(container);
+    for (let i = 0; i < selectedItems.length; i++) {
+      const { fileName, fileContent, fileType, fileDirectory, metadata } =
+        selectedItems[i];
+      const imgBuffer = new Buffer.from(fileContent, "base64");
+      const content = imgBuffer;
+      const blobName = `${fileDirectory}/${fileName}`;
+      const blockBlobClient = containerClient.getBlockBlobClient(blobName);
+      let progress;
+      const uploadBlobResponse = await blockBlobClient.uploadData(content, {
+        blobHTTPHeaders: { blobContentType: fileType },
+        // onProgress: progress,
+      });
+      const imgUrl = blockBlobClient.url;
+      await createImage(metadata, imgUrl);
+      if (i === selectedItems.length - 1) {
+        res.status(200).json({
+          message: `${i + 1} files uploaded`,
+        });
+      }
+    }
   } catch (error) {
     res.status(404).json({ errorMessage: error.message });
-    console.log(error.message);
   }
 };
 
@@ -204,12 +182,12 @@ export const deleteFiles = async (req, res) => {
       });
       if (i === selectedItems.length - 1) {
         res.status(200).json({
-          message: `${i + 1} image deleted`,
+          message: `${i + 1} files deleted`,
         });
       }
     }
   } catch (error) {
-    res.status(404).json({ errorMessage: "Medical checkup not found!" });
+    res.status(404).json({ errorMessage: error.message });
   }
 };
 
@@ -280,7 +258,7 @@ export const downloadFiles = async (req, res) => {
     return res.end(zipFileContents);
   } catch (error) {
     console.log(error.message);
-    res.status(404).json({ errorMessage: "Something went wrong!" });
+    res.status(404).json({ errorMessage: error.message });
   }
 };
 
@@ -374,13 +352,12 @@ export const uploadContainer = async (req, res) => {
   const { name, parentDir } = req.body;
   console.log(req.body);
   try {
-    // const containerName = `${parentDir.trim().toLowerCase()}/${name
-    //   .trim()
-    //   .toLowerCase()}`;
     const containerName = `${name.trim().toLowerCase()}`;
     const containerClient = blobServiceClient.getContainerClient(containerName);
     console.log(containerClient);
-    const createContainerResponse = await containerClient.createIfNotExists();
+    const createContainerResponse = await containerClient.createIfNotExists({
+      access: "container",
+    });
     res.status(200).json({
       message: `Folder ${name} created`,
     });
@@ -395,12 +372,61 @@ export const uploadContainer = async (req, res) => {
 };
 
 export const updateContainer = async (req, res) => {
-  const { name, parentDir } = req.body;
+  const { container, newContainer } = req.body;
   console.log(req.body);
+  // create new container
+  // copy all blobs to new container
+  // update Image's container
+  // delete old container
   try {
-    res.status(200).json({
-      message: `Folder ${name} created`,
-    });
+    const sourceContainerClient =
+      blobServiceClient.getContainerClient(container);
+    if (sourceContainerClient) {
+      const destinationContainerClient = blobServiceClient.getContainerClient(
+        newContainer.trim().toLowerCase()
+      );
+      const createContainerResponse =
+        await destinationContainerClient.createIfNotExists({
+          access: "container",
+        });
+      let i = 1;
+      for await (const blob of sourceContainerClient.listBlobsFlat()) {
+        const sourceBlobUrl = sourceContainerClient.getBlockBlobClient(
+          blob.name
+        ).url;
+        const destinationBlob = destinationContainerClient.getBlockBlobClient(
+          blob.name
+        );
+        const copyBlobResponse = destinationBlob.beginCopyFromURL(
+          sourceBlobUrl,
+          {
+            onProgress(state) {
+              console.log(`${blob.name}'s progress: ${state.copyProgress}`);
+            },
+          }
+        );
+        (await copyBlobResponse).pollUntilDone;
+        await Image.findOneAndUpdate(
+          { url: sourceBlobUrl },
+          {
+            url: destinationBlob.url,
+            container: newContainer,
+          },
+          {
+            new: true,
+          }
+        );
+      }
+      const deleteContainerResponse =
+        await sourceContainerClient.deleteIfExists();
+      res.status(200).json({
+        message: `Folder ${container} changed to ${newContainer}`,
+      });
+    } else {
+      res.status(200).json({
+        message: `Folder ${container} not found!`,
+      });
+    }
   } catch (error) {
     res.status(404).json({ errorMessage: error.message });
     console.log(error.message);

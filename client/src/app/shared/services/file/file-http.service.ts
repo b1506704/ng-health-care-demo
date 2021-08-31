@@ -33,6 +33,17 @@ export class FileHttpService {
     );
   }
 
+  updateContainer(container: string, newContainer: string): Observable<any> {
+    return this.http.post<any>(
+      this.apiFileUrl + '/updateContainer',
+      { container, newContainer },
+      {
+        reportProgress: true,
+        observe: 'body',
+      }
+    );
+  }
+
   deleteContainer(container: string): Observable<any> {
     const params = new HttpParams().set('name', container);
     return this.http.post<any>(
@@ -187,10 +198,7 @@ export class FileHttpService {
     });
   }
 
-  uploadFiles(
-    selectedItems: Array<String>,
-    container: string
-  ): Observable<any> {
+  uploadFiles(selectedItems: Array<File>, container: string): Observable<any> {
     return this.http.post<any>(
       this.apiFileUrl + '/batch/upload',
       { selectedItems, container },
