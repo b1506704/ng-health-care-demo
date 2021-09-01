@@ -191,6 +191,60 @@ export const deleteFiles = async (req, res) => {
   }
 };
 
+export const copyFiles = async (req, res) => {
+  const { selectedItems, sourceContainer, destinationContainer } = req.body;
+  try {
+    const sourceContainerClient =
+      blobServiceClient.getContainerClient(sourceContainer);
+    const destinationContainerClient =
+      blobServiceClient.getContainerClient(destinationContainer);
+    if (destinationContainerClient) {
+      for (let i = 0; i < selectedItems.length; i++) {
+        const sourceBlobUrl = sourceContainerClient.getBlockBlobClient(
+          selectedItems[i]
+        ).url;
+        const destinationBlob = destinationContainerClient.getBlockBlobClient(
+          selectedItems[i]
+        );
+        const copyBlobResponse = destinationBlob.beginCopyFromURL(
+          sourceBlobUrl,
+          {
+            onProgress(state) {
+              console.log(
+                `${selectedItems[i]}'s progress: ${state.copyProgress}`
+              );
+            },
+          }
+        );
+        // not showing progress yet
+        (await copyBlobResponse).pollUntilDone;
+        const sourceImage = await Image.findOne({ url: sourceBlobUrl });
+        const newImage = new Image({
+          sourceID: sourceImage?.sourceID,
+          url: destinationBlob.url,
+          title: sourceImage?.title,
+          category: sourceImage?.category,
+          container: destinationContainer,
+          fileName: sourceImage?.fileName,
+          fileSize: sourceImage?.fileSize,
+          fileType: sourceImage?.fileType,
+        });
+        await newImage.save();
+      }
+      res.status(200).json({
+        message: `Copied ${selectedItems.length} items to ${destinationContainer}`,
+      });
+    } else {
+      res.status(404).json({
+        message: `Folder ${destinationContainer} not found!`,
+      });
+    }
+  } catch (error) {
+    console.log(error.message);
+    res.status(404).json({ errorMessage: error.message });
+  }
+};
+
 async function streamToBuffer(readableStream) {
   return new Promise((resolve, reject) => {
     const chunks = [];
@@ -405,6 +459,7 @@ export const updateContainer = async (req, res) => {
             },
           }
         );
+        // not showing progress yet
         (await copyBlobResponse).pollUntilDone;
         await Image.findOneAndUpdate(
           { url: sourceBlobUrl },

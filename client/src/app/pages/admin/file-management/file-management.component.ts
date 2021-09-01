@@ -25,6 +25,10 @@ export class FileManagementComponent implements OnInit {
   isUploadContainerPopupVisible!: boolean;
   isUpdateContainerPopupVisible!: boolean;
   isUploading!: boolean;
+  isCopying!: boolean;
+  isMoving!: boolean;
+  sourceDirectory!: string;
+  tempCopyItems: Array<string> = [];
   currentFile!: any;
   uploadButtonOption: any = {};
   imageList: Array<Image> = [];
@@ -94,6 +98,26 @@ export class FileManagementComponent implements OnInit {
     ],
     onItemClick: this.downloadZip.bind(this),
   };
+  copyMenuOptions = {
+    items: [
+      {
+        text: 'Copy',
+        icon: 'copy',
+        hint: 'Copy selected items',
+      },
+    ],
+    onItemClick: this.copyImages.bind(this),
+  };
+  pasteMenuOptions = {
+    items: [
+      {
+        text: 'Paste',
+        icon: 'paste',
+        hint: 'Paste selected items',
+      },
+    ],
+    onItemClick: this.pasteImages.bind(this),
+  };
   updateMenuOptions = {
     items: [
       {
@@ -154,6 +178,7 @@ export class FileManagementComponent implements OnInit {
                 'custom'
               );
               this.store.setIsLoading(false);
+              this.currentDirectory = '';
             });
           }
         });
@@ -188,6 +213,63 @@ export class FileManagementComponent implements OnInit {
         });
     }
   }
+
+  copyImages() {
+    if (this.selectedKeys.length !== 0) {
+      this.isCopying = true;
+      this.sourceDirectory = this.currentDirectory;
+      this.tempCopyItems = this.selectedKeys;
+      this.store.showNotif(
+        `Copied ${this.selectedKeys.length} item(s)`,
+        'custom'
+      );
+    } else {
+      this.store.showNotif('No item selected!', 'custom');
+    }
+  }
+
+  pasteImages() {
+    if (this.tempCopyItems.length !== 0) {
+      const editorMode = this.checkEditorMode();
+      switch (editorMode) {
+        case 'copy':
+          this.performCopy();
+          break;
+        case 'move':
+          this.performMove();
+          break;
+        default:
+          break;
+      }
+    }
+  }
+
+  performCopy() {
+    this.fileStore
+    .confirmDialog(`Paste in ${this.currentDirectory} folder?`)
+    .then((confirm: boolean) => {
+      if (confirm) {
+          this.isCopying = false;
+          this.fileStore
+            .copySelectedFiles(
+              this.tempCopyItems,
+              this.sourceDirectory,
+              this.currentDirectory
+            )
+            .then((data: any) => {
+              this.refresh();
+              this.store.showNotif(data.message, 'custom');
+              this.store.setIsLoading(false);
+              this.tempCopyItems = [];
+            })
+            .catch((error) => {
+              this.store.showNotif(error.message, 'error');
+            });
+        }
+      });
+  }
+
+  performMove() {}
 
   deleteSelectedImage() {
     if (this.selectedItemKey.length !== 0) {
@@ -241,6 +323,16 @@ export class FileManagementComponent implements OnInit {
     }
   }
 
+  checkEditorMode() {
+    if (this.isCopying) {
+      return 'copy';
+    }
+    if (this.isMoving) {
+      return 'move';
+    }
+    return '';
+  }
+
   refreshFolder() {
     this.fileStore.initInfiniteContainer(0, this.pageSize).then(() => {
       this.containerDataListener();
@@ -277,6 +369,9 @@ export class FileManagementComponent implements OnInit {
       });
     }
     this.selectedItem = e.selectedItems[0]?.dataItem;
+    if (e.selectedItems[0]?.isDirectory === true) {
+      this.currentDirectory = e.selectedItems[0]?.dataItem.name;
+    }
     console.log('IS DIRECTORY SELECTED: ', this.isDirectorySelected);
   }
 

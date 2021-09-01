@@ -112,6 +112,20 @@
           [options]="downloadZipMenuOptions"
         ></dxi-file-selection-item>
         <dxi-file-selection-item
+          widget="dxMenu"
+          location="before"
+          locateInMenu="auto"
+          [options]="copyMenuOptions"
+        ></dxi-file-selection-item>
+        <ng-container *ngIf="isCopying === true || isMoving === true">
+          <dxi-item
+            widget="dxMenu"
+            location="before"
+            locateInMenu="auto"
+            [options]="pasteMenuOptions"
+          ></dxi-item>
+        </ng-container>
+        <dxi-file-selection-item
           name="clearSelection"
           locateInMenu="auto"
         ></dxi-file-selection-item>

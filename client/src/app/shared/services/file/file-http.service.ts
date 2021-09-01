@@ -261,6 +261,44 @@ export class FileHttpService {
     );
   }
 
+  copyFiles(
+    selectedItems: Array<string>,
+    sourceContainer: string,
+    destinationContainer: string
+  ): Observable<any> {
+    return this.http.post<any>(
+      this.apiFileUrl + '/batch/copy',
+      {
+        selectedItems,
+        sourceContainer,
+        destinationContainer,
+      },
+      {
+        reportProgress: true,
+        observe: 'body',
+      }
+    );
+  }
+
+  moveFiles(
+    selectedItems: Array<string>,
+    sourceContainer: string,
+    destinationContainer: string
+  ): Observable<any> {
+    return this.http.post<any>(
+      this.apiFileUrl + '/batch/move',
+      {
+        selectedItems,
+        sourceContainer,
+        destinationContainer,
+      },
+      {
+        reportProgress: true,
+        observe: 'body',
+      }
+    );
+  }
+
   getFile(id: string): Observable<File> {
     return this.http.get<File>(this.apiFileUrl + `/${id}`, {
       reportProgress: true,

@@ -1,6 +1,7 @@
 import express from "express";
 
 import {
+  copyFiles,
   deleteContainer,
   deleteContainers,
   deleteFile,
@@ -27,6 +28,7 @@ router.post("/download", downloadFile);
 router.post("/batch/download", downloadFiles);
 router.post("/batch/delete", deleteFiles);
 router.post("/batch/upload", uploadFiles);
+router.post("/batch/copy", copyFiles);
 // container controller
 router.get("/getContainers", getContainers);
 router.post("/getContainerByName", getContainerByName);

@@ -307,6 +307,28 @@ export class FileStore extends StateService<FileState> {
     return confirm(`<b>Are you sure?</b>`, 'Confirm changes');
   }
 
+  copySelectedFiles(
+    selectedFiles: Array<string>,
+    sourceContainer: string,
+    destinationContainer: string
+  ) {
+    this.setIsLoading(true);
+    return this.fileService
+      .copyFiles(selectedFiles, sourceContainer, destinationContainer)
+      .toPromise();
+  }
+
+  moveSelectedFiles(
+    selectedFiles: Array<string>,
+    sourceContainer: string,
+    destinationContainer: string
+  ) {
+    this.setIsLoading(true);
+    return this.fileService
+      .copyFiles(selectedFiles, sourceContainer, destinationContainer)
+      .toPromise();
+  }
+
   deleteSelectedFiles(selectedFiles: Array<string>, container: string) {
     this.setIsLoading(true);
     return this.fileService
