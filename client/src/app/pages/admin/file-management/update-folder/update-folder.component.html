@@ -10,9 +10,6 @@
       (submit)="onSubmit($event)"
       [classList]="['upload-form']"
     >
-      <div class="long-title">
-        <h3>Folder: {{ selectedItem }}/</h3>
-      </div>
       <dx-form
         id="form"
         [formData]="containerData"
@@ -20,7 +17,7 @@
         validationGroup="updateFolder"
       >
         <dxi-item itemType="group">
-          <dxi-item itemType="group" caption="New Folder">
+          <dxi-item itemType="group" caption="Type in new name">
             <dxi-item
               dataField="name"
               [label]="{ text: 'Folder Name' }"

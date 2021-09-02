@@ -151,11 +151,11 @@ export const deleteFile = async (req, res) => {
 
   try {
     const containerClient = blobServiceClient.getContainerClient(container);
-    const deleteBlolbResponse = await containerClient.deleteBlob(name);
+    const deleteBlobResponse = await containerClient.deleteBlob(name);
     await Image.findOneAndDelete({
       title: name.split("/")[1],
     });
-    console.log(`Blolb ${name} deleted `, deleteBlolbResponse.requestId);
+    console.log(`Blob ${name} deleted `, deleteBlobResponse.requestId);
     res.status(200).json({
       message: `Blob ${name} in ${container} deleted`,
     });
@@ -170,12 +170,12 @@ export const deleteFiles = async (req, res) => {
   try {
     const containerClient = blobServiceClient.getContainerClient(container);
     for (let i = 0; i < selectedItems.length; i++) {
-      const deleteBlolbResponse = await containerClient.deleteBlob(
+      const deleteBlobResponse = await containerClient.deleteBlob(
         selectedItems[i]
       );
       console.log(
-        `Blolb ${selectedItems[i]} deleted `,
-        deleteBlolbResponse.requestId
+        `Blob ${selectedItems[i]} deleted `,
+        deleteBlobResponse.requestId
       );
       await Image.findOneAndDelete({
         title: selectedItems[i].split("/")[1],
@@ -233,6 +233,69 @@ export const copyFiles = async (req, res) => {
       }
       res.status(200).json({
         message: `Copied ${selectedItems.length} items to ${destinationContainer}`,
+      });
+    } else {
+      res.status(404).json({
+        message: `Folder ${destinationContainer} not found!`,
+      });
+    }
+  } catch (error) {
+    console.log(error.message);
+    res.status(404).json({ errorMessage: error.message });
+  }
+};
+
+export const moveFiles = async (req, res) => {
+  const { selectedItems, sourceContainer, destinationContainer } = req.body;
+  try {
+    const sourceContainerClient =
+      blobServiceClient.getContainerClient(sourceContainer);
+    const destinationContainerClient =
+      blobServiceClient.getContainerClient(destinationContainer);
+    if (destinationContainerClient) {
+      for (let i = 0; i < selectedItems.length; i++) {
+        const sourceBlobUrl = sourceContainerClient.getBlockBlobClient(
+          selectedItems[i]
+        ).url;
+        const destinationBlob = destinationContainerClient.getBlockBlobClient(
+          selectedItems[i]
+        );
+        const copyBlobResponse = destinationBlob.beginCopyFromURL(
+          sourceBlobUrl,
+          {
+            onProgress(state) {
+              console.log(
+                `${selectedItems[i]}'s progress: ${state.copyProgress}`
+              );
+            },
+          }
+        );
+        // not showing progress yet
+        (await copyBlobResponse).pollUntilDone;
+
+        const sourceImage = await Image.findOne({ url: sourceBlobUrl });
+
+        const newImage = new Image({
+          sourceID: sourceImage?.sourceID,
+          url: destinationBlob.url,
+          title: sourceImage?.title,
+          category: sourceImage?.category,
+          container: destinationContainer,
+          fileName: sourceImage?.fileName,
+          fileSize: sourceImage?.fileSize,
+          fileType: sourceImage?.fileType,
+        });
+        await newImage.save();
+        const deleteBlobResponse = await sourceContainerClient.deleteBlob(
+          selectedItems[i]
+        );
+        console.log(
+          `Blob ${selectedItems[i]} deleted `,
+          deleteBlobResponse.requestId
+        );
+      }
+      res.status(200).json({
+        message: `Moved ${selectedItems.length} items from ${sourceContainer}/ to ${destinationContainer}/`,
       });
     } else {
       res.status(404).json({
@@ -476,6 +539,67 @@ export const updateContainer = async (req, res) => {
         await sourceContainerClient.deleteIfExists();
       res.status(200).json({
         message: `Folder ${container} changed to ${newContainer}`,
+      });
+    } else {
+      res.status(200).json({
+        message: `Folder ${container} not found!`,
+      });
+    }
+  } catch (error) {
+    res.status(404).json({ errorMessage: error.message });
+    console.log(error.message);
+  }
+};
+
+export const cloneContainer = async (req, res) => {
+  const { container } = req.body;
+  console.log(req.body);
+  // create new container of name 'cloneof...'
+  // copy all blobs to new container
+  // update Image's container
+  // delete old container
+  try {
+    const sourceContainerClient =
+      blobServiceClient.getContainerClient(container);
+    if (sourceContainerClient) {
+      const newContainer = `copyof${container}`;
+      const destinationContainerClient =
+        blobServiceClient.getContainerClient(newContainer);
+      const createContainerResponse =
+        await destinationContainerClient.createIfNotExists({
+          access: "container",
+        });
+      let i = 1;
+      for await (const blob of sourceContainerClient.listBlobsFlat()) {
+        const sourceBlobUrl = sourceContainerClient.getBlockBlobClient(
+          blob.name
+        ).url;
+        const destinationBlob = destinationContainerClient.getBlockBlobClient(
+          blob.name
+        );
+        const copyBlobResponse = await destinationBlob.beginCopyFromURL(
+          sourceBlobUrl,
+          {
+            onProgress(state) {
+              console.log(`${blob.name}'s progress: ${state.copyProgress}`);
+            },
+          }
+        );
+        // not showing progress yet
+        await copyBlobResponse.pollUntilDone();
+        await Image.findOneAndUpdate(
+          { url: sourceBlobUrl },
+          {
+            url: destinationBlob.url,
+            container: newContainer,
+          },
+          {
+            new: true,
+          }
+        );
+      }
+      res.status(200).json({
+        message: `Succesfully clone folder ${container}`,
       });
     } else {
       res.status(200).json({

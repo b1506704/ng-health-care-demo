@@ -6,21 +6,18 @@
 >
   <div class="container">
     <form
-      id="form-container"
+      id="form-upload-folder-container"
       (submit)="onSubmit($event)"
-      [classList]="['upload-form']"
+      [classList]="['upload-folder-form']"
     >
-      <div class="long-title">
-        <h3>To {{ directory }}/</h3>
-      </div>
       <dx-form
-        id="form"
+        id="form-upload-folder"
         [formData]="containerData"
         [showValidationSummary]="true"
         validationGroup="uploadFolder"
       >
         <dxi-item itemType="group">
-          <dxi-item itemType="group" caption="Folder Name">
+          <dxi-item itemType="group" caption="Type in name">
             <dxi-item
               dataField="name"
               [label]="{ text: 'Folder Name' }"

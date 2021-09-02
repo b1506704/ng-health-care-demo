@@ -325,7 +325,7 @@ export class FileStore extends StateService<FileState> {
   ) {
     this.setIsLoading(true);
     return this.fileService
-      .copyFiles(selectedFiles, sourceContainer, destinationContainer)
+      .moveFiles(selectedFiles, sourceContainer, destinationContainer)
       .toPromise();
   }
 
@@ -554,5 +554,10 @@ export class FileStore extends StateService<FileState> {
   deleteContainer(container: string) {
     this.setIsLoading(true);
     return this.fileService.deleteContainer(container).toPromise();
+  }
+
+  cloneContainer(container: string) {
+    this.setIsLoading(true);
+    return this.fileService.cloneContainer(container).toPromise();
   }
 }

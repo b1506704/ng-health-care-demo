@@ -70,6 +70,12 @@
           locateInMenu="auto"
           [options]="renameFolderMenuOptions"
         ></dxi-item>
+        <dxi-item
+          widget="dxMenu"
+          location="before"
+          locateInMenu="auto"
+          [options]="cloneFolderMenuOptions"
+        ></dxi-item>
       </ng-container>
       <dxi-item
         widget="dxMenu"
@@ -117,12 +123,24 @@
           locateInMenu="auto"
           [options]="copyMenuOptions"
         ></dxi-file-selection-item>
+        <dxi-file-selection-item
+          widget="dxMenu"
+          location="before"
+          locateInMenu="auto"
+          [options]="moveMenuOptions"
+        ></dxi-file-selection-item>
         <ng-container *ngIf="isCopying === true || isMoving === true">
           <dxi-item
             widget="dxMenu"
             location="before"
             locateInMenu="auto"
             [options]="pasteMenuOptions"
+          ></dxi-item>
+          <dxi-item
+            widget="dxMenu"
+            location="before"
+            locateInMenu="auto"
+            [options]="clearClipboardMenuOptions"
           ></dxi-item>
         </ng-container>
         <dxi-file-selection-item
@@ -149,6 +167,11 @@
           text="Update Folder"
           icon="edit"
           beginGroup="true"
+        ></dxi-item>
+        <dxi-item
+          name="cloneFolder"
+          text="Clone Folder"
+          icon="unselectall"
         ></dxi-item>
       </ng-container>
       <ng-container *ngIf="isDirectorySelected === false">

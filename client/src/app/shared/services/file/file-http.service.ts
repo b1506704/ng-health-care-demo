@@ -57,6 +57,17 @@ export class FileHttpService {
     );
   }
 
+  cloneContainer(container: string): Observable<any> {
+    return this.http.post<any>(
+      this.apiFileUrl + '/cloneContainer',
+      { container },
+      {
+        reportProgress: true,
+        observe: 'body',
+      }
+    );
+  }
+
   fetchFile(page: number, size: number): Observable<File> {
     const params = new HttpParams().set('page', page).set('size', size);
     console.log(params.toString());

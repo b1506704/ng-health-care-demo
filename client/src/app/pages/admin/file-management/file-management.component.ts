@@ -118,6 +118,26 @@ export class FileManagementComponent implements OnInit {
     ],
     onItemClick: this.pasteImages.bind(this),
   };
+  clearClipboardMenuOptions = {
+    items: [
+      {
+        text: 'Clear Clipboard',
+        icon: 'clear',
+        hint: 'Clear memory of clipboard',
+      },
+    ],
+    onItemClick: this.clearClipboard.bind(this),
+  };
+  moveMenuOptions = {
+    items: [
+      {
+        text: 'Cut',
+        icon: 'cut',
+        hint: 'Cut selected items',
+      },
+    ],
+    onItemClick: this.moveImages.bind(this),
+  };
   updateMenuOptions = {
     items: [
       {
@@ -148,6 +168,16 @@ export class FileManagementComponent implements OnInit {
     ],
     onItemClick: this.updateContainer.bind(this),
   };
+  cloneFolderMenuOptions = {
+    items: [
+      {
+        text: 'Clone Folder',
+        icon: 'unselectall',
+        hint: 'Clone current folder',
+      },
+    ],
+    onItemClick: this.cloneContainer.bind(this),
+  };
   containerList: Array<Container> = [];
 
   constructor(
@@ -175,6 +205,26 @@ export class FileManagementComponent implements OnInit {
               this.refreshFolder();
               this.store.showNotif(
                 `'${this.currentDirectory}' folder deleted`,
+                'custom'
+              );
+              this.store.setIsLoading(false);
+              this.currentDirectory = '';
+            });
+          }
+        });
+    }
+  }
+
+  cloneContainer() {
+    if (this.currentDirectory) {
+      this.fileStore
+        .confirmDialog(`Clone '${this.currentDirectory}' folder?`)
+        .then((confirm: boolean) => {
+          if (confirm) {
+            this.fileStore.cloneContainer(this.currentDirectory).then(() => {
+              this.refreshFolder();
+              this.store.showNotif(
+                `'${this.currentDirectory}' folder cloned`,
                 'custom'
               );
               this.store.setIsLoading(false);
@@ -214,8 +264,21 @@ export class FileManagementComponent implements OnInit {
     }
   }
 
+  clearClipboard() {
+    if (this.selectedKeys.length !== 0) {
+      this.isMoving = false;
+      this.isCopying = false;
+      this.sourceDirectory = '';
+      this.tempCopyItems = [];
+      this.store.showNotif(`Clipboard cleared!`, 'custom');
+    } else {
+      this.store.showNotif('No item selected!', 'custom');
+    }
+  }
+
   copyImages() {
     if (this.selectedKeys.length !== 0) {
+      this.isMoving = false;
       this.isCopying = true;
       this.sourceDirectory = this.currentDirectory;
       this.tempCopyItems = this.selectedKeys;
@@ -223,6 +286,18 @@ export class FileManagementComponent implements OnInit {
         `Copied ${this.selectedKeys.length} item(s)`,
         'custom'
       );
+    } else {
+      this.store.showNotif('No item selected!', 'custom');
+    }
+  }
+
+  moveImages() {
+    if (this.selectedKeys.length !== 0) {
+      this.isCopying = false;
+      this.isMoving = true;
+      this.sourceDirectory = this.currentDirectory;
+      this.tempCopyItems = this.selectedKeys;
+      this.store.showNotif(`Cut ${this.selectedKeys.length} item(s)`, 'custom');
     } else {
       this.store.showNotif('No item selected!', 'custom');
     }
@@ -246,9 +321,9 @@ export class FileManagementComponent implements OnInit {
 
   performCopy() {
     this.fileStore
-    .confirmDialog(`Paste in ${this.currentDirectory} folder?`)
-    .then((confirm: boolean) => {
-      if (confirm) {
+      .confirmDialog(`Paste in ${this.currentDirectory} folder?`)
+      .then((confirm: boolean) => {
+        if (confirm) {
           this.isCopying = false;
           this.fileStore
             .copySelectedFiles(
@@ -269,7 +344,30 @@ export class FileManagementComponent implements OnInit {
       });
   }
 
-  performMove() {}
+  performMove() {
+    this.fileStore
+      .confirmDialog(`Paste in ${this.currentDirectory} folder?`)
+      .then((confirm: boolean) => {
+        if (confirm) {
+          this.isMoving = false;
+          this.fileStore
+            .moveSelectedFiles(
+              this.tempCopyItems,
+              this.sourceDirectory,
+              this.currentDirectory
+            )
+            .then((data: any) => {
+              this.refresh();
+              this.store.showNotif(data.message, 'custom');
+              this.store.setIsLoading(false);
+              this.tempCopyItems = [];
+            })
+            .catch((error) => {
+              this.store.showNotif(error.message, 'error');
+            });
+        }
+      });
+  }
 
   deleteSelectedImage() {
     if (this.selectedItemKey.length !== 0) {
@@ -404,6 +502,9 @@ export class FileManagementComponent implements OnInit {
         break;
       case 'updateFolder':
         this.updateContainer();
+        break;
+      case 'cloneFolder':
+        this.cloneContainer();
         break;
       default:
         break;

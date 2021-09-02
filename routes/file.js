@@ -1,6 +1,7 @@
 import express from "express";
 
 import {
+  cloneContainer,
   copyFiles,
   deleteContainer,
   deleteContainers,
@@ -11,6 +12,7 @@ import {
   getContainerByName,
   getContainers,
   getFileByContainer,
+  moveFiles,
   updateContainer,
   updateFile,
   uploadContainer,
@@ -29,12 +31,14 @@ router.post("/batch/download", downloadFiles);
 router.post("/batch/delete", deleteFiles);
 router.post("/batch/upload", uploadFiles);
 router.post("/batch/copy", copyFiles);
+router.post("/batch/move", moveFiles);
 // container controller
 router.get("/getContainers", getContainers);
 router.post("/getContainerByName", getContainerByName);
 router.post("/deleteContainer", deleteContainer);
 router.post("/uploadContainer", uploadContainer);
 router.post("/updateContainer", updateContainer);
+router.post("/cloneContainer", cloneContainer);
 router.post("/batch/deleteContainers", deleteContainers);
 
 export default router;
