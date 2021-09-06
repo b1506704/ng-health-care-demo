@@ -5,7 +5,8 @@ import { MedicineStore } from 'src/app/shared/services/medicine/medicine-store.s
 import { StoreService } from 'src/app/shared/services/store.service';
 import brandList from 'src/app/shared/services/medicine/mock-brand';
 import { DxScrollViewComponent } from 'devextreme-angular';
-
+import { Image } from 'src/app/shared/models/image';
+import { ImageStore } from 'src/app/shared/services/image/image-store.service';
 @Component({
   selector: 'app-medicine-list',
   templateUrl: './medicine-list.component.html',
@@ -72,13 +73,25 @@ export class MedicineListComponent implements OnInit, OnDestroy {
     placeholder: 'Sort price',
     displayExpr: 'name',
     onValueChanged: this.onSortValueChanged.bind(this),
-  }; 
-  currency: string = '$'; 
+  };
+  imageData: Image = {
+    sourceID: '',
+    container: '',
+    category: '',
+    title: '',
+    fileName: '',
+    fileSize: 0,
+    fileType: '',
+    url: '../../../../assets/imgs/favipiravir.jpg',
+  };
+  imageList: Array<Image> = [];
+  currency: string = '$';
 
   constructor(
     private medicineStore: MedicineStore,
     private store: StoreService,
-    private router: Router
+    private router: Router,
+    private imageStore: ImageStore
   ) {}
 
   selectMedicine(_id: string) {
@@ -232,6 +245,30 @@ export class MedicineListComponent implements OnInit, OnDestroy {
     this.router.navigate(['/doctor_schedule']);
   }
 
+  mapImageListToUrl(_id: string) {
+    if (this.imageList.length !== 0) {
+      const fetchedImage = this.imageList.find(
+        (e: any) => e.sourceID === _id
+      )?.url;
+      if (fetchedImage) {
+        return fetchedImage;
+      } else {
+        return this.imageData.url;
+      }
+    }
+    return this.imageData.url;
+  }
+
+  imageDataListener() {
+    return this.imageStore.$imageList.subscribe((data: any) => {
+      if (data.length !== 0) {
+        this.imageList = data;
+        console.log('IMAGE LIST OF DOCTOR');
+        console.log(this.imageList);
+      }
+    });
+  }
+
   sourceDataListener() {
     return this.medicineStore.$medicineList.subscribe((data: any) => {
       this.medicineList = data;
@@ -252,11 +289,13 @@ export class MedicineListComponent implements OnInit, OnDestroy {
     this.currentPageListener();
     this.medicineStore.initInfiniteData(0, this.pageSize).then(() => {
       this.sourceDataListener();
+      this.imageDataListener();
     });
   }
 
   ngOnDestroy(): void {
     this.sourceDataListener().unsubscribe();
     this.currentPageListener().unsubscribe();
+    this.imageDataListener().unsubscribe();
   }
 }

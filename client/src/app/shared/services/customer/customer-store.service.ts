@@ -175,6 +175,7 @@ export class CustomerStore extends StateService<CustomerState> {
   }
 
   initData(page: number, size: number) {
+    this.setIsLoading(true);
     this.customerService
       .fetchCustomer(page, size)
       .toPromise()
@@ -195,6 +196,7 @@ export class CustomerStore extends StateService<CustomerState> {
 
   initFilterByCategoryData(value: string, page: number, size: number) {
     this.store.showNotif('Filtered Mode On', 'custom');
+    this.setIsLoading(true);
     this.customerService
       .filterCustomerByCategory(value, 0, 5)
       .toPromise()
@@ -215,6 +217,7 @@ export class CustomerStore extends StateService<CustomerState> {
 
   initSearchByNameData(value: string, page: number, size: number) {
     this.store.showNotif('Searched Mode On', 'custom');
+    this.setIsLoading(true);
     this.customerService
       .searchCustomerByName(value, 0, 5)
       .toPromise()
@@ -235,6 +238,7 @@ export class CustomerStore extends StateService<CustomerState> {
 
   initSortByPriceData(value: string, page: number, size: number) {
     this.store.showNotif('Sort Mode On', 'custom');
+    this.setIsLoading(true);
     this.customerService
       .sortCustomerByPrice(value, 0, 5)
       .toPromise()
@@ -255,6 +259,7 @@ export class CustomerStore extends StateService<CustomerState> {
 
   initSortByName(value: string, page: number, size: number) {
     this.store.showNotif('Sort Mode On', 'custom');
+    this.setIsLoading(true);
     this.customerService
       .sortCustomerByName(value, 0, 5)
       .toPromise()

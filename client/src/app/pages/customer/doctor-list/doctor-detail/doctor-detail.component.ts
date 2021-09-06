@@ -40,6 +40,16 @@ export class DoctorDetailComponent implements OnInit, OnDestroy, OnChanges {
 
   renderSourceData() {
     this.doctorData = null;
+    this.imageData = {
+      sourceID: '',
+      container: '',
+      category: '',
+      title: '',
+      fileName: '',
+      fileSize: 0,
+      fileType: '',
+      url: '../../../../assets/imgs/profile.png',
+    };
     setTimeout(() => {
       this.doctorStore.getDoctor(this.doctorID).then(() => {
         this.doctorDataListener();

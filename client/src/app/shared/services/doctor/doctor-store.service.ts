@@ -88,6 +88,7 @@ export class DoctorStore extends StateService<DoctorState> {
   }
 
   initData(page: number, size: number) {
+    this.setIsLoading(true);
     this.doctorService
       .fetchDoctor(page, size)
       .toPromise()
@@ -124,7 +125,6 @@ export class DoctorStore extends StateService<DoctorState> {
       })
       .then(() => {
         this.loadDataAsync(page, size);
-
       });
   }
 
@@ -155,6 +155,7 @@ export class DoctorStore extends StateService<DoctorState> {
 
   initFilterByCategoryData(value: string, page: number, size: number) {
     this.store.showNotif('Filtered Mode On', 'custom');
+    this.setIsLoading(true);
     this.doctorService
       .filterDoctorByCategory(value, 0, 5)
       .toPromise()
@@ -175,6 +176,7 @@ export class DoctorStore extends StateService<DoctorState> {
 
   initInfiniteFilterByCategoryData(value: string, page: number, size: number) {
     this.store.showNotif('Filtered Mode On', 'custom');
+    this.setIsLoading(true);
     this.doctorService
       .filterDoctorByCategory(value, page, size)
       .toPromise()
@@ -182,6 +184,7 @@ export class DoctorStore extends StateService<DoctorState> {
         this.setState({
           doctorList: new Array<Doctor>(data.items.length),
         });
+        this.imageStore.fetchSelectedImages(data.items);
         console.log('Current flag: infinite filtered list');
         console.log(this.state.doctorList);
         this.setState({ totalItems: data.totalItems });
@@ -195,6 +198,7 @@ export class DoctorStore extends StateService<DoctorState> {
 
   initSearchByNameData(value: string, page: number, size: number) {
     this.store.showNotif('Searched Mode On', 'custom');
+    this.setIsLoading(true);
     this.doctorService
       .searchDoctorByName(value, 0, 5)
       .toPromise()
@@ -215,6 +219,7 @@ export class DoctorStore extends StateService<DoctorState> {
 
   initInfiniteSearchByNameData(value: string, page: number, size: number) {
     this.store.showNotif('Searched Mode On', 'custom');
+    this.setIsLoading(true);
     return this.doctorService
       .searchDoctorByName(value, page, size)
       .toPromise()
@@ -226,6 +231,7 @@ export class DoctorStore extends StateService<DoctorState> {
         } else {
           this.store.showNotif('No result found!', 'custom');
         }
+        this.imageStore.fetchSelectedImages(data.items);
         console.log('Current flag: infitite searched list');
         console.log(this.state.doctorList);
         this.setState({ totalItems: data.totalItems });
@@ -239,6 +245,7 @@ export class DoctorStore extends StateService<DoctorState> {
 
   initSortByPriceData(value: string, page: number, size: number) {
     this.store.showNotif('Sort Mode On', 'custom');
+    this.setIsLoading(true);
     this.doctorService
       .sortDoctorByPrice(value, 0, 5)
       .toPromise()
@@ -259,6 +266,7 @@ export class DoctorStore extends StateService<DoctorState> {
 
   initInfiniteSortByPriceData(value: string, page: number, size: number) {
     this.store.showNotif('Sort Mode On', 'custom');
+    this.setIsLoading(true);
     this.doctorService
       .sortDoctorByPrice(value, page, size)
       .toPromise()
@@ -266,6 +274,7 @@ export class DoctorStore extends StateService<DoctorState> {
         this.setState({
           doctorList: new Array<Doctor>(data.items.length),
         });
+        this.imageStore.fetchSelectedImages(data.items);
         console.log('Current flag: sort list');
         console.log(this.state.doctorList);
         this.setState({ totalItems: data.totalItems });
@@ -279,6 +288,7 @@ export class DoctorStore extends StateService<DoctorState> {
 
   initSortByName(value: string, page: number, size: number) {
     this.store.showNotif('Sort Mode On', 'custom');
+    this.setIsLoading(true);
     this.doctorService
       .sortDoctorByName(value, 0, 5)
       .toPromise()
@@ -630,6 +640,7 @@ export class DoctorStore extends StateService<DoctorState> {
         this.setState({
           doctorList: this.state.doctorList.concat(data.items),
         });
+        this.imageStore.fetchSelectedImages(data.items);
         console.log('Filtered list');
         console.log(this.state.doctorList);
         console.log('Server response');
@@ -684,6 +695,7 @@ export class DoctorStore extends StateService<DoctorState> {
           this.setState({
             doctorList: this.state.doctorList.concat(data.items),
           });
+          this.imageStore.fetchSelectedImages(data.items);
         } else {
           this.store.showNotif('No result found!', 'custome');
         }
@@ -771,6 +783,7 @@ export class DoctorStore extends StateService<DoctorState> {
         this.setState({
           doctorList: this.state.doctorList.concat(data.items),
         });
+        this.imageStore.fetchSelectedImages(data.items);
         console.log('Infite sorted list');
         console.log(this.state.doctorList);
         console.log('Server response');

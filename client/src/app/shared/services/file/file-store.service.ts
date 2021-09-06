@@ -66,6 +66,7 @@ export class FileStore extends StateService<FileState> {
   }
 
   initInfiniteDataByContainer(container: string, size: number) {
+    this.setIsLoading(true);
     return this.fileService
       .fetchFilesByContainer(container, size)
       .toPromise()
@@ -79,6 +80,7 @@ export class FileStore extends StateService<FileState> {
         this.setState({ totalItems: data.totalItems });
         this.setState({ totalPages: data.totalPages });
         this.setState({ currentPage: data.currentPage });
+        this.setIsLoading(false);
       });
   }
 
@@ -131,6 +133,7 @@ export class FileStore extends StateService<FileState> {
 
   initInfiniteSearchByNameData(value: string, page: number, size: number) {
     this.store.showNotif('Searched Mode On', 'custom');
+    this.setIsLoading(true);
     this.fileService
       .searchFileByName(value, page, size)
       .toPromise()
@@ -147,10 +150,12 @@ export class FileStore extends StateService<FileState> {
         this.setState({ totalItems: data.totalItems });
         this.setState({ totalPages: data.totalPages });
         this.setState({ currentPage: data.currentPage });
+        this.setIsLoading(false);
       });
   }
 
   initInfiniteSortByPriceData(value: string, page: number, size: number) {
+    this.setIsLoading(true);
     this.store.showNotif('Sort Mode On', 'custom');
     this.fileService
       .sortFileByPrice(value, page, size)
@@ -164,6 +169,7 @@ export class FileStore extends StateService<FileState> {
         this.setState({ totalItems: data.totalItems });
         this.setState({ totalPages: data.totalPages });
         this.setState({ currentPage: data.currentPage });
+        this.setIsLoading(false);
       });
   }
 
@@ -295,6 +301,7 @@ export class FileStore extends StateService<FileState> {
       error: (data: any) => {
         this.store.showNotif(data.error.errorMessage, 'error');
         this.setIsLoading(false);
+        this.setisUploading(false);
         console.log(data);
       },
     });
@@ -497,6 +504,7 @@ export class FileStore extends StateService<FileState> {
   // container functions
 
   initInfiniteContainer(page: number, size: number) {
+    this.setIsLoading(true);
     return this.fileService
       .fetchContainer(page, size)
       .toPromise()
@@ -509,6 +517,7 @@ export class FileStore extends StateService<FileState> {
         this.setState({ totalItems: data.totalItems });
         this.setState({ totalPages: data.totalPages });
         this.setState({ currentPage: data.currentPage });
+        this.setIsLoading(false);
       });
   }
   uploadContainer(container: Container) {

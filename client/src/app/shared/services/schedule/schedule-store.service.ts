@@ -79,6 +79,7 @@ export class ScheduleStore extends StateService<ScheduleState> {
   }
 
   initData(page: number, size: number) {
+    this.setIsLoading(true);
     this.scheduleService
       .fetchSchedule(page, size)
       .toPromise()
@@ -99,6 +100,7 @@ export class ScheduleStore extends StateService<ScheduleState> {
 
   initFilterByCategoryData(value: string, page: number, size: number) {
     this.store.showNotif('Filtered Mode On', 'custom');
+    this.setIsLoading(true);
     this.scheduleService
       .filterScheduleByCategory(value, 0, 5)
       .toPromise()
@@ -119,6 +121,7 @@ export class ScheduleStore extends StateService<ScheduleState> {
 
   initSearchByNameData(value: string, page: number, size: number) {
     this.store.showNotif('Searched Mode On', 'custom');
+    this.setIsLoading(true);
     this.scheduleService
       .searchScheduleByName(value, 0, 5)
       .toPromise()
@@ -139,6 +142,7 @@ export class ScheduleStore extends StateService<ScheduleState> {
 
   initSortByPriceData(value: string, page: number, size: number) {
     this.store.showNotif('Sort Mode On', 'custom');
+    this.setIsLoading(true);
     this.scheduleService
       .sortScheduleByPrice(value, 0, 5)
       .toPromise()
@@ -159,6 +163,7 @@ export class ScheduleStore extends StateService<ScheduleState> {
 
   initSortByName(value: string, page: number, size: number) {
     this.store.showNotif('Sort Mode On', 'custom');
+    this.setIsLoading(true);
     this.scheduleService
       .sortScheduleByName(value, 0, 5)
       .toPromise()

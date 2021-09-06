@@ -82,6 +82,7 @@ export class PrescriptionStore extends StateService<PrescriptionState> {
   }
 
   initInfiniteData(page: number, size: number) {
+    this.setIsLoading(true);
     return this.prescriptionService
       .fetchPrescription(page, size)
       .toPromise()
@@ -161,11 +162,8 @@ export class PrescriptionStore extends StateService<PrescriptionState> {
       });
   }
 
-  initInfiniteDataByCustomerID(
-    page: number,
-    size: number,
-    customerID: string
-  ) {
+  initInfiniteDataByCustomerID(page: number, size: number, customerID: string) {
+    this.setIsLoading(true);
     return this.prescriptionService
       .fetchPrescriptionByCustomerID(page, size, customerID)
       .toPromise()
@@ -215,6 +213,7 @@ export class PrescriptionStore extends StateService<PrescriptionState> {
   }
 
   initData(page: number, size: number) {
+    this.setIsLoading(true);
     this.prescriptionService
       .fetchPrescription(page, size)
       .toPromise()
@@ -235,6 +234,7 @@ export class PrescriptionStore extends StateService<PrescriptionState> {
 
   initFilterByCategoryData(value: string, page: number, size: number) {
     this.store.showNotif('Filtered Mode On', 'custom');
+    this.setIsLoading(true);
     this.prescriptionService
       .filterPrescriptionByCategory(value, 0, 5)
       .toPromise()
@@ -255,6 +255,7 @@ export class PrescriptionStore extends StateService<PrescriptionState> {
 
   initInfiniteFilterByCategoryData(value: string, page: number, size: number) {
     this.store.showNotif('Filtered Mode On', 'custom');
+    this.setIsLoading(true);
     this.prescriptionService
       .filterPrescriptionByCategory(value, page, size)
       .toPromise()
@@ -275,6 +276,7 @@ export class PrescriptionStore extends StateService<PrescriptionState> {
 
   initSearchByNameData(value: string, page: number, size: number) {
     this.store.showNotif('Searched Mode On', 'custom');
+    this.setIsLoading(true);
     this.prescriptionService
       .searchPrescriptionByName(value, 0, 5)
       .toPromise()
@@ -295,6 +297,7 @@ export class PrescriptionStore extends StateService<PrescriptionState> {
 
   initInfiniteSearchByNameData(value: string, page: number, size: number) {
     this.store.showNotif('Searched Mode On', 'custom');
+    this.setIsLoading(true);
     this.prescriptionService
       .searchPrescriptionByName(value, page, size)
       .toPromise()
@@ -319,6 +322,7 @@ export class PrescriptionStore extends StateService<PrescriptionState> {
 
   initSortByPriceData(value: string, page: number, size: number) {
     this.store.showNotif('Sort Mode On', 'custom');
+    this.setIsLoading(true);
     this.prescriptionService
       .sortPrescriptionByPrice(value, 0, 5)
       .toPromise()
@@ -339,6 +343,7 @@ export class PrescriptionStore extends StateService<PrescriptionState> {
 
   initInfiniteSortByPriceData(value: string, page: number, size: number) {
     this.store.showNotif('Sort Mode On', 'custom');
+    this.setIsLoading(true);
     this.prescriptionService
       .sortPrescriptionByPrice(value, page, size)
       .toPromise()

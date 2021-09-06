@@ -262,7 +262,7 @@ export class DoctorListComponent implements OnInit, OnDestroy {
       } else {
         return this.imageData.url;
       }
-    } 
+    }
     return this.imageData.url;
   }
 

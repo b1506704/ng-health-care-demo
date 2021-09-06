@@ -373,9 +373,7 @@ export class ImageStore extends StateService<ImageState> {
     (state) => state.imageInstance
   );
 
-  $isUploading: Observable<boolean> = this.select(
-    (state) => state.isUploading
-  );
+  $isUploading: Observable<boolean> = this.select((state) => state.isUploading);
 
   uploadImage(image: Image) {
     this.setIsLoading(true);
@@ -723,6 +721,7 @@ export class ImageStore extends StateService<ImageState> {
 
   getImageBySourceID(id: string) {
     this.setIsLoading(true);
+    this.setState({ imageInstance: null });
     return this.imageService
       .getImageBySourceID(id)
       .toPromise()

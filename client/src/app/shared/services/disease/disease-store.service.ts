@@ -80,6 +80,7 @@ export class DiseaseStore extends StateService<DiseaseState> {
   }
 
   initData(page: number, size: number) {
+    this.setIsLoading(true);
     this.diseaseService
       .fetchDisease(page, size)
       .toPromise()
@@ -99,6 +100,7 @@ export class DiseaseStore extends StateService<DiseaseState> {
   }
 
   initInfiniteData(page: number, size: number) {
+    this.setIsLoading(true);
     return this.diseaseService
       .fetchDisease(page, size)
       .toPromise()
@@ -144,6 +146,7 @@ export class DiseaseStore extends StateService<DiseaseState> {
 
   initFilterByCategoryData(value: string, page: number, size: number) {
     this.store.showNotif('Filtered Mode On', 'custom');
+    this.setIsLoading(true);
     this.diseaseService
       .filterDiseaseByCategory(value, 0, 5)
       .toPromise()
@@ -164,6 +167,7 @@ export class DiseaseStore extends StateService<DiseaseState> {
 
   initInfiniteFilterByCategoryData(value: string, page: number, size: number) {
     this.store.showNotif('Filtered Mode On', 'custom');
+    this.setIsLoading(true);
     this.diseaseService
       .filterDiseaseByCategory(value, page, size)
       .toPromise()
@@ -184,6 +188,7 @@ export class DiseaseStore extends StateService<DiseaseState> {
 
   initSearchByNameData(value: string, page: number, size: number) {
     this.store.showNotif('Searched Mode On', 'custom');
+    this.setIsLoading(true);
     this.diseaseService
       .searchDiseaseByName(value, 0, 5)
       .toPromise()
@@ -204,6 +209,7 @@ export class DiseaseStore extends StateService<DiseaseState> {
 
   initInfiniteSearchByNameData(value: string, page: number, size: number) {
     this.store.showNotif('Searched Mode On', 'custom');
+    this.setIsLoading(true);
     this.diseaseService
       .searchDiseaseByName(value, page, size)
       .toPromise()
@@ -228,6 +234,7 @@ export class DiseaseStore extends StateService<DiseaseState> {
 
   initSortByPriceData(value: string, page: number, size: number) {
     this.store.showNotif('Sort Mode On', 'custom');
+    this.setIsLoading(true);
     this.diseaseService
       .sortDiseaseByPrice(value, 0, 5)
       .toPromise()
@@ -248,6 +255,7 @@ export class DiseaseStore extends StateService<DiseaseState> {
 
   initSortByName(value: string, page: number, size: number) {
     this.store.showNotif('Sort Mode On', 'custom');
+    this.setIsLoading(true);
     this.diseaseService
       .sortDiseaseByName(value, 0, 5)
       .toPromise()
@@ -268,6 +276,7 @@ export class DiseaseStore extends StateService<DiseaseState> {
 
   initInfiniteSortByPriceData(value: string, page: number, size: number) {
     this.store.showNotif('Sort Mode On', 'custom');
+    this.setIsLoading(true);
     this.diseaseService
       .sortDiseaseByPrice(value, page, size)
       .toPromise()

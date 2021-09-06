@@ -89,6 +89,7 @@ export class UserStore extends StateService<UserState> {
   }
 
   initData(page: number, size: number) {
+    this.setIsLoading(true);
     this.userService
       .fetchUser(page, size)
       .toPromise()
@@ -109,6 +110,7 @@ export class UserStore extends StateService<UserState> {
 
   initFilterByCategoryData(value: string, page: number, size: number) {
     this.store.showNotif('Filtered Mode On', 'custom');
+    this.setIsLoading(true);
     this.userService
       .filterUserByCategory(value, 0, 5)
       .toPromise()
@@ -129,6 +131,7 @@ export class UserStore extends StateService<UserState> {
 
   initSearchByNameData(value: string, page: number, size: number) {
     this.store.showNotif('Searched Mode On', 'custom');
+    this.setIsLoading(true);
     this.userService
       .searchUserByName(value, 0, 5)
       .toPromise()
@@ -149,6 +152,7 @@ export class UserStore extends StateService<UserState> {
 
   initSortByPriceData(value: string, page: number, size: number) {
     this.store.showNotif('Sort Mode On', 'custom');
+    this.setIsLoading(true);
     this.userService
       .sortUserByPrice(value, 0, 5)
       .toPromise()
@@ -169,6 +173,7 @@ export class UserStore extends StateService<UserState> {
 
   initSortByName(value: string, page: number, size: number) {
     this.store.showNotif('Sort Mode On', 'custom');
+    this.setIsLoading(true);
     this.userService
       .sortUserByName(value, 0, 5)
       .toPromise()

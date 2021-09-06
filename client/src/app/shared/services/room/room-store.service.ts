@@ -81,6 +81,7 @@ export class RoomStore extends StateService<RoomState> {
   }
 
   initData(page: number, size: number) {
+    this.setIsLoading(true);
     this.roomService
       .fetchRoom(page, size)
       .toPromise()
@@ -100,6 +101,7 @@ export class RoomStore extends StateService<RoomState> {
   }
 
   initInfiniteData(page: number, size: number) {
+    this.setIsLoading(true);
     return this.roomService
       .fetchRoom(page, size)
       .toPromise()
@@ -144,6 +146,7 @@ export class RoomStore extends StateService<RoomState> {
 
   initFilterByCategoryData(value: string, page: number, size: number) {
     this.store.showNotif('Filtered Mode On', 'custom');
+    this.setIsLoading(true);
     this.roomService
       .filterRoomByCategory(value, 0, 5)
       .toPromise()
@@ -164,6 +167,7 @@ export class RoomStore extends StateService<RoomState> {
 
   initInfiniteFilterByCategoryData(value: string, page: number, size: number) {
     this.store.showNotif('Filtered Mode On', 'custom');
+    this.setIsLoading(true);
     this.roomService
       .filterRoomByCategory(value, page, size)
       .toPromise()
@@ -184,6 +188,7 @@ export class RoomStore extends StateService<RoomState> {
 
   initSearchByNameData(value: string, page: number, size: number) {
     this.store.showNotif('Searched Mode On', 'custom');
+    this.setIsLoading(true);
     this.roomService
       .searchRoomByName(value, 0, 5)
       .toPromise()
@@ -204,6 +209,7 @@ export class RoomStore extends StateService<RoomState> {
 
   initInfiniteSearchByNameData(value: string, page: number, size: number) {
     this.store.showNotif('Searched Mode On', 'custom');
+    this.setIsLoading(true);
     this.roomService
       .searchRoomByName(value, page, size)
       .toPromise()
@@ -228,6 +234,7 @@ export class RoomStore extends StateService<RoomState> {
 
   initSortByPriceData(value: string, page: number, size: number) {
     this.store.showNotif('Sort Mode On', 'custom');
+    this.setIsLoading(true);
     this.roomService
       .sortRoomByPrice(value, 0, 5)
       .toPromise()
@@ -248,6 +255,7 @@ export class RoomStore extends StateService<RoomState> {
 
   initInfiniteSortByPriceData(value: string, page: number, size: number) {
     this.store.showNotif('Sort Mode On', 'custom');
+    this.setIsLoading(true);
     this.roomService
       .sortRoomByPrice(value, page, size)
       .toPromise()
@@ -268,6 +276,7 @@ export class RoomStore extends StateService<RoomState> {
 
   initSortByName(value: string, page: number, size: number) {
     this.store.showNotif('Sort Mode On', 'custom');
+    this.setIsLoading(true);
     this.roomService
       .sortRoomByName(value, 0, 5)
       .toPromise()

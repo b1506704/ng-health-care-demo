@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, HostListener } from '@angular/core';
 import { Router } from '@angular/router';
 import { ImageStore } from 'src/app/shared/services/image/image-store.service';
 import { Image } from 'src/app/shared/models/image';
@@ -15,6 +15,15 @@ import { File } from 'src/app/shared/models/file';
 export class FileManagementComponent implements OnInit {
   @ViewChild(DxFileManagerComponent, { static: false })
   dxFileManager: DxFileManagerComponent;
+  @HostListener('document:keyup', ['$event'])
+  handleKeyboardEvent(event: KeyboardEvent) {
+    this.keyCombination.push(event.key);
+    if (this.keyCombination.length > 2) {
+      this.keyCombination = [];
+    }
+    this.handleOperation(this.keyCombination);
+  }
+  keyCombination: Array<string> = [];
   isItemMode = false;
   isDirectorySelected: boolean = true;
   currentDirectory: string = '';
@@ -261,18 +270,20 @@ export class FileManagementComponent implements OnInit {
               });
           }
         });
+    } else {
+      this.store.showNotif('Nothing to delete!', 'custom');
     }
   }
 
   clearClipboard() {
-    if (this.selectedKeys.length !== 0) {
+    if (this.tempCopyItems.length) {
       this.isMoving = false;
       this.isCopying = false;
       this.sourceDirectory = '';
       this.tempCopyItems = [];
       this.store.showNotif(`Clipboard cleared!`, 'custom');
     } else {
-      this.store.showNotif('No item selected!', 'custom');
+      this.store.showNotif('No item is copied or cut!', 'custom');
     }
   }
 
@@ -639,6 +650,68 @@ export class FileManagementComponent implements OnInit {
     });
   }
 
+  overwriteKeyHandler() {
+    const keyList = [
+      'backspace',
+      'tab',
+      'enter',
+      'escape',
+      'pageUp',
+      'pageDown',
+      'end',
+      'home',
+      'leftArrow',
+      'upArrow',
+      'rightArrow',
+      'downArrow',
+      'del',
+      'space',
+      'F',
+      'A',
+      'asterisk',
+      'minus',
+    ];
+    for (let i = 0; i < keyList.length; i++) {
+      const key = keyList[i];
+      // remove default handler to add custom handler
+      this.dxFileManager?.instance.registerKeyHandler(key, () => {});
+    }
+  }
+
+  handleOperation(keyList: Array<string>) {
+    //todo: add select item with arrow logic?
+    console.log('COMBINATION');
+    console.log(keyList);
+    const isEsc = keyList.find((e) => e === 'Escape');
+    const isDel = keyList.find((e) => e === 'Delete');
+    const isCopy =
+      keyList.find((e) => e === 'Control') && keyList.find((e) => e === 'c');
+    const isCut =
+      keyList.find((e) => e === 'Control') && keyList.find((e) => e === 'x');
+    const isPaste =
+      keyList.find((e) => e === 'Control') && keyList.find((e) => e === 'v');
+    if (isEsc) {
+      this.clearClipboard();
+      this.keyCombination = [];
+    }
+    if (isDel) {
+      this.deleteImages();
+      this.keyCombination = [];
+    }
+    if (isCopy) {
+      this.copyImages();
+      this.keyCombination = [];
+    }
+    if (isCut) {
+      this.moveImages();
+      this.keyCombination = [];
+    }
+    if (isPaste) {
+      this.pasteImages();
+      this.keyCombination = [];
+    }
+  }
+
   ngOnInit(): void {
     this.refreshFolder();
     this.fileDataListener();
@@ -646,6 +719,10 @@ export class FileManagementComponent implements OnInit {
     this.isUploadingListener();
     this.isUploadingFolderListener();
     this.isUpdatingFolderListener();
+    //overwrite default key handler
+    setTimeout(() => {
+      this.overwriteKeyHandler();
+    }, 1500);
   }
 
   ngOnDestroy(): void {

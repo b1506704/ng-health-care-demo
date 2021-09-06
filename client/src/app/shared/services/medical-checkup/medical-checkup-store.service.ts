@@ -90,6 +90,7 @@ export class MedicalCheckupStore extends StateService<MedicalCheckupState> {
   }
 
   initPendingInfiniteData(page: number, size: number) {
+    this.setIsLoading(true);
     return this.medicalCheckupService
       .fetchPendingMedicalCheckup(page, size)
       .toPromise()
@@ -143,6 +144,7 @@ export class MedicalCheckupStore extends StateService<MedicalCheckupState> {
     size: number
   ) {
     this.store.showNotif('Searched Mode On', 'custom');
+    this.setIsLoading(true);
     this.medicalCheckupService
       .searchPendingMedicalCheckupByName(value, page, size)
       .toPromise()
@@ -201,6 +203,7 @@ export class MedicalCheckupStore extends StateService<MedicalCheckupState> {
     size: number,
     customerID: string
   ) {
+    this.setIsLoading(true);
     return this.medicalCheckupService
       .fetchPendingMedicalCheckupByCustomerID(page, size, customerID)
       .toPromise()
@@ -258,6 +261,7 @@ export class MedicalCheckupStore extends StateService<MedicalCheckupState> {
     size: number,
     customerID: string
   ) {
+    this.setIsLoading(true);
     this.store.showNotif('Searched Mode On', 'custom');
     this.medicalCheckupService
       .searchPendingMedicalCheckupByNameByCustomerID(
@@ -327,6 +331,7 @@ export class MedicalCheckupStore extends StateService<MedicalCheckupState> {
   }
   //
   initCompleteInfiniteData(page: number, size: number) {
+    this.setIsLoading(true);
     return this.medicalCheckupService
       .fetchCompleteMedicalCheckup(page, size)
       .toPromise()
@@ -380,6 +385,7 @@ export class MedicalCheckupStore extends StateService<MedicalCheckupState> {
     size: number
   ) {
     this.store.showNotif('Searched Mode On', 'custom');
+    this.setIsLoading(true);
     this.medicalCheckupService
       .searchCompleteMedicalCheckupByName(value, page, size)
       .toPromise()
@@ -438,6 +444,7 @@ export class MedicalCheckupStore extends StateService<MedicalCheckupState> {
     size: number,
     customerID: string
   ) {
+    this.setIsLoading(true);
     return this.medicalCheckupService
       .fetchCompleteMedicalCheckupByCustomerID(page, size, customerID)
       .toPromise()
@@ -495,6 +502,7 @@ export class MedicalCheckupStore extends StateService<MedicalCheckupState> {
     size: number,
     customerID: string
   ) {
+    this.setIsLoading(true);
     this.store.showNotif('Searched Mode On', 'custom');
     this.medicalCheckupService
       .searchCompleteMedicalCheckupByNameByCustomerID(

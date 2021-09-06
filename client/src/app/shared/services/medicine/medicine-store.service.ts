@@ -5,6 +5,7 @@ import { StateService } from '../state.service';
 import { StoreService } from '../store.service';
 import { MedicineHttpService } from './medicine-http.service';
 import { confirm } from 'devextreme/ui/dialog';
+import { ImageStore } from '../image/image-store.service';
 
 interface MedicineState {
   medicineList: Array<Medicine>;
@@ -32,7 +33,8 @@ const initialState: MedicineState = {
 export class MedicineStore extends StateService<MedicineState> {
   constructor(
     private medicineService: MedicineHttpService,
-    private store: StoreService
+    private store: StoreService,
+    private imageStore: ImageStore
   ) {
     super(initialState);
   }
@@ -80,6 +82,7 @@ export class MedicineStore extends StateService<MedicineState> {
   }
 
   initInfiniteData(page: number, size: number) {
+    this.setIsLoading(true);
     return this.medicineService
       .fetchMedicine(page, size)
       .toPromise()
@@ -87,6 +90,7 @@ export class MedicineStore extends StateService<MedicineState> {
         this.setState({
           medicineList: new Array<Medicine>(data.items.length),
         });
+        this.imageStore.fetchSelectedImages(data.items);
         console.log('Current flag: infite list');
         console.log(this.state.medicineList);
         this.setState({ totalItems: data.totalItems });
@@ -105,6 +109,7 @@ export class MedicineStore extends StateService<MedicineState> {
         this.setState({
           medicineList: this.state.medicineList.concat(data.items),
         });
+        this.imageStore.fetchSelectedImages(data.items);
         console.log('Infinite list');
         console.log(this.state.medicineList);
         console.log('Server response');
@@ -123,6 +128,7 @@ export class MedicineStore extends StateService<MedicineState> {
   }
 
   initData(page: number, size: number) {
+    this.setIsLoading(true);
     this.medicineService
       .fetchMedicine(page, size)
       .toPromise()
@@ -143,6 +149,7 @@ export class MedicineStore extends StateService<MedicineState> {
 
   initFilterByCategoryData(value: string, page: number, size: number) {
     this.store.showNotif('Filtered Mode On', 'custom');
+    this.setIsLoading(true);
     this.medicineService
       .filterMedicineByCategory(value, 0, 5)
       .toPromise()
@@ -163,6 +170,7 @@ export class MedicineStore extends StateService<MedicineState> {
 
   initInfiniteFilterByCategoryData(value: string, page: number, size: number) {
     this.store.showNotif('Filtered Mode On', 'custom');
+    this.setIsLoading(true);
     this.medicineService
       .filterMedicineByCategory(value, page, size)
       .toPromise()
@@ -170,6 +178,7 @@ export class MedicineStore extends StateService<MedicineState> {
         this.setState({
           medicineList: new Array<Medicine>(data.items.length),
         });
+        this.imageStore.fetchSelectedImages(data.items);
         console.log('Current flag: infinite filtered list');
         console.log(this.state.medicineList);
         this.setState({ totalItems: data.totalItems });
@@ -183,6 +192,7 @@ export class MedicineStore extends StateService<MedicineState> {
 
   initSearchByNameData(value: string, page: number, size: number) {
     this.store.showNotif('Searched Mode On', 'custom');
+    this.setIsLoading(true);
     this.medicineService
       .searchMedicineByName(value, 0, 5)
       .toPromise()
@@ -203,6 +213,7 @@ export class MedicineStore extends StateService<MedicineState> {
 
   initInfiniteSearchByNameData(value: string, page: number, size: number) {
     this.store.showNotif('Searched Mode On', 'custom');
+    this.setIsLoading(true);
     this.medicineService
       .searchMedicineByName(value, page, size)
       .toPromise()
@@ -211,6 +222,7 @@ export class MedicineStore extends StateService<MedicineState> {
           this.setState({
             medicineList: new Array<Medicine>(data.items.length),
           });
+          this.imageStore.fetchSelectedImages(data.items);
         } else {
           this.store.showNotif('No result found!', 'custom');
         }
@@ -227,6 +239,7 @@ export class MedicineStore extends StateService<MedicineState> {
 
   initSortByPriceData(value: string, page: number, size: number) {
     this.store.showNotif('Sort Mode On', 'custom');
+    this.setIsLoading(true);
     this.medicineService
       .sortMedicineByPrice(value, 0, 5)
       .toPromise()
@@ -247,6 +260,7 @@ export class MedicineStore extends StateService<MedicineState> {
 
   initInfiniteSortByPriceData(value: string, page: number, size: number) {
     this.store.showNotif('Sort Mode On', 'custom');
+    this.setIsLoading(true);
     this.medicineService
       .sortMedicineByPrice(value, page, size)
       .toPromise()
@@ -254,6 +268,7 @@ export class MedicineStore extends StateService<MedicineState> {
         this.setState({
           medicineList: new Array<Medicine>(data.items.length),
         });
+        this.imageStore.fetchSelectedImages(data.items);
         console.log('Current flag: sort list');
         console.log(this.state.medicineList);
         this.setState({ totalItems: data.totalItems });
@@ -576,6 +591,7 @@ export class MedicineStore extends StateService<MedicineState> {
         this.setState({
           medicineList: this.state.medicineList.concat(data.items),
         });
+        this.imageStore.fetchSelectedImages(data.items);
         console.log('Filtered list');
         console.log(this.state.medicineList);
         console.log('Server response');
@@ -634,6 +650,7 @@ export class MedicineStore extends StateService<MedicineState> {
           this.setState({
             medicineList: this.state.medicineList.concat(data.items),
           });
+          this.imageStore.fetchSelectedImages(data.items);
         } else {
           this.store.showNotif('No result found!', 'custome');
         }
@@ -721,6 +738,7 @@ export class MedicineStore extends StateService<MedicineState> {
         this.setState({
           medicineList: this.state.medicineList.concat(data.items),
         });
+        this.imageStore.fetchSelectedImages(data.items);
         console.log('Infite sorted list');
         console.log(this.state.medicineList);
         console.log('Server response');

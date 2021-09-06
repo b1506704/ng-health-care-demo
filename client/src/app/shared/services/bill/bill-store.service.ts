@@ -79,6 +79,7 @@ export class BillStore extends StateService<BillState> {
   }
 
   initData(page: number, size: number) {
+    this.setIsLoading(true);
     this.billService
       .fetchBill(page, size)
       .toPromise()
@@ -99,6 +100,7 @@ export class BillStore extends StateService<BillState> {
 
   initFilterByCategoryData(value: string, page: number, size: number) {
     this.store.showNotif('Filtered Mode On', 'custom');
+    this.setIsLoading(true);
     this.billService
       .filterBillByCategory(value, 0, 5)
       .toPromise()
@@ -119,6 +121,7 @@ export class BillStore extends StateService<BillState> {
 
   initSearchByNameData(value: string, page: number, size: number) {
     this.store.showNotif('Searched Mode On', 'custom');
+    this.setIsLoading(true);
     this.billService
       .searchBillByName(value, 0, 5)
       .toPromise()
@@ -139,6 +142,7 @@ export class BillStore extends StateService<BillState> {
 
   initSortByPriceData(value: string, page: number, size: number) {
     this.store.showNotif('Sort Mode On', 'custom');
+    this.setIsLoading(true);
     this.billService
       .sortBillByPrice(value, 0, 5)
       .toPromise()
@@ -159,6 +163,7 @@ export class BillStore extends StateService<BillState> {
 
   initSortByName(value: string, page: number, size: number) {
     this.store.showNotif('Sort Mode On', 'custom');
+    this.setIsLoading(true);
     this.billService
       .sortBillByName(value, 0, 5)
       .toPromise()

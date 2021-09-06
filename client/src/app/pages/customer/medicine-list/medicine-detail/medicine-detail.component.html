@@ -4,7 +4,7 @@
   [scrollByThumb]="true"
 >
   <div class="img-container">
-    <img src="../../../../../assets/imgs/favipiravir_1.png" alt="..." />
+    <img [src]="imageData?.url" alt="..." />
   </div>
   <form id="medicine-form-container" [classList]="['medicine-form']">
     <dx-form id="medicine-form" [formData]="medicineData" [readOnly]="true">
