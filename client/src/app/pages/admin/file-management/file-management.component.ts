@@ -17,6 +17,7 @@ export class FileManagementComponent implements OnInit {
   dxFileManager: DxFileManagerComponent;
   @HostListener('document:keyup', ['$event'])
   handleKeyboardEvent(event: KeyboardEvent) {
+    event.preventDefault();
     this.keyCombination.push(event.key);
     if (this.keyCombination.length > 2) {
       this.keyCombination = [];
@@ -33,6 +34,7 @@ export class FileManagementComponent implements OnInit {
   isUploadBatchPopupVisible!: boolean;
   isUploadContainerPopupVisible!: boolean;
   isUpdateContainerPopupVisible!: boolean;
+  isKeyShortcutPopupVisible!: boolean;
   isUploading!: boolean;
   isCopying!: boolean;
   isMoving!: boolean;
@@ -245,33 +247,49 @@ export class FileManagementComponent implements OnInit {
   }
 
   uploadImage() {
-    this.isUploadPopupVisible = true;
+    if (this.currentDirectory === '') {
+      this.store.showNotif(
+        'Please select a folder to upload file(s)',
+        'custom'
+      );
+    } else {
+      this.isUploadPopupVisible = true;
+    }
   }
 
   uploadBatch() {
-    this.isUploadBatchPopupVisible = true;
+    if (this.currentDirectory === '') {
+      this.store.showNotif(
+        'Please select a folder to upload file(s)',
+        'custom'
+      );
+    } else {
+      this.isUploadBatchPopupVisible = true;
+    }
   }
 
   deleteImages() {
-    if (this.selectedKeys.length !== 0) {
-      this.fileStore
-        .confirmDialog('Delete selected items?')
-        .then((confirm: boolean) => {
-          if (confirm) {
-            this.fileStore
-              .deleteSelectedFiles(this.selectedKeys, this.currentDirectory)
-              .then(() => {
-                this.refresh();
-                this.store.showNotif(
-                  `${this.selectedKeys.length} item deleted`,
-                  'custom'
-                );
-                this.store.setIsLoading(false);
-              });
-          }
-        });
-    } else {
-      this.store.showNotif('Nothing to delete!', 'custom');
+    if (this.currentDirectory !== '') {
+      if (this.selectedKeys.length !== 0) {
+        this.fileStore
+          .confirmDialog('Delete selected items?')
+          .then((confirm: boolean) => {
+            if (confirm) {
+              this.fileStore
+                .deleteSelectedFiles(this.selectedKeys, this.currentDirectory)
+                .then(() => {
+                  this.refresh();
+                  this.store.showNotif(
+                    `${this.selectedKeys.length} item deleted`,
+                    'custom'
+                  );
+                  this.store.setIsLoading(false);
+                });
+            }
+          });
+      } else {
+        this.store.showNotif('Nothing to delete!', 'custom');
+      }
     }
   }
 
@@ -381,25 +399,29 @@ export class FileManagementComponent implements OnInit {
   }
 
   deleteSelectedImage() {
-    if (this.selectedItemKey.length !== 0) {
-      this.fileStore
-        .confirmDialog('Delete this item?')
-        .then((confirm: boolean) => {
-          if (confirm) {
-            this.fileStore
-              .deleteFile(this.selectedItemKey, this.currentDirectory)
-              .then(() => {
-                this.refresh();
-                this.store.showNotif('1 item deleted', 'custom');
-                this.store.setIsLoading(false);
-              });
-          }
-        });
+    if (this.currentDirectory !== '') {
+      if (this.selectedItemKey.length !== 0) {
+        this.fileStore
+          .confirmDialog('Delete this item?')
+          .then((confirm: boolean) => {
+            if (confirm) {
+              this.fileStore
+                .deleteFile(this.selectedItemKey, this.currentDirectory)
+                .then(() => {
+                  this.refresh();
+                  this.store.showNotif('1 item deleted', 'custom');
+                  this.store.setIsLoading(false);
+                });
+            }
+          });
+      }
     }
   }
 
   updateImage() {
-    this.isUploadPopupVisible = true;
+    if (this.currentDirectory !== '') {
+      this.isUploadPopupVisible = true;
+    }
   }
 
   downloadImage() {
@@ -430,6 +452,10 @@ export class FileManagementComponent implements OnInit {
           }
         });
     }
+  }
+
+  showKeyShortcut() {
+    this.isKeyShortcutPopupVisible = true;
   }
 
   checkEditorMode() {
@@ -680,35 +706,83 @@ export class FileManagementComponent implements OnInit {
 
   handleOperation(keyList: Array<string>) {
     //todo: add select item with arrow logic?
+    // disable browser default Ctr T, Ctr N key shortcut?
     console.log('COMBINATION');
     console.log(keyList);
-    const isEsc = keyList.find((e) => e === 'Escape');
-    const isDel = keyList.find((e) => e === 'Delete');
-    const isCopy =
-      keyList.find((e) => e === 'Control') && keyList.find((e) => e === 'c');
-    const isCut =
-      keyList.find((e) => e === 'Control') && keyList.find((e) => e === 'x');
-    const isPaste =
+    const isClearClipboard = keyList.find((e) => e === 'Escape');
+    const isDeleteFile =
+      keyList.find((e) => e === 'Delete') && this.isDirectorySelected === false;
+    const isCopyFile =
+      keyList.find((e) => e === 'Control') &&
+      keyList.find((e) => e === 'c') &&
+      this.isDirectorySelected === false;
+    const isMoveFile =
+      keyList.find((e) => e === 'Control') &&
+      keyList.find((e) => e === 'x') &&
+      this.isDirectorySelected === false;
+    const isPasteFile =
       keyList.find((e) => e === 'Control') && keyList.find((e) => e === 'v');
-    if (isEsc) {
+    const isUpdateFile =
+      keyList.find((e) => e === 'F2') &&
+      this.isDirectorySelected === false &&
+      this.currentDirectory !== '';
+    const isUploadFile = keyList.find((e) => e === 'PageUp');
+    const isUploadBatch = keyList.find((e) => e === 'Insert');
+    const isRenameFolder =
+      keyList.find((e) => e === 'F2') &&
+      this.isDirectorySelected === true &&
+      this.currentDirectory !== '';
+    const isNewFolder =
+      keyList.find((e) => e === 'Control') &&
+      keyList.find((e) => e === 'ArrowUp');
+    const isDeleteFolder =
+      keyList.find((e) => e === 'Delete') && this.isDirectorySelected === true;
+    const isCloneFolder =
+      keyList.find((e) => e === 'Control') &&
+      keyList.find((e) => e === 'c') &&
+      this.isDirectorySelected === true;
+    if (isClearClipboard) {
       this.clearClipboard();
       this.keyCombination = [];
     }
-    if (isDel) {
+    if (isDeleteFile) {
       this.deleteImages();
       this.keyCombination = [];
     }
-    if (isCopy) {
+    if (isUploadFile) {
+      this.uploadImage();
+      this.keyCombination = [];
+    }
+    if (isUploadBatch) {
+      this.uploadBatch();
+      this.keyCombination = [];
+    }
+    if (isCopyFile) {
       this.copyImages();
       this.keyCombination = [];
     }
-    if (isCut) {
+    if (isMoveFile) {
       this.moveImages();
       this.keyCombination = [];
     }
-    if (isPaste) {
+    if (isPasteFile) {
       this.pasteImages();
       this.keyCombination = [];
+    }
+    if (isRenameFolder) {
+      this.updateContainer();
+    }
+    if (isNewFolder) {
+      this.uploadContainer();
+    }
+    if (isCloneFolder) {
+      this.cloneContainer();
+    }
+    if (isDeleteFolder) {
+      this.deleteSelectedContainer();
+    }
+    if (isUpdateFile) {
+      this.updateImage();
     }
   }
 

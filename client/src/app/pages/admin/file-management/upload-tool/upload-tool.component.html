@@ -82,7 +82,12 @@
                 </div>
               </div>
             </dxi-item>
-
+            <dxi-item name="directory">
+              <dxo-label text="Folder"> </dxo-label>
+              <div *dxTemplate>
+                <div>{{ directory }}/</div>
+              </div>
+            </dxi-item>
             <dxi-item
               dataField="title"
               [label]="{ text: 'Title' }"

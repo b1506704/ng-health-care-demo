@@ -8,7 +8,7 @@
     (onSelectionChanged)="onSelectionChanged($event)"
     (onToolbarItemClick)="onToolbarItemClick($event)"
     (onContextMenuItemClick)="onContextItemClick($event)"
-    (onOptionChanged)="onOptionChanged($event)"    
+    (onOptionChanged)="onOptionChanged($event)"
   >
     <dxo-item-view [showParentFolder]="false">
       <dxo-details>
@@ -57,38 +57,41 @@
         locateInMenu="auto"
         [options]="newContainerMenuOptions"
       ></dxi-item>
-      <ng-container *ngIf="isDirectorySelected">
+      <dxi-item
+        *ngIf="currentDirectory !== ''"
+        widget="dxMenu"
+        location="before"
+        locateInMenu="auto"
+        [options]="deleteFolderMenuOptions"
+      ></dxi-item>
+      <dxi-item
+        *ngIf="currentDirectory !== ''"
+        widget="dxMenu"
+        location="before"
+        locateInMenu="auto"
+        [options]="renameFolderMenuOptions"
+      ></dxi-item>
+      <dxi-item
+        *ngIf="currentDirectory !== ''"
+        widget="dxMenu"
+        location="before"
+        locateInMenu="auto"
+        [options]="cloneFolderMenuOptions"
+      ></dxi-item>
+      <ng-container *ngIf="currentDirectory !== ''">
         <dxi-item
           widget="dxMenu"
           location="before"
           locateInMenu="auto"
-          [options]="deleteFolderMenuOptions"
+          [options]="newFileMenuOptions"
         ></dxi-item>
         <dxi-item
           widget="dxMenu"
           location="before"
           locateInMenu="auto"
-          [options]="renameFolderMenuOptions"
-        ></dxi-item>
-        <dxi-item
-          widget="dxMenu"
-          location="before"
-          locateInMenu="auto"
-          [options]="cloneFolderMenuOptions"
+          [options]="newFilesMenuOptions"
         ></dxi-item>
       </ng-container>
-      <dxi-item
-        widget="dxMenu"
-        location="before"
-        locateInMenu="auto"
-        [options]="newFileMenuOptions"
-      ></dxi-item>
-      <dxi-item
-        widget="dxMenu"
-        location="before"
-        locateInMenu="auto"
-        [options]="newFilesMenuOptions"
-      ></dxi-item>
       <dxi-item
         widget="dxMenu"
         location="after"
@@ -157,22 +160,24 @@
           icon="newfolder"
           beginGroup="true"
         ></dxi-item>
-        <dxi-item
-          name="deleteFolder"
-          text="Delete Folder"
-          icon="trash"
-        ></dxi-item>
-        <dxi-item
-          name="updateFolder"
-          text="Update Folder"
-          icon="edit"
-          beginGroup="true"
-        ></dxi-item>
-        <dxi-item
-          name="cloneFolder"
-          text="Clone Folder"
-          icon="unselectall"
-        ></dxi-item>
+        <ng-container *ngIf="currentDirectory !== ''">
+          <dxi-item
+            name="deleteFolder"
+            text="Delete Folder"
+            icon="trash"
+          ></dxi-item>
+          <dxi-item
+            name="updateFolder"
+            text="Update Folder"
+            icon="edit"
+            beginGroup="true"
+          ></dxi-item>
+          <dxi-item
+            name="cloneFolder"
+            text="Clone Folder"
+            icon="unselectall"
+          ></dxi-item>
+        </ng-container>
       </ng-container>
       <ng-container *ngIf="isDirectorySelected === false">
         <dxi-item
@@ -331,3 +336,51 @@
     </div>
   </dx-popup>
 </ng-container>
+<dx-popup
+  id="key-shortcut-popup"
+  [height]="'70%'"
+  [width]="'70%'"
+  [showTitle]="true"
+  [shading]="true"
+  [showCloseButton]="true"
+  [title]="'Keyboard Shortcut'"
+  [(visible)]="isKeyShortcutPopupVisible"
+>
+  <div *dxTemplate="let data of 'content'">
+    <dx-scroll-view
+      [bounceEnabled]="true"
+      [scrollByContent]="true"
+      [scrollByThumb]="true"
+      [height]="'100%'"
+      [width]="'100%'"
+    >
+      <div
+        style="
+          display: flex;
+          justify-content: center;
+          align-items: flex-start;
+          flex-direction: column;
+        "
+      >
+        <p>'F2': Rename Folder/ Update a file</p>
+        <p>'Escape': Clear clipboard</p>
+        <p>'Control' + 'C': Copy file(s)/ Clone folder</p>
+        <p>'Control' + 'X': Move file(s)</p>
+        <p>'Control' + 'V': Paste file(s)</p>
+        <p>'Delete': Delete file(s)/ folder</p>
+        <p>'Pageup': Upload a file</p>
+        <p>'Insert': Upload batch</p>
+        <p>'Control' + 'ArrowUp': New Folder</p>
+      </div>
+    </dx-scroll-view>
+  </div>
+</dx-popup>
+<dx-speed-dial-action
+  icon="warning"
+  label="Key Shortcut"
+  [index]="1"
+  (onClick)="showKeyShortcut()"
+>
+</dx-speed-dial-action>
+<dx-speed-dial-action icon="like" label="Sub Menu 2" [index]="2">
+</dx-speed-dial-action>

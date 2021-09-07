@@ -9,6 +9,7 @@ import {
   DxPopupModule,
   DxScrollViewModule,
   DxSelectBoxModule,
+  DxSpeedDialActionModule,
   DxTileViewModule,
 } from 'devextreme-angular';
 import { UploadToolComponent } from './upload-tool/upload-tool.component';
@@ -27,6 +28,7 @@ import { UpdateFolderComponent } from './update-folder/update-folder.component';
     DxTileViewModule,
     DxAutocompleteModule,
     DxSelectBoxModule,
+    DxSpeedDialActionModule
   ],
   declarations: [
     FileManagementComponent,
