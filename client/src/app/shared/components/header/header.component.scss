@@ -34,15 +34,22 @@
   padding: 0;
 }
 
-@media screen and (max-width: 340px) {
+::ng-deep #progress-bar-status {
+  display: inline-block;
+}
+::ng-deep .complete .dx-progressbar-range {
+  background-color: green;
+}
+
+@media screen and (max-width: 425px) {
   .neon-header {
     display: none;
   }
 }
-@media screen and (min-width: 341px) {
+@media screen and (min-width: 426px) {
   .neon-header {
     font-family: Hero;
-    font-size: 30px;
+    font-size: 26px;
     letter-spacing: 5px;
   }
 }

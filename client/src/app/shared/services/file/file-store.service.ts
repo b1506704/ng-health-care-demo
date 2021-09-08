@@ -253,10 +253,12 @@ export class FileStore extends StateService<FileState> {
     const currentDate = new Date();
     this.fileService.downloadFiles(selectedItems, container).subscribe({
       next: (data: any) => {
-        let blob: any = new Blob([data], { type: 'application/zip' });
-        saveAs(blob, `${currentDate.toLocaleDateString()}.zip`);
-        this.store.showNotif('1 zip downloaded', 'custom');
-        this.setIsLoading(false);
+        if (data !== null) {
+          let blob: any = new Blob([data], { type: 'application/zip' });
+          saveAs(blob, `${currentDate.toLocaleDateString()}.zip`);
+          this.store.showNotif('1 zip downloaded', 'custom');
+          this.setIsLoading(false);
+        }
       },
       error: (data: any) => {
         this.store.showNotif(data.error.errorMessage, 'error');

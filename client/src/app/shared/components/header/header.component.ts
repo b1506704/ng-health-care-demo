@@ -5,6 +5,7 @@ import {
   Output,
   EventEmitter,
   OnInit,
+  OnDestroy,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
@@ -13,16 +14,17 @@ import { DxButtonModule } from 'devextreme-angular/ui/button';
 import { DxToolbarModule } from 'devextreme-angular/ui/toolbar';
 
 import { Router } from '@angular/router';
-import { DxLoadIndicatorModule } from 'devextreme-angular';
+import { DxLoadIndicatorModule, DxProgressBarModule } from 'devextreme-angular';
 import { StoreService } from '../../services/store.service';
 import { UserStore } from '../../services/user/user-store.service';
 import { User } from '../../models/user';
+import { ScreenService } from '../../services/screen.service';
 @Component({
   selector: 'app-header',
   templateUrl: 'header.component.html',
   styleUrls: ['./header.component.scss'],
 })
-export class HeaderComponent implements OnInit {
+export class HeaderComponent implements OnInit, OnDestroy {
   @Output()
   menuToggle = new EventEmitter<boolean>();
 
@@ -43,26 +45,57 @@ export class HeaderComponent implements OnInit {
   ];
 
   isLoadIndicatorVisible!: boolean;
-  isLoggedIn!: boolean ;
+  isLoggedIn!: boolean;
   currentUser!: User;
+  progress!: number;
+  maxValue = 100;
+  responsiveWidth: any;
 
   constructor(
     private router: Router,
     private store: StoreService,
-    private userStore: UserStore
+    private userStore: UserStore,
+    private screenService: ScreenService
   ) {}
 
-  ngOnInit() {
-    this.store.$isLoading.subscribe((data: any) => {
+  responsiveAdapt() {
+    const isXSmall = this.screenService.sizes['screen-x-small'];
+    const isSmall = this.screenService.sizes['screen-small'];
+    if (isXSmall === true) {
+      this.responsiveWidth = 100;
+    } else if (isSmall === true) {
+      this.responsiveWidth = 120;
+    } else {
+      this.responsiveWidth = 300;
+    }
+  }
+
+  loadingDataListener() {
+    return this.store.$isLoading.subscribe((data: any) => {
       this.isLoadIndicatorVisible = data;
     });
-    this.store.$currentUser.subscribe((data: any) => {
+  }
+
+  responseProgressListener() {
+    return this.store.$responseProgress.subscribe((data: any) => {
+      if (data !== undefined) {
+        this.progress = Math.round(data * 100 * 100) / 100;
+        console.log('RECEIVED PROGRESS');
+        console.log(this.progress);
+      }
+    });
+  }
+
+  userDataListener() {
+    return this.store.$currentUser.subscribe((data: any) => {
       if (data !== null) {
         this.currentUser = data;
       }
-      // console.log(data);
     });
-    this.userStore.$isLoggedIn.subscribe((data: any) => {
+  }
+
+  navigateByRole() {
+    return this.userStore.$isLoggedIn.subscribe((data: any) => {
       this.isLoggedIn = data;
       if (this.isLoggedIn) {
         this.store.$currentRole.subscribe((data: string) => {
@@ -102,6 +135,25 @@ export class HeaderComponent implements OnInit {
   toggleMenu = () => {
     this.menuToggle.emit();
   };
+
+  format(value: any) {
+    return 'Loading: ' + value + '%';
+  }
+
+  ngOnInit(): void {
+    this.loadingDataListener();
+    this.responseProgressListener();
+    this.navigateByRole();
+    this.userDataListener();
+    this.responsiveAdapt();
+  }
+
+  ngOnDestroy(): void {
+    this.navigateByRole().unsubscribe();
+    this.userDataListener().unsubscribe();
+    this.loadingDataListener().unsubscribe();
+    this.responseProgressListener().unsubscribe();
+  }
 }
 
 @NgModule({
@@ -111,6 +163,7 @@ export class HeaderComponent implements OnInit {
     UserPanelModule,
     DxToolbarModule,
     DxLoadIndicatorModule,
+    DxProgressBarModule,
   ],
   declarations: [HeaderComponent],
   exports: [HeaderComponent],

@@ -359,8 +359,6 @@ export const downloadFiles = async (req, res) => {
       const downloadedBuffer = await streamToBuffer(
         downloadBlockBlobResponse.readableStreamBody
       );
-      console.log(downloadedBuffer);
-      blobLists.push(blockBlobClient.url);
       zip.addFile(`${blobName}.${blobExtension}`, downloadedBuffer, "Comments");
     }
     const zipFileContents = zip.toBuffer();
@@ -369,9 +367,8 @@ export const downloadFiles = async (req, res) => {
     res.writeHead(200, {
       "Content-Disposition": `attachment; filename="${fileName}"`,
       "Content-Type": fileType,
+      "Content-Length": zipFileContents.byteLength,
     });
-    console.log("Downloaded items: ");
-    console.log(blobLists);
     return res.end(zipFileContents);
   } catch (error) {
     console.log(error.message);

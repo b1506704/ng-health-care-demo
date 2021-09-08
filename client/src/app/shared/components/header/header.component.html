@@ -26,12 +26,24 @@
     </dxi-item>
     <dxi-item location="center">
       <div *dxTemplate="let data of 'item'">
-        <dx-load-indicator
+        <dx-progress-bar
+          #progressBar
+          id="progress-bar-status"
+          [width]="responsiveWidth"
+          [class.complete]="progressBar.value === maxValue"
+          [min]="0"
+          [max]="maxValue"
+          [visible]="isLoadIndicatorVisible"
+          [statusFormat]="format"
+          [value]="progress"
+        >
+        </dx-progress-bar>
+        <!-- <dx-load-indicator
           [visible]="isLoadIndicatorVisible"
           [height]="20"
           [width]="20"
         >
-        </dx-load-indicator>
+        </dx-load-indicator> -->
       </div>
     </dxi-item>
     <dxi-item location="after" locateInMenu="auto" [visible]="!isLoggedIn">

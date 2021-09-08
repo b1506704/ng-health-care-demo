@@ -240,6 +240,7 @@ export class FileHttpService {
       {
         responseType: 'blob',
         reportProgress: true,
+        observe: 'body',
       }
     );
   }

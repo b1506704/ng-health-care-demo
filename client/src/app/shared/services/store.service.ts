@@ -10,12 +10,14 @@ interface StoreState {
   selectedUser: Object;
   currentUser: Object;
   currentRole: String;
+  responseProgress: number;
   isLoading: Boolean;
   notifType: string;
   responseMsg: string;
 }
 const initialState: StoreState = {
   userList: [],
+  responseProgress: undefined,
   selectedUser: {},
   currentUser: {},
   currentRole: '',
@@ -35,6 +37,8 @@ export class StoreService extends StateService<StoreState> {
   $isLoading: Observable<Boolean> = this.select((state) => state.isLoading);
 
   $responseMsg: Observable<String> = this.select((state) => state.responseMsg);
+
+  $responseProgress: Observable<number> = this.select((state) => state.responseProgress);
 
   $notifType: Observable<String> = this.select((state) => state.notifType);
 
@@ -56,6 +60,9 @@ export class StoreService extends StateService<StoreState> {
     this.setState({ notifType: type });
   }
 
+  setResponseProgress(progress: number) {
+    this.setState({ responseProgress: progress });
+  }
 
   setCurrentUser(_user: Object) {
     this.setState({ currentUser: _user });
