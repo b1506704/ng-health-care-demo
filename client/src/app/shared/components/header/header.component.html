@@ -33,7 +33,10 @@
           [class.complete]="progressBar.value === maxValue"
           [min]="0"
           [max]="maxValue"
-          [visible]="isLoadIndicatorVisible"
+          [visible]="
+            (progress !== undefined && progress !== 100) ||
+            isLoadIndicatorVisible
+          "
           [statusFormat]="format"
           [value]="progress"
         >

@@ -47,8 +47,9 @@ export class HeaderComponent implements OnInit, OnDestroy {
   isLoadIndicatorVisible!: boolean;
   isLoggedIn!: boolean;
   currentUser!: User;
+  eventType: string = '';
   progress!: number;
-  maxValue = 100;
+  maxValue: number = 100;
   responsiveWidth: any;
 
   constructor(
@@ -79,9 +80,19 @@ export class HeaderComponent implements OnInit, OnDestroy {
   responseProgressListener() {
     return this.store.$responseProgress.subscribe((data: any) => {
       if (data !== undefined) {
-        this.progress = Math.round(data * 100 * 100) / 100;
+        this.progress = data;
         console.log('RECEIVED PROGRESS');
         console.log(this.progress);
+      }
+    });
+  }
+
+  responseEventTypeListener() {
+    return this.store.$responseEventType.subscribe((data: any) => {
+      if (data !== undefined) {
+        this.eventType = data;
+        console.log('EVENT TYPE');
+        console.log(this.eventType);
       }
     });
   }
@@ -136,13 +147,14 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.menuToggle.emit();
   };
 
-  format(value: any) {
-    return 'Loading: ' + value + '%';
+  format(value: number) {
+    return `Loading: ${(value * 100).toFixed(2)}%`;
   }
 
   ngOnInit(): void {
     this.loadingDataListener();
     this.responseProgressListener();
+    this.responseEventTypeListener();
     this.navigateByRole();
     this.userDataListener();
     this.responsiveAdapt();
@@ -153,6 +165,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.userDataListener().unsubscribe();
     this.loadingDataListener().unsubscribe();
     this.responseProgressListener().unsubscribe();
+    this.responseEventTypeListener().unsubscribe();
   }
 }
 

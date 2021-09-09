@@ -26,19 +26,34 @@ export class AuthInterceptor implements HttpInterceptor {
       console.log(cloned);
       return next.handle(cloned).pipe(
         tap((event) => {
+          //todo: manage response progress array
+          // const miliseconds = new Date().valueOf();
           if (event.type == HttpEventType.Sent) {
-            console.log('Request sent');
+            console.log('Request sent');            
+            // this.store.addResponse({id: miliseconds, type: 'Requesting', progress: 0});
+            // this.store.setResponseEventType('Requesting');
             this.store.setResponseProgress(0);
           }
           if (event.type == HttpEventType.DownloadProgress) {
             console.log(event.loaded);
             console.log(event.total);
-            const progress = event.loaded / event.total;
+            const progress = (event.loaded / event.total) * 100;
             console.log('DOWNLOAD PROGRESS');
             console.log(progress);
+            // this.store.setResponseEventType('Downloading');
+            this.store.setResponseProgress(progress);
+          }
+          if (event.type == HttpEventType.UploadProgress) {
+            console.log(event.loaded);
+            console.log(event.total);
+            const progress = (event.loaded / event.total) * 100;
+            console.log('UPLOAD PROGRESS');
+            console.log(progress);
+            // this.store.setResponseEventType('Sending');
             this.store.setResponseProgress(progress);
           }
           if (event.type == HttpEventType.Response) {
+            // this.store.setResponseEventType('Finishing');
             console.log('Content downloaded completely');
           }
         })
